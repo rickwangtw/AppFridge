@@ -31,6 +31,10 @@ public class AppSelectedListener implements CompoundButton.OnCheckedChangeListen
         }
     }
 
+    public boolean isPackageNameSelected(String packageName) {
+        return selectedPackageNames.contains(packageName);
+    }
+
     @Override
     public void onClick(View v) {
         try {

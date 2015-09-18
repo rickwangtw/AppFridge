@@ -3,6 +3,7 @@ package com.mysticwind.disabledappmanager;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AppListAdapter extends BaseAdapter {
     private static final String TAG = "AppListAdapter";
@@ -52,41 +55,61 @@ public class AppListAdapter extends BaseAdapter {
         return position;
     }
 
-    public class ViewHolder {
+    public class CachedAppInfo {
         public String packageName;
         public String appName;
-        public TextView textView;
-        public ImageView imageView;
+        public Drawable icon;
+        public ApplicationInfo appInfo;
     }
+
+    private Map<Integer, CachedAppInfo> positionToViewMap = new HashMap<>();
 
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
-        final ViewHolder holder;
-        ApplicationInfo appInfo = appInfoList.get(position);
-        if(convertView == null) {
-            view = layoutInflater.inflate(R.layout.applistitem, null);
-            holder = new ViewHolder();
-            holder.textView = (TextView) view.findViewById(R.id.packagename);;
-            holder.imageView = (ImageView) view.findViewById(R.id.appicon);
-            CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox);
-            checkBox.setTag(appInfo.packageName);
-            checkBox.setOnCheckedChangeListener(appSelectedListener);
-            view.setTag(holder);
-        } else {
-            holder = (ViewHolder) view.getTag();
+        CachedAppInfo cachedAppInfoForPosition = positionToViewMap.get(position);
+        if (cachedAppInfoForPosition == null) {
+            if (view == null) {
+                view = layoutInflater.inflate(R.layout.applistitem, null);
+            }
+            cachedAppInfoForPosition = newViewHolder(view, position);
+            positionToViewMap.put(position, cachedAppInfoForPosition);
         }
 
-        holder.packageName = appInfo.packageName;
-        holder.appName = appInfo.loadLabel(packageManager).toString();
-        holder.textView.setText(holder.appName);
-        if (!appInfo.enabled) {
+        TextView textView = (TextView) view.findViewById(R.id.packagename);;
+        textView.setText(cachedAppInfoForPosition.appName);
+
+        ImageView imageView = (ImageView) view.findViewById(R.id.appicon);
+        imageView.setImageDrawable(cachedAppInfoForPosition.icon);
+
+        if (!cachedAppInfoForPosition.appInfo.enabled) {
             view.setBackgroundColor(Color.GRAY);
             view.setEnabled(false);
+        } else {
+            view.setBackgroundColor(Color.WHITE);
+            view.setEnabled(true);
         }
+
+        CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+        checkBox.setChecked(
+                appSelectedListener.isPackageNameSelected(cachedAppInfoForPosition.packageName));
+
+        return view;
+    }
+
+    private CachedAppInfo newViewHolder(View view, int position) {
+        ApplicationInfo appInfo = appInfoList.get(position);
+
+        final CachedAppInfo cachedAppInfo = new CachedAppInfo();
+        cachedAppInfo.packageName = appInfo.packageName;
+        cachedAppInfo.appName = appInfo.loadLabel(packageManager).toString();
+        cachedAppInfo.appInfo = appInfo;
         try {
-            holder.imageView.setImageDrawable(packageManager.getApplicationIcon(holder.packageName).getCurrent());
+            cachedAppInfo.icon = packageManager.getApplicationIcon(cachedAppInfo.packageName).getCurrent();
         } catch (PackageManager.NameNotFoundException e) {
         }
-        return view;
+        CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+        checkBox.setTag(appInfo.packageName);
+        checkBox.setOnCheckedChangeListener(appSelectedListener);
+        return cachedAppInfo;
     }
 }

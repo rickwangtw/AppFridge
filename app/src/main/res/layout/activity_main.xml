@@ -13,11 +13,20 @@
         android:id="@+id/appListView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/textView"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/disable_app_button" />
+
+    <Button
+        android:id="@+id/disable_app_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disable"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

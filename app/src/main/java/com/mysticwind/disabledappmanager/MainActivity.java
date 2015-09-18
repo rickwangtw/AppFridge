@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -29,8 +32,13 @@ public class MainActivity extends AppCompatActivity {
             packageName.add(appInfo.packageName);
         }
 
+        AppSelectedListener appSelectedListener = new AppSelectedListener(packages);
         appListView.setAdapter(new AppListAdapter(getPackageManager(),
-                (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), packages));
+                (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), packages,
+                appSelectedListener));
+
+        Button disableAppButton = (Button) findViewById(R.id.disable_app_button);
+        disableAppButton.setOnClickListener(appSelectedListener);
     }
 
     @Override

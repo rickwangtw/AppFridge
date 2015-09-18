@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,12 +22,16 @@ public class AppListAdapter extends BaseAdapter {
     private final List<String> packageNameList;
     private final LayoutInflater layoutInflater;
     private final PackageManager packageManager;
+    private final AppSelectedListener appSelectedListener;
 
     public AppListAdapter(PackageManager packageManager,
-                          LayoutInflater layoutInflater, List<ApplicationInfo> appInfoList) {
+                          LayoutInflater layoutInflater,
+                          List<ApplicationInfo> appInfoList,
+                          AppSelectedListener appSelectedListener) {
         this.packageManager = packageManager;
         this.layoutInflater = layoutInflater;
         this.appInfoList = appInfoList;
+        this.appSelectedListener = appSelectedListener;
 
         this.packageNameList = new ArrayList<String>(appInfoList.size());
         for (ApplicationInfo appInfo : appInfoList){
@@ -57,17 +62,20 @@ public class AppListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         final ViewHolder holder;
+        ApplicationInfo appInfo = appInfoList.get(position);
         if(convertView == null) {
             view = layoutInflater.inflate(R.layout.applistitem, null);
             holder = new ViewHolder();
             holder.textView = (TextView) view.findViewById(R.id.packagename);;
             holder.imageView = (ImageView) view.findViewById(R.id.appicon);
+            CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox);
+            checkBox.setTag(appInfo.packageName);
+            checkBox.setOnCheckedChangeListener(appSelectedListener);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
         }
 
-        ApplicationInfo appInfo = appInfoList.get(position);
         holder.packageName = appInfo.packageName;
         holder.appName = appInfo.loadLabel(packageManager).toString();
         holder.textView.setText(holder.appName);

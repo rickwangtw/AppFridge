@@ -2,6 +2,7 @@ package com.mysticwind.disabledappmanager;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,6 +71,10 @@ public class AppListAdapter extends BaseAdapter {
         holder.packageName = appInfo.packageName;
         holder.appName = appInfo.loadLabel(packageManager).toString();
         holder.textView.setText(holder.appName);
+        if (!appInfo.enabled) {
+            view.setBackgroundColor(Color.GRAY);
+            view.setEnabled(false);
+        }
         try {
             holder.imageView.setImageDrawable(packageManager.getApplicationIcon(holder.packageName).getCurrent());
         } catch (PackageManager.NameNotFoundException e) {

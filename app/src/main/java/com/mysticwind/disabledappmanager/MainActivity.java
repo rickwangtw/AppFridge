@@ -1,16 +1,34 @@
 package com.mysticwind.disabledappmanager;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ListView appListView = (ListView)findViewById(R.id.appListView);
+
+        List<ApplicationInfo> packages = getPackageManager()
+                .getInstalledApplications(PackageManager.GET_META_DATA);
+
+        List<String> packageName = new ArrayList<>(packages.size());
+        for (ApplicationInfo appInfo : packages) {
+            packageName.add(appInfo.packageName);
+        }
+
+        appListView.setAdapter(new ArrayAdapter(appListView.getContext(), android.R.layout.simple_list_item_1, packageName));
     }
 
     @Override

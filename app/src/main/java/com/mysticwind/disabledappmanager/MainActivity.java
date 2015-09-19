@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.opengl.Visibility;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,6 +18,7 @@ import android.widget.Spinner;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
+import com.mysticwind.disabledappmanager.domain.CachingAppIconProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
@@ -47,7 +47,10 @@ public class MainActivity extends AppCompatActivity {
 
         appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
         appNameProvider = new PackageMangerAppNameProvider(getPackageManager());
-        appIconProvider = new PackageMangerAppIconProvider(getPackageManager());
+        appIconProvider = CachingAppIconProvider.INSTANCE.init(
+                new PackageMangerAppIconProvider(getPackageManager()),
+                getPackageManager());
+
         packageStateController = new RootProcessPackageStateController();
 
         progressDialog = new ProgressDialog(this);

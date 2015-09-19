@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.opengl.Visibility;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -34,6 +35,10 @@ public class MainActivity extends AppCompatActivity {
     private PackageStateController packageStateController;
     private ProgressDialog progressDialog;
     private AppSelectedListener appSelectedListener;
+    private int[] appStatusChangingButtonResourceIds = {
+            R.id.toggle_app_state_button,
+            R.id.disable_app_button,
+            R.id.enable_app_button};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +57,14 @@ public class MainActivity extends AppCompatActivity {
         appSelectedListener = new AppSelectedListener(progressDialog,
                 packageStateController, appStateProvider);
 
-        Button enableAppButton = (Button) findViewById(R.id.toggle_app_state_button);
-        enableAppButton.setOnClickListener(appSelectedListener);
+        Button toggleAppStatusButton = (Button) findViewById(R.id.toggle_app_state_button);
+        toggleAppStatusButton.setOnClickListener(appSelectedListener);
 
-        Button disableAppButton = (Button) findViewById(R.id.disable_app_button);
-        disableAppButton.setOnClickListener(appSelectedListener);
+        Button enableAppStatusButton = (Button) findViewById(R.id.enable_app_button);
+        enableAppStatusButton.setOnClickListener(appSelectedListener);
+
+        Button disableAppStatusButton = (Button) findViewById(R.id.disable_app_button);
+        disableAppStatusButton.setOnClickListener(appSelectedListener);
 
         Spinner appStatusSpinner = (Spinner) findViewById(R.id.app_status_spinner);
         appStatusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -66,9 +74,11 @@ public class MainActivity extends AppCompatActivity {
                         .getInstalledApplications(PackageManager.GET_META_DATA);
                 List<ApplicationInfo> filteredPackages
                         = new ArrayList<ApplicationInfo>();
+                int showingButtonResourceId = R.id.toggle_app_state_button;
 
                 switch (position) {
                     case 1:
+                        showingButtonResourceId = R.id.disable_app_button;
                         for (ApplicationInfo packages : allPackages) {
                             if (packages.enabled) {
                                 filteredPackages.add(packages);
@@ -76,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         break;
                     case 2:
+                        showingButtonResourceId = R.id.enable_app_button;
                         for (ApplicationInfo packages : allPackages) {
                             if (!packages.enabled) {
                                 filteredPackages.add(packages);
@@ -84,8 +95,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     default:
                         filteredPackages = allPackages;
+                        break;
                 }
-                generateListView(filteredPackages);
+                generateListView(filteredPackages, showingButtonResourceId);
             }
 
             @Override
@@ -96,10 +108,10 @@ public class MainActivity extends AppCompatActivity {
         List<ApplicationInfo> packages = getPackageManager()
                 .getInstalledApplications(PackageManager.GET_META_DATA);
 
-        generateListView(packages);
+        generateListView(packages, R.id.toggle_app_state_button);
     }
 
-    private void generateListView(List<ApplicationInfo> selectedPackages) {
+    private void generateListView(List<ApplicationInfo> selectedPackages, int showingButtonResourceId) {
         AppListAdapter appListAdapter = new AppListAdapter(appStateProvider, appIconProvider,
                 appNameProvider, (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE),
                 selectedPackages, appSelectedListener);
@@ -109,6 +121,14 @@ public class MainActivity extends AppCompatActivity {
 
         ListView appListView = (ListView)findViewById(R.id.appListView);
         appListView.setAdapter(appListAdapter);
+
+        for (int buttonResourceId : appStatusChangingButtonResourceIds) {
+            int visibility = View.GONE;
+            if (buttonResourceId == showingButtonResourceId) {
+                visibility = View.VISIBLE;
+            }
+            findViewById(buttonResourceId).setVisibility(visibility);
+        }
     }
 
     @Override

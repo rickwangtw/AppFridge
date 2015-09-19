@@ -9,32 +9,40 @@
         android:id="@+id/app_status_spinner"
         android:entries="@array/app_status_selection_array"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dip"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/toggle_app_state_button"
-        android:layout_toStartOf="@+id/toggle_app_state_button"
-        android:layout_alignBottom="@+id/toggle_app_state_button"
         android:layout_alignParentTop="true"
         android:spinnerMode="dropdown" />
 
     <Button
+        android:id="@+id/toggle_app_state_button"
+        android:text="Toggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Toggle"
-        android:id="@+id/toggle_app_state_button"
-        android:layout_above="@+id/appListView"
-        android:layout_toLeftOf="@+id/disable_app_button"
-        android:layout_toStartOf="@+id/disable_app_button" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignBottom="@+id/app_status_spinner" />
+
+    <Button
+        android:id="@+id/enable_app_button"
+        android:text="Enable"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignBottom="@+id/app_status_spinner" />
 
     <Button
         android:id="@+id/disable_app_button"
+        android:text="Disable"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Disable"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignBottom="@+id/app_status_spinner" />
 
     <ListView
         android:id="@+id/appListView"
@@ -45,6 +53,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/disable_app_button" />
+        android:layout_below="@+id/app_status_spinner" />
 
 </RelativeLayout>

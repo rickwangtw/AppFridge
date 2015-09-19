@@ -51,7 +51,7 @@ public class AppSelectedListener extends Observable
         }
 
         final int id = v.getId();
-        AsyncTask<String, Void, Void> packageStateUpdateTask = new AsyncTask<String, Void, Void>() {
+        final AsyncTask<String, Void, Void> packageStateUpdateTask = new AsyncTask<String, Void, Void>() {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
@@ -72,6 +72,9 @@ public class AppSelectedListener extends Observable
             @Override
             protected Void doInBackground(String... params) {
                 switch (id) {
+                    case R.id.enable_app_button:
+                        packageStateController.enablePackages(selectedPackageNames);
+                        break;
                     case R.id.disable_app_button:
                         packageStateController.disablePackages(selectedPackageNames);
                         break;

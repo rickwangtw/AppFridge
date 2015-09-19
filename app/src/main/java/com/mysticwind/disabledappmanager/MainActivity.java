@@ -46,10 +46,14 @@ public class MainActivity extends AppCompatActivity {
         AppIconProvider appIconProvider = new PackageMangerAppIconProvider(getPackageManager());
         PackageStateController packageStateController = new RootProcessPackageStateController();
 
-        AppSelectedListener appSelectedListener = new AppSelectedListener(packageStateController);
+        AppSelectedListener appSelectedListener = new AppSelectedListener(
+                packageStateController, appStateProvider);
         appListView.setAdapter(new AppListAdapter(appStateProvider, appIconProvider, appNameProvider,
                 (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), packages,
                 appSelectedListener));
+
+        Button enableAppButton = (Button) findViewById(R.id.toggle_app_state_button);
+        enableAppButton.setOnClickListener(appSelectedListener);
 
         Button disableAppButton = (Button) findViewById(R.id.disable_app_button);
         disableAppButton.setOnClickListener(appSelectedListener);

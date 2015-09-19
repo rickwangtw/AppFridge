@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 
+import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 
 import java.util.HashSet;
@@ -13,10 +14,12 @@ public class AppSelectedListener implements CompoundButton.OnCheckedChangeListen
     private static final String TAG ="AppSelectedListener";
 
     private final PackageStateController packageStateController;
+    private final AppStateProvider appStateProvider;
     private final Set<String> selectedPackageNames = new HashSet<>();
 
-    public AppSelectedListener(PackageStateController packageStateController) {
+    public AppSelectedListener(PackageStateController packageStateController, AppStateProvider appStateProvider) {
         this.packageStateController = packageStateController;
+        this.appStateProvider = appStateProvider;
     }
 
     @Override
@@ -35,6 +38,34 @@ public class AppSelectedListener implements CompoundButton.OnCheckedChangeListen
 
     @Override
     public void onClick(View v) {
-        packageStateController.disablePackages(selectedPackageNames);
+        switch (v.getId()) {
+            case R.id.disable_app_button:
+                packageStateController.disablePackages(selectedPackageNames);
+                break;
+            case R.id.toggle_app_state_button:
+                togglePackages(selectedPackageNames);
+                break;
+            default:
+                Log.w(TAG, "Unsupported click action for view: " + v.getId());
+        }
+    }
+
+    private void togglePackages(Set<String> packageNames) {
+        Set<String> packagesToEnable = new HashSet<>();
+        Set<String> packagesToDisable = new HashSet<>();
+
+        for (String packageName : selectedPackageNames) {
+            if (appStateProvider.isPackageEnabled(packageName)) {
+                packagesToDisable.add(packageName);
+            } else {
+                packagesToEnable.add(packageName);
+            }
+        }
+        if (!packagesToDisable.isEmpty()) {
+            packageStateController.disablePackages(packagesToDisable);
+        }
+        if (!packagesToEnable.isEmpty()) {
+            packageStateController.enablePackages(packagesToEnable);
+        }
     }
 }

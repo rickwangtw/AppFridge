@@ -100,6 +100,7 @@ public class AppListAdapter extends BaseAdapter {
         }
 
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+        checkBox.setTag(cachedAppInfoForPosition.packageName);
         checkBox.setChecked(
                 appSelectedListener.isPackageNameSelected(cachedAppInfoForPosition.packageName));
 
@@ -115,7 +116,6 @@ public class AppListAdapter extends BaseAdapter {
         cachedAppInfo.appInfo = appInfo;
         cachedAppInfo.icon = appIconProvider.getAppIcon(cachedAppInfo.packageName);
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
-        checkBox.setTag(appInfo.packageName);
         checkBox.setOnCheckedChangeListener(appSelectedListener);
         return cachedAppInfo;
     }

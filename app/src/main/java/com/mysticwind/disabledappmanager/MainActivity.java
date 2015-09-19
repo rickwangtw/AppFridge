@@ -18,7 +18,7 @@ import android.widget.Spinner;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
-import com.mysticwind.disabledappmanager.domain.CachingAppIconProvider;
+import com.mysticwind.disabledappmanager.domain.CachingAppInfoProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
@@ -46,10 +46,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
-        appNameProvider = new PackageMangerAppNameProvider(getPackageManager());
-        appIconProvider = CachingAppIconProvider.INSTANCE.init(
+
+        CachingAppInfoProvider appInfoProvider = CachingAppInfoProvider.INSTANCE.init(
                 new PackageMangerAppIconProvider(getPackageManager()),
+                new PackageMangerAppNameProvider(getPackageManager()),
                 getPackageManager());
+        appIconProvider = appInfoProvider;
+        appNameProvider = appInfoProvider;
 
         packageStateController = new RootProcessPackageStateController();
 

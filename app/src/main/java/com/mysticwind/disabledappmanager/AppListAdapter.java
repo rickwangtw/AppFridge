@@ -13,6 +13,10 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mysticwind.disabledappmanager.domain.AppIconProvider;
+import com.mysticwind.disabledappmanager.domain.AppNameProvider;
+import com.mysticwind.disabledappmanager.domain.AppStateProvider;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,17 +25,23 @@ import java.util.Map;
 public class AppListAdapter extends BaseAdapter {
     private static final String TAG = "AppListAdapter";
 
+    private final AppStateProvider appStateProvider;
+    private final AppNameProvider appNameProvider;
+    private final AppIconProvider appIconProvider;
     private final List<ApplicationInfo> appInfoList;
     private final List<String> packageNameList;
     private final LayoutInflater layoutInflater;
-    private final PackageManager packageManager;
     private final AppSelectedListener appSelectedListener;
 
-    public AppListAdapter(PackageManager packageManager,
+    public AppListAdapter(AppStateProvider appStateProvider,
+                          AppIconProvider appIconProvider,
+                          AppNameProvider appNameProvider,
                           LayoutInflater layoutInflater,
                           List<ApplicationInfo> appInfoList,
                           AppSelectedListener appSelectedListener) {
-        this.packageManager = packageManager;
+        this.appStateProvider = appStateProvider;
+        this.appNameProvider = appNameProvider;
+        this.appIconProvider = appIconProvider;
         this.layoutInflater = layoutInflater;
         this.appInfoList = appInfoList;
         this.appSelectedListener = appSelectedListener;
@@ -81,12 +91,12 @@ public class AppListAdapter extends BaseAdapter {
         ImageView imageView = (ImageView) view.findViewById(R.id.appicon);
         imageView.setImageDrawable(cachedAppInfoForPosition.icon);
 
-        if (!cachedAppInfoForPosition.appInfo.enabled) {
-            view.setBackgroundColor(Color.GRAY);
-            view.setEnabled(false);
-        } else {
+        if (appStateProvider.isPackageEnabled(cachedAppInfoForPosition.packageName)) {
             view.setBackgroundColor(Color.WHITE);
             view.setEnabled(true);
+        } else {
+            view.setBackgroundColor(Color.GRAY);
+            view.setEnabled(false);
         }
 
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
@@ -101,12 +111,9 @@ public class AppListAdapter extends BaseAdapter {
 
         final CachedAppInfo cachedAppInfo = new CachedAppInfo();
         cachedAppInfo.packageName = appInfo.packageName;
-        cachedAppInfo.appName = appInfo.loadLabel(packageManager).toString();
+        cachedAppInfo.appName = appNameProvider.getAppName(cachedAppInfo.packageName);
         cachedAppInfo.appInfo = appInfo;
-        try {
-            cachedAppInfo.icon = packageManager.getApplicationIcon(cachedAppInfo.packageName).getCurrent();
-        } catch (PackageManager.NameNotFoundException e) {
-        }
+        cachedAppInfo.icon = appIconProvider.getAppIcon(cachedAppInfo.packageName);
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
         checkBox.setTag(appInfo.packageName);
         checkBox.setOnCheckedChangeListener(appSelectedListener);

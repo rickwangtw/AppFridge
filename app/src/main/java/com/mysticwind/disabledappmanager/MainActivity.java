@@ -13,6 +13,13 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.mysticwind.disabledappmanager.domain.AppIconProvider;
+import com.mysticwind.disabledappmanager.domain.AppNameProvider;
+import com.mysticwind.disabledappmanager.domain.AppStateProvider;
+import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
+import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
+import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +39,12 @@ public class MainActivity extends AppCompatActivity {
             packageName.add(appInfo.packageName);
         }
 
+        AppStateProvider appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
+        AppNameProvider appNameProvider = new PackageMangerAppNameProvider(getPackageManager());
+        AppIconProvider appIconProvider = new PackageMangerAppIconProvider(getPackageManager());
+
         AppSelectedListener appSelectedListener = new AppSelectedListener(packages);
-        appListView.setAdapter(new AppListAdapter(getPackageManager(),
+        appListView.setAdapter(new AppListAdapter(appStateProvider, appIconProvider, appNameProvider,
                 (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), packages,
                 appSelectedListener));
 

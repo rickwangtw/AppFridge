@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -26,48 +28,87 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private AppStateProvider appStateProvider;
+    private AppNameProvider appNameProvider;
+    private AppIconProvider appIconProvider;
+    private PackageStateController packageStateController;
+    private ProgressDialog progressDialog;
+    private AppSelectedListener appSelectedListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Spinner appStatusSpinner = (Spinner) findViewById(R.id.app_status_spinner);
+        appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
+        appNameProvider = new PackageMangerAppNameProvider(getPackageManager());
+        appIconProvider = new PackageMangerAppIconProvider(getPackageManager());
+        packageStateController = new RootProcessPackageStateController();
 
-        ListView appListView = (ListView)findViewById(R.id.appListView);
-
-        List<ApplicationInfo> packages = getPackageManager()
-                .getInstalledApplications(PackageManager.GET_META_DATA);
-
-        List<String> packageName = new ArrayList<>(packages.size());
-        for (ApplicationInfo appInfo : packages) {
-            packageName.add(appInfo.packageName);
-        }
-
-        AppStateProvider appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
-        AppNameProvider appNameProvider = new PackageMangerAppNameProvider(getPackageManager());
-        AppIconProvider appIconProvider = new PackageMangerAppIconProvider(getPackageManager());
-        PackageStateController packageStateController = new RootProcessPackageStateController();
-
-        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Updating application status");
         progressDialog.setIndeterminate(true);
 
-        AppSelectedListener appSelectedListener = new AppSelectedListener(progressDialog,
+        appSelectedListener = new AppSelectedListener(progressDialog,
                 packageStateController, appStateProvider);
-
-        AppListAdapter appListAdapter = new AppListAdapter(appStateProvider, appIconProvider, appNameProvider,
-                (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), packages,
-                appSelectedListener);
-
-        appSelectedListener.addObserver(appListAdapter);
-
-        appListView.setAdapter(appListAdapter);
 
         Button enableAppButton = (Button) findViewById(R.id.toggle_app_state_button);
         enableAppButton.setOnClickListener(appSelectedListener);
 
         Button disableAppButton = (Button) findViewById(R.id.disable_app_button);
         disableAppButton.setOnClickListener(appSelectedListener);
+
+        Spinner appStatusSpinner = (Spinner) findViewById(R.id.app_status_spinner);
+        appStatusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                List<ApplicationInfo> allPackages = getPackageManager()
+                        .getInstalledApplications(PackageManager.GET_META_DATA);
+                List<ApplicationInfo> filteredPackages
+                        = new ArrayList<ApplicationInfo>();
+
+                switch (position) {
+                    case 1:
+                        for (ApplicationInfo packages : allPackages) {
+                            if (packages.enabled) {
+                                filteredPackages.add(packages);
+                            }
+                        }
+                        break;
+                    case 2:
+                        for (ApplicationInfo packages : allPackages) {
+                            if (!packages.enabled) {
+                                filteredPackages.add(packages);
+                            }
+                        }
+                        break;
+                    default:
+                        filteredPackages = allPackages;
+                }
+                generateListView(filteredPackages);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        List<ApplicationInfo> packages = getPackageManager()
+                .getInstalledApplications(PackageManager.GET_META_DATA);
+
+        generateListView(packages);
+    }
+
+    private void generateListView(List<ApplicationInfo> selectedPackages) {
+        AppListAdapter appListAdapter = new AppListAdapter(appStateProvider, appIconProvider,
+                appNameProvider, (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE),
+                selectedPackages, appSelectedListener);
+
+        appSelectedListener.deleteObservers();
+        appSelectedListener.addObserver(appListAdapter);
+
+        ListView appListView = (ListView)findViewById(R.id.appListView);
+        appListView.setAdapter(appListAdapter);
     }
 
     @Override

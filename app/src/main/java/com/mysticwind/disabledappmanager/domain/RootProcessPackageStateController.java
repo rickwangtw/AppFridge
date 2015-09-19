@@ -33,7 +33,7 @@ public class RootProcessPackageStateController implements PackageStateController
         DataOutputStream outputStream = new DataOutputStream(process.getOutputStream());
 
         for (String packageName : packageNames) {
-            Log.d(TAG, "Disabling package: " + packageName);
+            Log.d(TAG, "Modifying (" + state + ") package: " + packageName);
             outputStream.writeBytes(buildCommand(packageName, state));
             outputStream.flush();
         }

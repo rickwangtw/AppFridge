@@ -30,6 +30,7 @@ public class AppSelectedListener implements CompoundButton.OnCheckedChangeListen
         } else {
             selectedPackageNames.remove(packageName);
         }
+        Log.d(TAG, "Selected packages: " + selectedPackageNames);
     }
 
     public boolean isPackageNameSelected(String packageName) {

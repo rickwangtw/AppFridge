@@ -8,9 +8,11 @@ import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 
 import java.util.HashSet;
+import java.util.Observable;
 import java.util.Set;
 
-public class AppSelectedListener implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+public class AppSelectedListener extends Observable
+        implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
     private static final String TAG ="AppSelectedListener";
 
     private final PackageStateController packageStateController;
@@ -39,6 +41,10 @@ public class AppSelectedListener implements CompoundButton.OnCheckedChangeListen
 
     @Override
     public void onClick(View v) {
+        if (selectedPackageNames.isEmpty()) {
+            Log.i(TAG, "No package selected ...");
+            return;
+        }
         switch (v.getId()) {
             case R.id.disable_app_button:
                 packageStateController.disablePackages(selectedPackageNames);
@@ -49,6 +55,9 @@ public class AppSelectedListener implements CompoundButton.OnCheckedChangeListen
             default:
                 Log.w(TAG, "Unsupported click action for view: " + v.getId());
         }
+        selectedPackageNames.clear();
+        this.setChanged();
+        this.notifyObservers();
     }
 
     private void togglePackages(Set<String> packageNames) {

@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -48,9 +46,14 @@ public class MainActivity extends AppCompatActivity {
 
         AppSelectedListener appSelectedListener = new AppSelectedListener(
                 packageStateController, appStateProvider);
-        appListView.setAdapter(new AppListAdapter(appStateProvider, appIconProvider, appNameProvider,
+
+        AppListAdapter appListAdapter = new AppListAdapter(appStateProvider, appIconProvider, appNameProvider,
                 (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), packages,
-                appSelectedListener));
+                appSelectedListener);
+
+        appSelectedListener.addObserver(appListAdapter);
+
+        appListView.setAdapter(appListAdapter);
 
         Button enableAppButton = (Button) findViewById(R.id.toggle_app_state_button);
         enableAppButton.setOnClickListener(appSelectedListener);

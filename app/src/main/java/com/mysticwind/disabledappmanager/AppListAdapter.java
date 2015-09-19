@@ -1,7 +1,6 @@
 package com.mysticwind.disabledappmanager;
 
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -21,8 +20,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
-public class AppListAdapter extends BaseAdapter {
+public class AppListAdapter extends BaseAdapter implements Observer {
     private static final String TAG = "AppListAdapter";
 
     private final AppStateProvider appStateProvider;
@@ -119,4 +120,10 @@ public class AppListAdapter extends BaseAdapter {
         checkBox.setOnCheckedChangeListener(appSelectedListener);
         return cachedAppInfo;
     }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        notifyDataSetChanged();
+    }
+
 }

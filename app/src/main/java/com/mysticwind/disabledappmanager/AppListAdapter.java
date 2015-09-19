@@ -119,7 +119,8 @@ public class AppListAdapter extends BaseAdapter implements Observer {
 
     @Override
     public void update(Observable observable, Object data) {
+        this.appInfoList = packageListProvider.getOrderedPackages();
+        this.positionToViewMap.clear();
         notifyDataSetChanged();
     }
-
 }

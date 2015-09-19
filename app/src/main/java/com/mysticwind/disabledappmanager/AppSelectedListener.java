@@ -1,7 +1,6 @@
 package com.mysticwind.disabledappmanager;
 
-import android.app.ProgressDialog;
-import android.content.Context;
+import android.app.Dialog;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -18,14 +17,13 @@ public class AppSelectedListener extends Observable
         implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
     private static final String TAG ="AppSelectedListener";
 
-    private final Context context;
+    private final Dialog dialog;
     private final PackageStateController packageStateController;
     private final AppStateProvider appStateProvider;
     private final Set<String> selectedPackageNames = new HashSet<>();
-    private ProgressDialog progressDialog;
 
-    public AppSelectedListener(Context context, PackageStateController packageStateController, AppStateProvider appStateProvider) {
-        this.context = context;
+    public AppSelectedListener(Dialog dialog, PackageStateController packageStateController, AppStateProvider appStateProvider) {
+        this.dialog = dialog;
         this.packageStateController = packageStateController;
         this.appStateProvider = appStateProvider;
     }
@@ -57,7 +55,7 @@ public class AppSelectedListener extends Observable
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                showDialog();
+                dialog.show();
             }
 
             @Override
@@ -65,7 +63,10 @@ public class AppSelectedListener extends Observable
                 super.onPostExecute(aVoid);
                 setChanged();
                 notifyObservers();
-                dismissDialog();
+
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
             }
 
             @Override
@@ -86,17 +87,6 @@ public class AppSelectedListener extends Observable
         };
         packageStateUpdateTask.execute();
     }
-
-    private void showDialog() {
-        progressDialog = ProgressDialog.show(context, "Updating Application Status", null, true);
-    }
-
-    private void dismissDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-    }
-
 
     private void togglePackages(Set<String> packageNames) {
         Set<String> packagesToEnable = new HashSet<>();

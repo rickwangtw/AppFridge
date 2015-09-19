@@ -1,5 +1,6 @@
 package com.mysticwind.disabledappmanager;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -44,7 +45,11 @@ public class MainActivity extends AppCompatActivity {
         AppIconProvider appIconProvider = new PackageMangerAppIconProvider(getPackageManager());
         PackageStateController packageStateController = new RootProcessPackageStateController();
 
-        AppSelectedListener appSelectedListener = new AppSelectedListener(this,
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Updating application status");
+        progressDialog.setIndeterminate(true);
+
+        AppSelectedListener appSelectedListener = new AppSelectedListener(progressDialog,
                 packageStateController, appStateProvider);
 
         AppListAdapter appListAdapter = new AppListAdapter(appStateProvider, appIconProvider, appNameProvider,

@@ -37,11 +37,23 @@ public class RootProcessPackageStateController implements PackageStateController
             outputStream.writeBytes(buildCommand(packageName, state));
             outputStream.flush();
         }
+        outputStream.writeBytes("exit\n");
+        int result = waitForResult(process);
+        Log.d(TAG, "Root process result: " + result);
 
         outputStream.close();
     }
 
     private String buildCommand(String packageName, boolean state) {
         return String.format(PACKAGE_COMMAND_FORMAT, state ? "enable" : "disable", packageName);
+    }
+
+    private int waitForResult(Process process) {
+        try {
+            return process.waitFor();
+        } catch (InterruptedException e) {
+            Log.d(TAG, "Root process Interrupted!");
+            return -1;
+        }
     }
 }

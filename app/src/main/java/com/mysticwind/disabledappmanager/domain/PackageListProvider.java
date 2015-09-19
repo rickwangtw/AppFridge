@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 public interface PackageListProvider {
-    Set<AppInfo> getAllPackages();
-    List<AppInfo> getOrderedAllPackages();
-    Set<AppInfo> getEnabledPackages();
-    List<AppInfo> getOrderedEnabledPackages();
-    Set<AppInfo> getDisabledPackages();
-    List<AppInfo> getOrderedDisabledPackages();
+    Set<AppInfo> getPackages();
+    List<AppInfo> getOrderedPackages();
 }

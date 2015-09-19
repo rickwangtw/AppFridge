@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         AppIconProvider appIconProvider = new PackageMangerAppIconProvider(getPackageManager());
         PackageStateController packageStateController = new RootProcessPackageStateController();
 
-        AppSelectedListener appSelectedListener = new AppSelectedListener(
+        AppSelectedListener appSelectedListener = new AppSelectedListener(this,
                 packageStateController, appStateProvider);
 
         AppListAdapter appListAdapter = new AppListAdapter(appStateProvider, appIconProvider, appNameProvider,

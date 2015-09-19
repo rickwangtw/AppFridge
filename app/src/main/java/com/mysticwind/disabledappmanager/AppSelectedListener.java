@@ -1,5 +1,8 @@
 package com.mysticwind.disabledappmanager;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -15,11 +18,14 @@ public class AppSelectedListener extends Observable
         implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
     private static final String TAG ="AppSelectedListener";
 
+    private final Context context;
     private final PackageStateController packageStateController;
     private final AppStateProvider appStateProvider;
     private final Set<String> selectedPackageNames = new HashSet<>();
+    private ProgressDialog progressDialog;
 
-    public AppSelectedListener(PackageStateController packageStateController, AppStateProvider appStateProvider) {
+    public AppSelectedListener(Context context, PackageStateController packageStateController, AppStateProvider appStateProvider) {
+        this.context = context;
         this.packageStateController = packageStateController;
         this.appStateProvider = appStateProvider;
     }
@@ -45,20 +51,52 @@ public class AppSelectedListener extends Observable
             Log.i(TAG, "No package selected ...");
             return;
         }
-        switch (v.getId()) {
-            case R.id.disable_app_button:
-                packageStateController.disablePackages(selectedPackageNames);
-                break;
-            case R.id.toggle_app_state_button:
-                togglePackages(selectedPackageNames);
-                break;
-            default:
-                Log.w(TAG, "Unsupported click action for view: " + v.getId());
-        }
-        selectedPackageNames.clear();
-        this.setChanged();
-        this.notifyObservers();
+
+        final int id = v.getId();
+        AsyncTask<String, Void, Void> packageStateUpdateTask = new AsyncTask<String, Void, Void>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                showDialog();
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                setChanged();
+                notifyObservers();
+                dismissDialog();
+            }
+
+            @Override
+            protected Void doInBackground(String... params) {
+                switch (id) {
+                    case R.id.disable_app_button:
+                        packageStateController.disablePackages(selectedPackageNames);
+                        break;
+                    case R.id.toggle_app_state_button:
+                        togglePackages(selectedPackageNames);
+                        break;
+                    default:
+                        Log.w(TAG, "Unsupported click action for view: " + id);
+                }
+                selectedPackageNames.clear();
+                return null;
+            }
+        };
+        packageStateUpdateTask.execute();
     }
+
+    private void showDialog() {
+        progressDialog = ProgressDialog.show(context, "Updating Application Status", null, true);
+    }
+
+    private void dismissDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
 
     private void togglePackages(Set<String> packageNames) {
         Set<String> packagesToEnable = new HashSet<>();

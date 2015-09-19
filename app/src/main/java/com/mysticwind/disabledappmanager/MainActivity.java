@@ -19,6 +19,8 @@ import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
+import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +44,9 @@ public class MainActivity extends AppCompatActivity {
         AppStateProvider appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
         AppNameProvider appNameProvider = new PackageMangerAppNameProvider(getPackageManager());
         AppIconProvider appIconProvider = new PackageMangerAppIconProvider(getPackageManager());
+        PackageStateController packageStateController = new RootProcessPackageStateController();
 
-        AppSelectedListener appSelectedListener = new AppSelectedListener(packages);
+        AppSelectedListener appSelectedListener = new AppSelectedListener(packageStateController);
         appListView.setAdapter(new AppListAdapter(appStateProvider, appIconProvider, appNameProvider,
                 (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), packages,
                 appSelectedListener));

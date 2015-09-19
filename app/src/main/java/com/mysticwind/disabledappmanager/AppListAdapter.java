@@ -31,7 +31,6 @@ public class AppListAdapter extends BaseAdapter implements Observer {
     private final AppNameProvider appNameProvider;
     private final AppIconProvider appIconProvider;
     private final List<AppInfo> appInfoList;
-    private final List<String> packageNameList;
     private final LayoutInflater layoutInflater;
     private final AppSelectedListener appSelectedListener;
 
@@ -48,10 +47,6 @@ public class AppListAdapter extends BaseAdapter implements Observer {
         this.appInfoList = appInfoList;
         this.appSelectedListener = appSelectedListener;
 
-        this.packageNameList = new ArrayList<String>(appInfoList.size());
-        for (AppInfo appInfo : appInfoList){
-            this.packageNameList.add(appInfo.getPackageName());
-        }
         Log.i(TAG, "Size of packages: " + appInfoList.size());
     }
 

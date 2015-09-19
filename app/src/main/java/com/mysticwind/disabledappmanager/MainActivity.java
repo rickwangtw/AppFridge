@@ -19,16 +19,20 @@ import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.CachingAppInfoProvider;
+import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
+import com.mysticwind.disabledappmanager.domain.PackageMangerPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
+import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private PackageListProvider packageListProvider;
     private AppStateProvider appStateProvider;
     private AppNameProvider appNameProvider;
     private AppIconProvider appIconProvider;
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        packageListProvider = new PackageMangerPackageListProvider(getPackageManager());
         appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
 
         CachingAppInfoProvider appInfoProvider = CachingAppInfoProvider.INSTANCE.init(
@@ -76,34 +81,23 @@ public class MainActivity extends AppCompatActivity {
         appStatusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                List<ApplicationInfo> allPackages = getPackageManager()
-                        .getInstalledApplications(PackageManager.GET_META_DATA);
-                List<ApplicationInfo> filteredPackages
-                        = new ArrayList<ApplicationInfo>();
+                List<AppInfo>  selectedPackages;
                 int showingButtonResourceId = R.id.toggle_app_state_button;
 
                 switch (position) {
                     case 1:
                         showingButtonResourceId = R.id.disable_app_button;
-                        for (ApplicationInfo packages : allPackages) {
-                            if (packages.enabled) {
-                                filteredPackages.add(packages);
-                            }
-                        }
+                        selectedPackages = packageListProvider.getOrderedEnabledPackages();
                         break;
                     case 2:
                         showingButtonResourceId = R.id.enable_app_button;
-                        for (ApplicationInfo packages : allPackages) {
-                            if (!packages.enabled) {
-                                filteredPackages.add(packages);
-                            }
-                        }
+                        selectedPackages = packageListProvider.getOrderedDisabledPackages();
                         break;
                     default:
-                        filteredPackages = allPackages;
+                        selectedPackages = packageListProvider.getOrderedAllPackages();
                         break;
                 }
-                generateListView(filteredPackages, showingButtonResourceId);
+                generateListView(selectedPackages, showingButtonResourceId);
             }
 
             @Override
@@ -111,13 +105,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        List<ApplicationInfo> packages = getPackageManager()
-                .getInstalledApplications(PackageManager.GET_META_DATA);
-
-        generateListView(packages, R.id.toggle_app_state_button);
+        generateListView(packageListProvider.getOrderedAllPackages(), R.id.toggle_app_state_button);
     }
 
-    private void generateListView(List<ApplicationInfo> selectedPackages, int showingButtonResourceId) {
+    private void generateListView(List<AppInfo> selectedPackages, int showingButtonResourceId) {
         AppListAdapter appListAdapter = new AppListAdapter(appStateProvider, appIconProvider,
                 appNameProvider, (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE),
                 selectedPackages, appSelectedListener);

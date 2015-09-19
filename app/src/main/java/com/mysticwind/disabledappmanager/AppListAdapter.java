@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
+import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class AppListAdapter extends BaseAdapter implements Observer {
     private final AppStateProvider appStateProvider;
     private final AppNameProvider appNameProvider;
     private final AppIconProvider appIconProvider;
-    private final List<ApplicationInfo> appInfoList;
+    private final List<AppInfo> appInfoList;
     private final List<String> packageNameList;
     private final LayoutInflater layoutInflater;
     private final AppSelectedListener appSelectedListener;
@@ -38,7 +39,7 @@ public class AppListAdapter extends BaseAdapter implements Observer {
                           AppIconProvider appIconProvider,
                           AppNameProvider appNameProvider,
                           LayoutInflater layoutInflater,
-                          List<ApplicationInfo> appInfoList,
+                          List<AppInfo> appInfoList,
                           AppSelectedListener appSelectedListener) {
         this.appStateProvider = appStateProvider;
         this.appNameProvider = appNameProvider;
@@ -48,8 +49,8 @@ public class AppListAdapter extends BaseAdapter implements Observer {
         this.appSelectedListener = appSelectedListener;
 
         this.packageNameList = new ArrayList<String>(appInfoList.size());
-        for (ApplicationInfo appInfo : appInfoList){
-            this.packageNameList.add(appInfo.packageName);
+        for (AppInfo appInfo : appInfoList){
+            this.packageNameList.add(appInfo.getPackageName());
         }
         Log.i(TAG, "Size of packages: " + appInfoList.size());
     }
@@ -70,7 +71,7 @@ public class AppListAdapter extends BaseAdapter implements Observer {
         public String packageName;
         public String appName;
         public Drawable icon;
-        public ApplicationInfo appInfo;
+        public AppInfo appInfo;
     }
 
     private Map<Integer, CachedAppInfo> positionToViewMap = new HashMap<>();
@@ -109,10 +110,10 @@ public class AppListAdapter extends BaseAdapter implements Observer {
     }
 
     private CachedAppInfo newViewHolder(View view, int position) {
-        ApplicationInfo appInfo = appInfoList.get(position);
+        AppInfo appInfo = appInfoList.get(position);
 
         final CachedAppInfo cachedAppInfo = new CachedAppInfo();
-        cachedAppInfo.packageName = appInfo.packageName;
+        cachedAppInfo.packageName = appInfo.getPackageName();
         cachedAppInfo.appName = appNameProvider.getAppName(cachedAppInfo.packageName);
         cachedAppInfo.appInfo = appInfo;
         cachedAppInfo.icon = appIconProvider.getAppIcon(cachedAppInfo.packageName);

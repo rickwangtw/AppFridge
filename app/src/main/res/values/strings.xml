@@ -3,4 +3,10 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+    <string-array name="app_status_selection_array">
+        <item>All</item>
+        <item>Enabled</item>
+        <item>Disabled</item>
+    </string-array>
 </resources>

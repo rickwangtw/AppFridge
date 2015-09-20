@@ -73,11 +73,11 @@ public class AppListAdapter extends BaseAdapter implements Observer {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
+        if (view == null) {
+            view = layoutInflater.inflate(R.layout.applistitem, null);
+        }
         CachedAppInfo cachedAppInfoForPosition = positionToViewMap.get(position);
         if (cachedAppInfoForPosition == null) {
-            if (view == null) {
-                view = layoutInflater.inflate(R.layout.applistitem, null);
-            }
             cachedAppInfoForPosition = newViewHolder(view, position);
             positionToViewMap.put(position, cachedAppInfoForPosition);
         }

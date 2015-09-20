@@ -7,13 +7,22 @@
 
     <Spinner
         android:id="@+id/app_status_spinner"
+        android:spinnerMode="dropdown"
         android:entries="@array/app_status_selection_array"
         android:layout_width="wrap_content"
         android:layout_height="50dip"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <Button
+        android:id="@+id/add_to_group_button"
+        android:text="Add to Group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:spinnerMode="dropdown" />
+        android:layout_alignBottom="@+id/app_status_spinner"
+        android:layout_toRightOf="@+id/app_status_spinner" />
 
     <Button
         android:id="@+id/toggle_app_state_button"

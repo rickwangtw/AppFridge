@@ -12,10 +12,14 @@ import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
+import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
+import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.CachingAppInfoProvider;
+import com.mysticwind.disabledappmanager.domain.PackageManagerAppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
+import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
@@ -38,11 +42,15 @@ public class LauncherActivity extends AppCompatActivity {
                 getPackageManager());
         AppIconProvider appIconProvider = appInfoProvider;
         AppNameProvider appNameProvider = appInfoProvider;
+        AppStateProvider appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
         PackageStateController packageStateController = new RootProcessPackageStateController();
+        AppLauncher appLauncher = new PackageManagerAppLauncher(getPackageManager());
         AppGroupListAdapter appGroupListAdapter = new AppGroupListAdapter(this, appGroupManager,
-                appIconProvider, appNameProvider, packageStateController, layoutInflater);
+                appIconProvider, appNameProvider, appStateProvider,
+                packageStateController, appLauncher, layoutInflater);
         listView.setAdapter(appGroupListAdapter);
         listView.setOnItemLongClickListener(appGroupListAdapter);
+        listView.setOnChildClickListener(appGroupListAdapter);
     }
 
     @Override

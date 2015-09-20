@@ -4,12 +4,14 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,17 +19,20 @@ import android.widget.Toast;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
+import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
+import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class AppGroupListAdapter extends BaseExpandableListAdapter
-        implements AdapterView.OnItemLongClickListener {
+        implements AdapterView.OnItemLongClickListener, ExpandableListView.OnChildClickListener {
     private static final String TAG = "AppGroupListAdapter";
 
     private final Context context;
@@ -35,7 +40,9 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     private final LayoutInflater layoutInflator;
     private final AppIconProvider appIconProvider;
     private final AppNameProvider appNameProvider;
+    private final AppStateProvider appStateProvider;
     private final PackageStateController packageStateController;
+    private final AppLauncher appLauncher;
     private final List<String> allAppGroups;
     private final Map<String, List<String>> appGroupToPackageListMap = new HashMap<>();
     private final Dialog groupActionDialog;
@@ -43,12 +50,16 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
 
     public AppGroupListAdapter(Context context, AppGroupManager appGroupManager,
                                AppIconProvider appIconProvider, AppNameProvider appNameProvider,
-                               PackageStateController packageStateController, LayoutInflater layoutInflator) {
+                               AppStateProvider appStateProvider,
+                               PackageStateController packageStateController,
+                               AppLauncher appLauncher, LayoutInflater layoutInflator) {
         this.context = context;
         this.appGroupManager = appGroupManager;
         this.appIconProvider = appIconProvider;
         this.appNameProvider = appNameProvider;
+        this.appStateProvider = appStateProvider;
         this.packageStateController = packageStateController;
+        this.appLauncher = appLauncher;
         this.layoutInflator = layoutInflator;
         this.allAppGroups = getSortedAllAppGroups();
         this.groupActionDialog = buildGroupActionDialog();
@@ -153,7 +164,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
+        return true;
     }
 
     @Override
@@ -190,5 +201,25 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     }
                 });
         return groupActionDialogBuilder.create();
+    }
+
+    @Override
+    public boolean onChildClick(
+            ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+        String packageName = getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
+        boolean isEnabled = appStateProvider.isPackageEnabled(packageName);
+        if (!isEnabled) {
+            Toast.makeText(
+                    context, "Enabling package: " + packageName, Toast.LENGTH_SHORT).show();
+            packageStateController.enablePackages(Arrays.asList(packageName));
+        }
+        Intent intent = appLauncher.getLaunchIntentForPackage(packageName);
+        if (intent == null) {
+            Toast.makeText(context,
+                    "No launching intent for package: " + packageName, Toast.LENGTH_SHORT).show();
+        } else {
+            context.startActivity(intent);
+        }
+        return true;
     }
 }

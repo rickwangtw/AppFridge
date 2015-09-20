@@ -1,10 +1,16 @@
 package com.mysticwind.disabledappmanager;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
@@ -14,7 +20,7 @@ import java.util.Observable;
 import java.util.Set;
 
 public class AppSelectedListener extends Observable
-        implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+        implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, DialogInterface.OnClickListener {
     private static final String TAG ="AppSelectedListener";
 
     private final Dialog progressDialog;
@@ -23,9 +29,19 @@ public class AppSelectedListener extends Observable
     private final AppStateProvider appStateProvider;
     private final Set<String> selectedPackageNames = new HashSet<>();
 
-    public AppSelectedListener(Dialog progressDialog, Dialog appGroupDialog, PackageStateController packageStateController, AppStateProvider appStateProvider) {
+    public AppSelectedListener(Context context, LayoutInflater layoutInflater, PackageStateController packageStateController, AppStateProvider appStateProvider) {
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle("Updating application status");
+        progressDialog.setIndeterminate(true);
         this.progressDialog = progressDialog;
-        this.appGroupDialog = appGroupDialog;
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        dialogBuilder.setView(layoutInflater.inflate(R.layout.app_group_dialog, null));
+        dialogBuilder.setTitle("Enter Group Name");
+        dialogBuilder.setPositiveButton("Create", this);
+        dialogBuilder.setNegativeButton("Cancel", null);
+        this.appGroupDialog = dialogBuilder.create();
+
         this.packageStateController = packageStateController;
         this.appStateProvider = appStateProvider;
     }
@@ -115,5 +131,12 @@ public class AppSelectedListener extends Observable
         if (!packagesToEnable.isEmpty()) {
             packageStateController.enablePackages(packagesToEnable);
         }
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        TextView appGroupNameTextView = (TextView) appGroupDialog.findViewById(R.id.app_group_name);
+        String appGroupName = appGroupNameTextView.getText().toString();
+        Log.i(TAG, "Adding " + selectedPackageNames + " to " + appGroupName);
     }
 }

@@ -1,6 +1,5 @@
 package com.mysticwind.disabledappmanager;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
@@ -61,19 +60,8 @@ public class MainActivity extends AppCompatActivity {
 
         packageStateController = new RootProcessPackageStateController();
 
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle("Updating application status");
-        progressDialog.setIndeterminate(true);
-
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setView(layoutInflater.inflate(R.layout.app_group_dialog, null));
-        dialogBuilder.setTitle("Enter Group Name");
-        dialogBuilder.setPositiveButton("Create", null);
-        dialogBuilder.setNegativeButton("Cancel", null);
-        AlertDialog appGroupDialog = dialogBuilder.create();
-
-        appSelectedListener = new AppSelectedListener(progressDialog, appGroupDialog,
-                packageStateController, appStateProvider);
+        appSelectedListener = new AppSelectedListener(
+                this, layoutInflater, packageStateController, appStateProvider);
 
         Button addToGroupButton = (Button) findViewById(R.id.add_to_group_button);
         addToGroupButton.setOnClickListener(appSelectedListener);

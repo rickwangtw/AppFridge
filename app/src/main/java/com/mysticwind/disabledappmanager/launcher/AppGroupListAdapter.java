@@ -1,18 +1,14 @@
 package com.mysticwind.disabledappmanager.launcher;
 
-import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ExpandableListAdapter;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +23,33 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter {
     public AppGroupListAdapter(AppGroupManager appGroupManager, LayoutInflater layoutInflator) {
         this.appGroupManager = appGroupManager;
         this.layoutInflator = layoutInflator;
+        this.allAppGroups = getSortedAllAppGroups();
+    }
 
+    private List<String> getSortedAllAppGroups() {
         List<String> allAppGroups = new ArrayList<String>(appGroupManager.getAllAppGroups());
         Collections.sort(allAppGroups);
-        this.allAppGroups = allAppGroups;
+        return allAppGroups;
+    }
+
+    private String getAppGroup(int groupPosition) {
+        String appGroup = allAppGroups.get(groupPosition);
+        return appGroup;
+    }
+
+    private List<String> getPackageListOfGroupPosition(int groupPosition) {
+        String appGroup = getAppGroup(groupPosition);
+        List<String> packageNameList = appGroupToPackageListMap.get(appGroup);
+        if (packageNameList == null) {
+            packageNameList = new ArrayList<>(appGroupManager.getPackagesOfAppGroup(appGroup));
+            Collections.sort(packageNameList);
+            appGroupToPackageListMap.put(appGroup, packageNameList);
+        }
+        return packageNameList;
+    }
+
+    private String getPackageNameOfGroupPositionChildPosition(int groupPosition, int childPosition) {
+        return getPackageListOfGroupPosition(groupPosition).get(childPosition);
     }
 
     @Override
@@ -40,26 +59,18 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        String appGroup = allAppGroups.get(groupPosition);
-        List<String> packageNameList = appGroupToPackageListMap.get(appGroup);
-        if (packageNameList == null) {
-            packageNameList = new ArrayList<>(appGroupManager.getPackagesOfAppGroup(appGroup));
-            Collections.sort(packageNameList);
-            appGroupToPackageListMap.put(appGroup, packageNameList);
-        }
+        List<String> packageNameList = getPackageListOfGroupPosition(groupPosition);
         return packageNameList.size();
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return allAppGroups.get(groupPosition);
+        return getAppGroup(groupPosition);
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        String appGroup = allAppGroups.get(groupPosition);
-        List<String> packageNameList = appGroupToPackageListMap.get(appGroup);
-        return packageNameList.get(childPosition);
+        return getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
     }
 
     @Override
@@ -78,23 +89,25 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    public View getGroupView(int groupPosition, boolean isExpanded,
+                             View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = layoutInflator.inflate(android.R.layout.simple_dropdown_item_1line, null);
         }
-        String appGroup = allAppGroups.get(groupPosition);
+        String appGroup = getAppGroup(groupPosition);
         ((TextView) convertView).setText(appGroup);
         return convertView;
     }
 
     @Override
-    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
+                             View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = layoutInflator.inflate(android.R.layout.simple_dropdown_item_1line, null);
         }
-        String appGroup = allAppGroups.get(groupPosition);
-        List<String> packageNameList = appGroupToPackageListMap.get(appGroup);
-        ((TextView) convertView).setText(packageNameList.get(childPosition));
+        String packageName
+                = getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
+        ((TextView) convertView).setText(packageName);
         return convertView;
     }
 

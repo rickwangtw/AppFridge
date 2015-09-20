@@ -17,13 +17,15 @@ public class AppSelectedListener extends Observable
         implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
     private static final String TAG ="AppSelectedListener";
 
-    private final Dialog dialog;
+    private final Dialog progressDialog;
+    private final Dialog appGroupDialog;
     private final PackageStateController packageStateController;
     private final AppStateProvider appStateProvider;
     private final Set<String> selectedPackageNames = new HashSet<>();
 
-    public AppSelectedListener(Dialog dialog, PackageStateController packageStateController, AppStateProvider appStateProvider) {
-        this.dialog = dialog;
+    public AppSelectedListener(Dialog progressDialog, Dialog appGroupDialog, PackageStateController packageStateController, AppStateProvider appStateProvider) {
+        this.progressDialog = progressDialog;
+        this.appGroupDialog = appGroupDialog;
         this.packageStateController = packageStateController;
         this.appStateProvider = appStateProvider;
     }
@@ -51,11 +53,16 @@ public class AppSelectedListener extends Observable
         }
 
         final int id = v.getId();
+        if (id == R.id.add_to_group_button) {
+            appGroupDialog.show();
+            return;
+        }
+
         final AsyncTask<String, Void, Void> packageStateUpdateTask = new AsyncTask<String, Void, Void>() {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                dialog.show();
+                progressDialog.show();
             }
 
             @Override
@@ -64,8 +71,8 @@ public class AppSelectedListener extends Observable
                 setChanged();
                 notifyObservers();
 
-                if (dialog.isShowing()) {
-                    dialog.dismiss();
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
                 }
             }
 

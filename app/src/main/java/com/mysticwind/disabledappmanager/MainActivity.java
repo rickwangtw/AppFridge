@@ -1,5 +1,6 @@
 package com.mysticwind.disabledappmanager;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,7 @@ import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 
 public class MainActivity extends AppCompatActivity {
+    private LayoutInflater layoutInflater;
     private PackageListProvider defaultPackageListProvider;
     private PackageListProvider packageListProvider;
     private AppStateProvider appStateProvider;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         defaultPackageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
         appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
 
@@ -62,8 +65,18 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.setTitle("Updating application status");
         progressDialog.setIndeterminate(true);
 
-        appSelectedListener = new AppSelectedListener(progressDialog,
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setView(layoutInflater.inflate(R.layout.app_group_dialog, null));
+        dialogBuilder.setTitle("Enter Group Name");
+        dialogBuilder.setPositiveButton("Create", null);
+        dialogBuilder.setNegativeButton("Cancel", null);
+        AlertDialog appGroupDialog = dialogBuilder.create();
+
+        appSelectedListener = new AppSelectedListener(progressDialog, appGroupDialog,
                 packageStateController, appStateProvider);
+
+        Button addToGroupButton = (Button) findViewById(R.id.add_to_group_button);
+        addToGroupButton.setOnClickListener(appSelectedListener);
 
         Button toggleAppStatusButton = (Button) findViewById(R.id.toggle_app_state_button);
         toggleAppStatusButton.setOnClickListener(appSelectedListener);
@@ -109,9 +122,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void generateListView(int showingButtonResourceId) {
         AppListAdapter appListAdapter = new AppListAdapter(
-                packageListProvider, appStateProvider, appIconProvider, appNameProvider,
-                (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE),
-                appSelectedListener);
+                packageListProvider, appStateProvider, appIconProvider,
+                appNameProvider, layoutInflater, appSelectedListener);
 
         appSelectedListener.deleteObservers();
         appSelectedListener.addObserver(appListAdapter);

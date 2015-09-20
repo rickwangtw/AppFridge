@@ -36,7 +36,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     private final List<String> allAppGroups;
     private final Map<String, List<String>> appGroupToPackageListMap = new HashMap<>();
     private final Dialog groupActionDialog;
-    private int selectedGroupPosition;
+    private String selectedAppGroupName;
 
     public AppGroupListAdapter(Context context, AppGroupManager appGroupManager,
                                AppIconProvider appIconProvider, AppNameProvider appNameProvider,
@@ -63,11 +63,15 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
 
     private List<String> getPackageListOfGroupPosition(int groupPosition) {
         String appGroup = getAppGroup(groupPosition);
-        List<String> packageNameList = appGroupToPackageListMap.get(appGroup);
+        return getPackageListOfAppGroupName(appGroup);
+    }
+
+    private List<String> getPackageListOfAppGroupName(String appGroupName) {
+        List<String> packageNameList = appGroupToPackageListMap.get(appGroupName);
         if (packageNameList == null) {
-            packageNameList = new ArrayList<>(appGroupManager.getPackagesOfAppGroup(appGroup));
+            packageNameList = new ArrayList<>(appGroupManager.getPackagesOfAppGroup(appGroupName));
             Collections.sort(packageNameList);
-            appGroupToPackageListMap.put(appGroup, packageNameList);
+            appGroupToPackageListMap.put(appGroupName, packageNameList);
         }
         return packageNameList;
     }
@@ -120,6 +124,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         }
         String appGroup = getAppGroup(groupPosition);
 
+        convertView.setTag(appGroup);
         TextView appGroupNameTextView = (TextView) convertView.findViewById(R.id.app_group_name);
         appGroupNameTextView.setText(appGroup);
         return convertView;
@@ -149,9 +154,9 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        String appGroupName = getAppGroup(position);
+        String appGroupName = (String) view.getTag();
         Log.d(TAG, "Long clicked group name: " + appGroupName);
-        this.selectedGroupPosition = position;
+        this.selectedAppGroupName = appGroupName;
         groupActionDialog.setTitle("Actions for " + appGroupName);
         groupActionDialog.show();
 
@@ -163,14 +168,14 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                 .setPositiveButton("Enable Apps", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        List<String> packages = getPackageListOfGroupPosition(selectedGroupPosition);
+                        List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Enable apps: " + packages);
                     }
                 })
                 .setNeutralButton("Disable Apps", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        List<String> packages = getPackageListOfGroupPosition(selectedGroupPosition);
+                        List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Disable apps: " + packages);
                     }
                 });

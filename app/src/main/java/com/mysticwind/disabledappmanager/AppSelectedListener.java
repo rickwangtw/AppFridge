@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 
@@ -27,9 +28,12 @@ public class AppSelectedListener extends Observable
     private final Dialog appGroupDialog;
     private final PackageStateController packageStateController;
     private final AppStateProvider appStateProvider;
+    private final AppGroupManager appGroupManager;
     private final Set<String> selectedPackageNames = new HashSet<>();
 
-    public AppSelectedListener(Context context, LayoutInflater layoutInflater, PackageStateController packageStateController, AppStateProvider appStateProvider) {
+    public AppSelectedListener(Context context, LayoutInflater layoutInflater,
+                               PackageStateController packageStateController,
+                               AppStateProvider appStateProvider, AppGroupManager appGroupManager) {
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setTitle("Updating application status");
         progressDialog.setIndeterminate(true);
@@ -44,6 +48,7 @@ public class AppSelectedListener extends Observable
 
         this.packageStateController = packageStateController;
         this.appStateProvider = appStateProvider;
+        this.appGroupManager = appGroupManager;
     }
 
     @Override
@@ -138,5 +143,11 @@ public class AppSelectedListener extends Observable
         TextView appGroupNameTextView = (TextView) appGroupDialog.findViewById(R.id.app_group_name);
         String appGroupName = appGroupNameTextView.getText().toString();
         Log.i(TAG, "Adding " + selectedPackageNames + " to " + appGroupName);
+        appGroupManager.addPackagesToAppGroup(
+                new HashSet<String>(selectedPackageNames), appGroupName);
+
+        selectedPackageNames.clear();
+        setChanged();
+        notifyObservers();
     }
 }

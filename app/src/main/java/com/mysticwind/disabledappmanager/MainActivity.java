@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.mysticwind.disabledappmanager.domain.AppGroupManager;
+import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
@@ -26,6 +28,7 @@ import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
+import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 
 public class MainActivity extends AppCompatActivity {
     private LayoutInflater layoutInflater;
@@ -60,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
 
         packageStateController = new RootProcessPackageStateController();
 
-        appSelectedListener = new AppSelectedListener(
-                this, layoutInflater, packageStateController, appStateProvider);
+        appSelectedListener = new AppSelectedListener(this, layoutInflater, packageStateController,
+                appStateProvider, new AppGroupManagerImpl(new AppGroupDAO(this)));
 
         Button addToGroupButton = (Button) findViewById(R.id.add_to_group_button);
         addToGroupButton.setOnClickListener(appSelectedListener);

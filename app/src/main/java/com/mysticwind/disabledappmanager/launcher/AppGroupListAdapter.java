@@ -1,11 +1,14 @@
 package com.mysticwind.disabledappmanager.launcher;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
@@ -18,7 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AppGroupListAdapter extends BaseExpandableListAdapter {
+public class AppGroupListAdapter extends BaseExpandableListAdapter implements AdapterView.OnItemLongClickListener {
+    private static final String TAG = "AppGroupListAdapter";
+
     private final AppGroupManager appGroupManager;
     private final LayoutInflater layoutInflator;
     private final AppIconProvider appIconProvider;
@@ -130,5 +135,12 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return false;
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        String appGroupName = getAppGroup(position);
+        Log.d(TAG, "Long clicked group name: " + appGroupName);
+        return true;
     }
 }

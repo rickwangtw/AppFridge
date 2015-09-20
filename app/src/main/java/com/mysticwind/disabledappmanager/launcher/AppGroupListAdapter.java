@@ -101,10 +101,12 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = layoutInflator.inflate(android.R.layout.simple_dropdown_item_1line, null);
+            convertView = layoutInflator.inflate(R.layout.launcher_group_item, null);
         }
         String appGroup = getAppGroup(groupPosition);
-        ((TextView) convertView).setText(appGroup);
+
+        TextView appGroupNameTextView = (TextView) convertView.findViewById(R.id.app_group_name);
+        appGroupNameTextView.setText(appGroup);
         return convertView;
     }
 

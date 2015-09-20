@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private AppNameProvider appNameProvider;
     private AppIconProvider appIconProvider;
     private PackageStateController packageStateController;
-    private ProgressDialog progressDialog;
     private AppSelectedListener appSelectedListener;
     private int[] appStatusChangingButtonResourceIds = {
             R.id.toggle_app_state_button,

@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
@@ -174,6 +175,8 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Enable apps: " + packages);
                         packageStateController.enablePackages(packages);
+                        Toast.makeText(context, "Enabled packages: " + packages,
+                                Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNeutralButton("Disable Apps", new DialogInterface.OnClickListener() {
@@ -182,6 +185,8 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Disable apps: " + packages);
                         packageStateController.disablePackages(packages);
+                        Toast.makeText(context, "Disabled packages: " + packages,
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
         return groupActionDialogBuilder.create();

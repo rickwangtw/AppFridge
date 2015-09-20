@@ -17,6 +17,7 @@ import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
+import com.mysticwind.disabledappmanager.domain.PackageStateController;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +34,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     private final LayoutInflater layoutInflator;
     private final AppIconProvider appIconProvider;
     private final AppNameProvider appNameProvider;
+    private final PackageStateController packageStateController;
     private final List<String> allAppGroups;
     private final Map<String, List<String>> appGroupToPackageListMap = new HashMap<>();
     private final Dialog groupActionDialog;
@@ -40,11 +42,12 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
 
     public AppGroupListAdapter(Context context, AppGroupManager appGroupManager,
                                AppIconProvider appIconProvider, AppNameProvider appNameProvider,
-                               LayoutInflater layoutInflator) {
+                               PackageStateController packageStateController, LayoutInflater layoutInflator) {
         this.context = context;
         this.appGroupManager = appGroupManager;
         this.appIconProvider = appIconProvider;
         this.appNameProvider = appNameProvider;
+        this.packageStateController = packageStateController;
         this.layoutInflator = layoutInflator;
         this.allAppGroups = getSortedAllAppGroups();
         this.groupActionDialog = buildGroupActionDialog();
@@ -170,6 +173,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Enable apps: " + packages);
+                        packageStateController.enablePackages(packages);
                     }
                 })
                 .setNeutralButton("Disable Apps", new DialogInterface.OnClickListener() {
@@ -177,6 +181,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Disable apps: " + packages);
+                        packageStateController.disablePackages(packages);
                     }
                 });
         return groupActionDialogBuilder.create();

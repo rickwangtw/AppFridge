@@ -1,8 +1,8 @@
 package com.mysticwind.disabledappmanager.domain;
 
-import java.util.Set;
+import java.util.Collection;
 
 public interface PackageStateController {
-    void enablePackages(Set<String> packageNames);
-    void disablePackages(Set<String> packageNames);
+    void enablePackages(Collection<String> packageNames);
+    void disablePackages(Collection<String> packageNames);
 }

@@ -4,6 +4,8 @@ import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 public class RootProcessPackageStateController implements PackageStateController {
@@ -11,18 +13,18 @@ public class RootProcessPackageStateController implements PackageStateController
     private static final String PACKAGE_COMMAND_FORMAT = "pm %s %s \n";
 
     @Override
-    public void enablePackages(Set<String> packageNames) {
+    public void enablePackages(Collection<String> packageNames) {
         modifyPackageStatesToStateSafely(packageNames, true);
     }
 
     @Override
-    public void disablePackages(Set<String> packageNames) {
+    public void disablePackages(Collection<String> packageNames) {
         modifyPackageStatesToStateSafely(packageNames, false);
     }
 
-    private void modifyPackageStatesToStateSafely(Set<String> packageNames, boolean state) {
+    private void modifyPackageStatesToStateSafely(Collection<String> packageNames, boolean state) {
         try {
-            modifyPackageStatesToState(packageNames, state);
+            modifyPackageStatesToState(new HashSet<String>(packageNames), state);
         } catch (Exception e) {
             Log.w(TAG, "Error occurred on modifying (" + state + ") packages: " + packageNames, e);
         }

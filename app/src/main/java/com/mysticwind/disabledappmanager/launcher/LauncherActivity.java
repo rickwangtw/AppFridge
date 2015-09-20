@@ -16,6 +16,8 @@ import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.CachingAppInfoProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
+import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 
 public class LauncherActivity extends AppCompatActivity {
@@ -36,8 +38,9 @@ public class LauncherActivity extends AppCompatActivity {
                 getPackageManager());
         AppIconProvider appIconProvider = appInfoProvider;
         AppNameProvider appNameProvider = appInfoProvider;
-        AppGroupListAdapter appGroupListAdapter = new AppGroupListAdapter(this,
-                appGroupManager, appIconProvider, appNameProvider, layoutInflater);
+        PackageStateController packageStateController = new RootProcessPackageStateController();
+        AppGroupListAdapter appGroupListAdapter = new AppGroupListAdapter(this, appGroupManager,
+                appIconProvider, appNameProvider, packageStateController, layoutInflater);
         listView.setAdapter(appGroupListAdapter);
         listView.setOnItemLongClickListener(appGroupListAdapter);
     }

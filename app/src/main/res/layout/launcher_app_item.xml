@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <ImageView
+        android:id="@+id/appicon"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:scaleType="centerCrop"
+        android:src="@drawable/stub"/>
+
+    <TextView
+        android:id="@+id/packagename"
+        android:layout_width="fill_parent"
+        android:layout_height="50dip"
+        android:layout_weight="1"
+        android:layout_toRightOf="@id/appicon"
+        android:layout_gravity="left|center_vertical"
+        android:textSize="20dip"
+        android:layout_marginLeft="10dip"
+        android:layout_toLeftOf="@+id/checkbox" />
+
+</RelativeLayout>

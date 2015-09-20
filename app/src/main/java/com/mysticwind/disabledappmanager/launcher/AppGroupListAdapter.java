@@ -4,9 +4,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
+import com.mysticwind.disabledappmanager.domain.AppIconProvider;
+import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,11 +21,16 @@ import java.util.Map;
 public class AppGroupListAdapter extends BaseExpandableListAdapter {
     private final AppGroupManager appGroupManager;
     private final LayoutInflater layoutInflator;
+    private final AppIconProvider appIconProvider;
+    private final AppNameProvider appNameProvider;
     private final List<String> allAppGroups;
     private final Map<String, List<String>> appGroupToPackageListMap = new HashMap<>();
 
-    public AppGroupListAdapter(AppGroupManager appGroupManager, LayoutInflater layoutInflator) {
+    public AppGroupListAdapter(AppGroupManager appGroupManager, AppIconProvider appIconProvider,
+                               AppNameProvider appNameProvider, LayoutInflater layoutInflator) {
         this.appGroupManager = appGroupManager;
+        this.appIconProvider = appIconProvider;
+        this.appNameProvider = appNameProvider;
         this.layoutInflator = layoutInflator;
         this.allAppGroups = getSortedAllAppGroups();
     }
@@ -103,11 +112,16 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
                              View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = layoutInflator.inflate(android.R.layout.simple_dropdown_item_1line, null);
+            convertView = layoutInflator.inflate(R.layout.launcher_app_item, null);
         }
         String packageName
                 = getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
-        ((TextView) convertView).setText(packageName);
+
+        ImageView iconView = (ImageView) convertView.findViewById(R.id.appicon);
+        TextView packageNameTextView = (TextView) convertView.findViewById(R.id.packagename);
+
+        iconView.setImageDrawable(appIconProvider.getAppIcon(packageName));
+        packageNameTextView.setText(appNameProvider.getAppName(packageName));
         return convertView;
     }
 

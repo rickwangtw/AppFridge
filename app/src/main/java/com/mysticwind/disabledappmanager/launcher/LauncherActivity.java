@@ -11,6 +11,11 @@ import android.widget.ExpandableListView;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
+import com.mysticwind.disabledappmanager.domain.AppIconProvider;
+import com.mysticwind.disabledappmanager.domain.AppNameProvider;
+import com.mysticwind.disabledappmanager.domain.CachingAppInfoProvider;
+import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
+import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 
 public class LauncherActivity extends AppCompatActivity {
@@ -24,7 +29,15 @@ public class LauncherActivity extends AppCompatActivity {
 
         ExpandableListView listView = (ExpandableListView) findViewById(R.id.appGroupListView);
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        listView.setAdapter(new AppGroupListAdapter(appGroupManager, layoutInflater));
+
+        CachingAppInfoProvider appInfoProvider = CachingAppInfoProvider.INSTANCE.init(
+                new PackageMangerAppIconProvider(getPackageManager()),
+                new PackageMangerAppNameProvider(getPackageManager()),
+                getPackageManager());
+        AppIconProvider appIconProvider = appInfoProvider;
+        AppNameProvider appNameProvider = appInfoProvider;
+        listView.setAdapter(new AppGroupListAdapter(appGroupManager, appIconProvider,
+                appNameProvider, layoutInflater));
     }
 
     @Override

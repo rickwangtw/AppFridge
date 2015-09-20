@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 
 import com.mysticwind.disabledappmanager.R;
@@ -38,7 +36,7 @@ public class LauncherActivity extends AppCompatActivity {
                 getPackageManager());
         AppIconProvider appIconProvider = appInfoProvider;
         AppNameProvider appNameProvider = appInfoProvider;
-        AppGroupListAdapter appGroupListAdapter = new AppGroupListAdapter(
+        AppGroupListAdapter appGroupListAdapter = new AppGroupListAdapter(this,
                 appGroupManager, appIconProvider, appNameProvider, layoutInflater);
         listView.setAdapter(appGroupListAdapter);
         listView.setOnItemLongClickListener(appGroupListAdapter);

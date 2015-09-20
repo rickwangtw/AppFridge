@@ -1,5 +1,9 @@
 package com.mysticwind.disabledappmanager.launcher;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
@@ -21,23 +24,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AppGroupListAdapter extends BaseExpandableListAdapter implements AdapterView.OnItemLongClickListener {
+public class AppGroupListAdapter extends BaseExpandableListAdapter
+        implements AdapterView.OnItemLongClickListener {
     private static final String TAG = "AppGroupListAdapter";
 
+    private final Context context;
     private final AppGroupManager appGroupManager;
     private final LayoutInflater layoutInflator;
     private final AppIconProvider appIconProvider;
     private final AppNameProvider appNameProvider;
     private final List<String> allAppGroups;
     private final Map<String, List<String>> appGroupToPackageListMap = new HashMap<>();
+    private final Dialog groupActionDialog;
+    private int selectedGroupPosition;
 
-    public AppGroupListAdapter(AppGroupManager appGroupManager, AppIconProvider appIconProvider,
-                               AppNameProvider appNameProvider, LayoutInflater layoutInflator) {
+    public AppGroupListAdapter(Context context, AppGroupManager appGroupManager,
+                               AppIconProvider appIconProvider, AppNameProvider appNameProvider,
+                               LayoutInflater layoutInflator) {
+        this.context = context;
         this.appGroupManager = appGroupManager;
         this.appIconProvider = appIconProvider;
         this.appNameProvider = appNameProvider;
         this.layoutInflator = layoutInflator;
         this.allAppGroups = getSortedAllAppGroups();
+        this.groupActionDialog = buildGroupActionDialog();
     }
 
     private List<String> getSortedAllAppGroups() {
@@ -141,6 +151,29 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter implements Ad
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         String appGroupName = getAppGroup(position);
         Log.d(TAG, "Long clicked group name: " + appGroupName);
+        this.selectedGroupPosition = position;
+        groupActionDialog.setTitle("Actions for " + appGroupName);
+        groupActionDialog.show();
+
         return true;
+    }
+
+    private Dialog buildGroupActionDialog() {
+        AlertDialog.Builder groupActionDialogBuilder = new AlertDialog.Builder(context)
+                .setPositiveButton("Enable Apps", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        List<String> packages = getPackageListOfGroupPosition(selectedGroupPosition);
+                        Log.d(TAG, "Enable apps: " + packages);
+                    }
+                })
+                .setNeutralButton("Disable Apps", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        List<String> packages = getPackageListOfGroupPosition(selectedGroupPosition);
+                        Log.d(TAG, "Disable apps: " + packages);
+                    }
+                });
+        return groupActionDialogBuilder.create();
     }
 }

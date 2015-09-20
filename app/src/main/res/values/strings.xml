@@ -9,4 +9,5 @@
         <item>Enabled</item>
         <item>Disabled</item>
     </string-array>
+    <string name="title_activity_launcher">LauncherActivity</string>
 </resources>

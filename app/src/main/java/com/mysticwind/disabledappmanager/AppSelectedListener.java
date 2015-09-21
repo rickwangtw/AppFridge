@@ -9,14 +9,19 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Observable;
 import java.util.Set;
 
@@ -24,12 +29,14 @@ public class AppSelectedListener extends Observable
         implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, DialogInterface.OnClickListener {
     private static final String TAG ="AppSelectedListener";
 
+    private final Context context;
     private final Dialog progressDialog;
     private final Dialog appGroupDialog;
     private final PackageStateController packageStateController;
     private final AppStateProvider appStateProvider;
     private final AppGroupManager appGroupManager;
     private final Set<String> selectedPackageNames = new HashSet<>();
+    private final Spinner appGroupSpinner;
 
     public AppSelectedListener(Context context, LayoutInflater layoutInflater,
                                PackageStateController packageStateController,
@@ -38,10 +45,13 @@ public class AppSelectedListener extends Observable
         progressDialog.setTitle("Updating application status");
         progressDialog.setIndeterminate(true);
         this.progressDialog = progressDialog;
+        this.context = context;
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-        dialogBuilder.setView(layoutInflater.inflate(R.layout.app_group_dialog, null));
-        dialogBuilder.setTitle("Enter Group Name");
+        View dialogView = layoutInflater.inflate(R.layout.app_group_dialog, null);
+        this.appGroupSpinner = (Spinner) dialogView.findViewById(R.id.app_group_spinner);
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.setTitle("Select Group Name");
         dialogBuilder.setPositiveButton("Create", this);
         dialogBuilder.setNegativeButton("Cancel", null);
         this.appGroupDialog = dialogBuilder.create();
@@ -75,7 +85,7 @@ public class AppSelectedListener extends Observable
 
         final int id = v.getId();
         if (id == R.id.add_to_group_button) {
-            appGroupDialog.show();
+            displayAppGroupDialogWithAppGroups(appGroupDialog);
             return;
         }
 
@@ -117,6 +127,18 @@ public class AppSelectedListener extends Observable
             }
         };
         packageStateUpdateTask.execute();
+    }
+
+    private void displayAppGroupDialogWithAppGroups(Dialog appGroupDialog) {
+        List<String> appGroups = new ArrayList<>(appGroupManager.getAllAppGroups());
+        Collections.sort(appGroups);
+        String[] appGroupArray = appGroups.toArray(new String[appGroups.size()]);
+        ArrayAdapter<String> appGroupSpinnerAdapter = new ArrayAdapter<String>(
+                context, android.R.layout.simple_spinner_item, appGroupArray);
+        appGroupSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        appGroupSpinner.setAdapter(appGroupSpinnerAdapter);
+        appGroupDialog.show();
     }
 
     private void togglePackages(Set<String> packageNames) {

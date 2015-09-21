@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -36,6 +37,7 @@ public class AppSelectedListener extends Observable
     private final AppStateProvider appStateProvider;
     private final AppGroupManager appGroupManager;
     private final Set<String> selectedPackageNames = new HashSet<>();
+    private final View appGroupDialogView;
     private final Spinner appGroupSpinner;
 
     public AppSelectedListener(Context context, LayoutInflater layoutInflater,
@@ -48,9 +50,33 @@ public class AppSelectedListener extends Observable
         this.context = context;
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-        View dialogView = layoutInflater.inflate(R.layout.app_group_dialog, null);
-        this.appGroupSpinner = (Spinner) dialogView.findViewById(R.id.app_group_spinner);
-        dialogBuilder.setView(dialogView);
+        this.appGroupDialogView = layoutInflater.inflate(R.layout.app_group_dialog, null);
+        this.appGroupSpinner = (Spinner) appGroupDialogView.findViewById(R.id.app_group_spinner);
+        RadioButton appGroupSpinnerRadioButton =
+                (RadioButton) appGroupDialogView.findViewById(R.id.app_group_spinner_radio_button);
+        appGroupSpinnerRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    ((RadioButton) appGroupDialogView.findViewById(R.id.new_app_group_radio_button)).setChecked(false);
+                    appGroupDialogView.findViewById(R.id.app_group_spinner).setEnabled(true);
+                    appGroupDialogView.findViewById(R.id.app_group_name).setEnabled(false);
+                }
+            }
+        });
+        RadioButton appAppGroupRadioButton =
+                (RadioButton) appGroupDialogView.findViewById(R.id.new_app_group_radio_button);
+        appAppGroupRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    ((RadioButton) appGroupDialogView.findViewById(R.id.app_group_spinner_radio_button)).setChecked(false);
+                    appGroupDialogView.findViewById(R.id.app_group_name).setEnabled(true);
+                    appGroupDialogView.findViewById(R.id.app_group_spinner).setEnabled(false);
+                }
+            }
+        });
+        dialogBuilder.setView(appGroupDialogView);
         dialogBuilder.setTitle("Select Group Name");
         dialogBuilder.setPositiveButton("Create", this);
         dialogBuilder.setNegativeButton("Cancel", null);

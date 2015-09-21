@@ -188,8 +188,24 @@ public class AppSelectedListener extends Observable
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        TextView appGroupNameTextView = (TextView) appGroupDialog.findViewById(R.id.app_group_name);
-        String appGroupName = appGroupNameTextView.getText().toString();
+        String appGroupName = null;
+        RadioButton newAppGroupRadioButton
+                = (RadioButton) appGroupDialogView.findViewById(R.id.new_app_group_radio_button);
+        RadioButton appGroupSpinnerRadioButton
+                = (RadioButton) appGroupDialogView.findViewById(R.id.app_group_spinner_radio_button);
+
+        if (newAppGroupRadioButton.isChecked()) {
+            TextView appGroupNameTextView = (TextView) appGroupDialogView.findViewById(R.id.app_group_name);
+            appGroupName = appGroupNameTextView.getText().toString();
+        } else if (appGroupSpinnerRadioButton.isChecked()) {
+            Spinner appGroupSpinner
+                    = (Spinner) appGroupDialogView.findViewById(R.id.app_group_spinner);
+            TextView appGroupNameTextView = (TextView) appGroupSpinner.getSelectedView();
+            appGroupName = appGroupNameTextView.getText().toString();
+        }
+        if (appGroupName == null) {
+            return;
+        }
         Log.i(TAG, "Adding " + selectedPackageNames + " to " + appGroupName);
         appGroupManager.addPackagesToAppGroup(
                 new HashSet<String>(selectedPackageNames), appGroupName);

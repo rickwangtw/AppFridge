@@ -25,6 +25,7 @@ import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
+import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 
 public class LauncherActivity extends AppCompatActivity {
 
@@ -47,12 +48,16 @@ public class LauncherActivity extends AppCompatActivity {
         AppStateProvider appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
         PackageStateController packageStateController = new RootProcessPackageStateController();
         AppLauncher appLauncher = new PackageManagerAppLauncher(getPackageManager());
+
+        SwipeDetector swipeDetector = new SwipeDetector();
         AppGroupListAdapter appGroupListAdapter = new AppGroupListAdapter(this, appGroupManager,
                 appIconProvider, appNameProvider, appStateProvider,
-                packageStateController, appLauncher, layoutInflater);
+                packageStateController, appLauncher, layoutInflater, swipeDetector);
         listView.setAdapter(appGroupListAdapter);
         listView.setOnItemLongClickListener(appGroupListAdapter);
+        listView.setOnGroupClickListener(appGroupListAdapter);
         listView.setOnChildClickListener(appGroupListAdapter);
+        listView.setOnTouchListener(swipeDetector);
     }
 
     @Override

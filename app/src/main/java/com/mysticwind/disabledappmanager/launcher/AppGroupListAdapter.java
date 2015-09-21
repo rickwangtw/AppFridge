@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,12 +34,13 @@ import java.util.List;
 import java.util.Map;
 
 public class AppGroupListAdapter extends BaseExpandableListAdapter
-        implements AdapterView.OnItemLongClickListener, ExpandableListView.OnChildClickListener {
+        implements AdapterView.OnItemLongClickListener, ExpandableListView.OnChildClickListener, ExpandableListView.OnGroupClickListener {
     private static final String TAG = "AppGroupListAdapter";
 
     private final Context context;
     private final AppGroupManager appGroupManager;
     private final LayoutInflater layoutInflator;
+    private final SwipeDetector swipeDetector;
     private final AppIconProvider appIconProvider;
     private final AppNameProvider appNameProvider;
     private final AppStateProvider appStateProvider;
@@ -52,7 +55,8 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                                AppIconProvider appIconProvider, AppNameProvider appNameProvider,
                                AppStateProvider appStateProvider,
                                PackageStateController packageStateController,
-                               AppLauncher appLauncher, LayoutInflater layoutInflator) {
+                               AppLauncher appLauncher, LayoutInflater layoutInflator,
+                               SwipeDetector swipeDetector) {
         this.context = context;
         this.appGroupManager = appGroupManager;
         this.appIconProvider = appIconProvider;
@@ -61,6 +65,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         this.packageStateController = packageStateController;
         this.appLauncher = appLauncher;
         this.layoutInflator = layoutInflator;
+        this.swipeDetector = swipeDetector;
         this.allAppGroups = getSortedAllAppGroups();
         this.groupActionDialog = buildGroupActionDialog();
     }
@@ -221,5 +226,23 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
             context.startActivity(intent);
         }
         return true;
+    }
+
+    @Override
+    public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+        if (swipeDetector.swipeDetected()) {
+            if (SwipeDetector.Action.RIGHT_TO_LEFT == swipeDetector.getAction()) {
+                ImageButton imageButton = (ImageButton) v.findViewById(R.id.trashButton);
+                imageButton.setVisibility(View.VISIBLE);
+                imageButton.setFocusable(false);
+                return true;
+            } else if (SwipeDetector.Action.LEFT_TO_RIGHT == swipeDetector.getAction()) {
+                ImageButton imageButton = (ImageButton) v.findViewById(R.id.trashButton);
+                imageButton.setVisibility(View.GONE);
+                imageButton.setFocusable(false);
+                return true;
+            }
+        }
+        return false;
     }
 }

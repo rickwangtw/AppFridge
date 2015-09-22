@@ -33,4 +33,9 @@ public class AppGroupManagerImpl implements AppGroupManager {
     public void deleteAppGroup(String appGroupName) {
         appGroupDAO.deleteAppGroup(appGroupName);
     }
+
+    @Override
+    public void deletePackageFromAppGroup(String packageName, String appGroupName) {
+        appGroupDAO.deletePackageFromAppGroup(packageName, appGroupName);
+    }
 }

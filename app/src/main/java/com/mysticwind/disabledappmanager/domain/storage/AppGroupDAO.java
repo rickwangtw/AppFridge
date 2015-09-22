@@ -95,4 +95,11 @@ public class AppGroupDAO extends SQLiteOpenHelper {
         db.delete(TABLE_NAME, APP_GROUP_NAME_COLUMN + "=?", new String[] { appGroupName });
         db.close();
     }
+
+    public void deletePackageFromAppGroup(String packageName, String appGroupName) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_NAME, PACKAGE_NAME_COLUMN + "=? and " + APP_GROUP_NAME_COLUMN + "=?",
+                new String[] { packageName, appGroupName });
+        db.close();
+    }
 }

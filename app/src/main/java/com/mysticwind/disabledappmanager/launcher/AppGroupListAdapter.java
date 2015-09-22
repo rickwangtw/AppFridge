@@ -216,7 +216,30 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     @Override
     public boolean onChildClick(
             ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-        String packageName = getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
+        final String appGroupName = getAppGroup(groupPosition);
+        final String packageName =
+                getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
+        if (swipeDetector.swipeDetected()) {
+            if (SwipeDetector.Action.RIGHT_TO_LEFT == swipeDetector.getAction()) {
+                final ImageButton imageButton = (ImageButton) v.findViewById(R.id.trashButton);
+                imageButton.setVisibility(View.VISIBLE);
+                imageButton.setFocusable(false);
+                imageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        DialogHelper.newConfirmDeletePackageFromAppGroupDialog(context, packageName,
+                                appGroupName, appGroupManager, AppGroupListAdapter.this).show();
+                        imageButton.setVisibility(View.GONE);
+                    }
+                });
+                return true;
+            } else if (SwipeDetector.Action.LEFT_TO_RIGHT == swipeDetector.getAction()) {
+                ImageButton imageButton = (ImageButton) v.findViewById(R.id.trashButton);
+                imageButton.setVisibility(View.GONE);
+                imageButton.setFocusable(false);
+                return true;
+            }
+        }
         boolean isEnabled = appStateProvider.isPackageEnabled(packageName);
         if (!isEnabled) {
             Toast.makeText(
@@ -263,12 +286,18 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     @Override
     public void update(Observable observable, Object data) {
         Action action = (Action) data;
-        if (Action.APP_GROUP_UPDATED == action) {
-            selectedAppGroupName = null;
-            allAppGroups.clear();
-            allAppGroups.addAll(getSortedAllAppGroups());
-            appGroupToPackageListMap.clear();
-            notifyDataSetChanged();
+        switch (action) {
+            case APP_GROUP_UPDATED:
+                selectedAppGroupName = null;
+                allAppGroups.clear();
+                allAppGroups.addAll(getSortedAllAppGroups());
+                appGroupToPackageListMap.clear();
+                notifyDataSetChanged();
+                break;
+            case PACKAGE_REMOVED_FROM_APP_GROUP:
+                appGroupToPackageListMap.clear();
+                notifyDataSetChanged();
+                break;
         }
     }
 }

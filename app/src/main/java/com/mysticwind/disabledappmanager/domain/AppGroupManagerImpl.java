@@ -28,4 +28,9 @@ public class AppGroupManagerImpl implements AppGroupManager {
     public void addPackagesToAppGroup(Collection<String> packageNames, String appGroupName) {
         appGroupDAO.addPackagesToAppGroup(packageNames, appGroupName);
     }
+
+    @Override
+    public void deleteAppGroup(String appGroupName) {
+        appGroupDAO.deleteAppGroup(appGroupName);
+    }
 }

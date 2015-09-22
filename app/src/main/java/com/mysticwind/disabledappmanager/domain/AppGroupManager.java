@@ -7,4 +7,5 @@ public interface AppGroupManager {
     Set<String> getAllAppGroups();
     Set<String> getPackagesOfAppGroup(String appGroupName);
     void addPackagesToAppGroup(Collection<String> packageNames, String appGroupName);
+    void deleteAppGroup(String appGroupName);
 }

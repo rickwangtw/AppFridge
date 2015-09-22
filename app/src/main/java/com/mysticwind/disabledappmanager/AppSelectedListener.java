@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,11 +44,8 @@ public class AppSelectedListener extends Observable
     public AppSelectedListener(Context context, LayoutInflater layoutInflater,
                                PackageStateController packageStateController,
                                AppStateProvider appStateProvider, AppGroupManager appGroupManager) {
-        ProgressDialog progressDialog = new ProgressDialog(context);
-        progressDialog.setTitle("Updating application status");
-        progressDialog.setIndeterminate(true);
-        this.progressDialog = progressDialog;
         this.context = context;
+        this.progressDialog = DialogHelper.newProgressDialog(context);
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
         this.appGroupDialogView = layoutInflater.inflate(R.layout.app_group_dialog, null);

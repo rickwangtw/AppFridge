@@ -89,4 +89,10 @@ public class AppGroupDAO extends SQLiteOpenHelper {
 
         return itemSet;
     }
+
+    public void deleteAppGroup(String appGroupName) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_NAME, APP_GROUP_NAME_COLUMN + "=?", new String[] { appGroupName });
+        db.close();
+    }
 }

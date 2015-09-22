@@ -24,6 +24,8 @@ import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.ui.common.Action;
+import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 
 import java.util.ArrayList;
@@ -32,9 +34,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 public class AppGroupListAdapter extends BaseExpandableListAdapter
-        implements AdapterView.OnItemLongClickListener, ExpandableListView.OnChildClickListener, ExpandableListView.OnGroupClickListener {
+        implements AdapterView.OnItemLongClickListener, ExpandableListView.OnChildClickListener,
+        ExpandableListView.OnGroupClickListener, Observer {
     private static final String TAG = "AppGroupListAdapter";
 
     private final Context context;
@@ -232,9 +237,18 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
         if (swipeDetector.swipeDetected()) {
             if (SwipeDetector.Action.RIGHT_TO_LEFT == swipeDetector.getAction()) {
-                ImageButton imageButton = (ImageButton) v.findViewById(R.id.trashButton);
+                final ImageButton imageButton = (ImageButton) v.findViewById(R.id.trashButton);
                 imageButton.setVisibility(View.VISIBLE);
                 imageButton.setFocusable(false);
+                final String appGroupName = getAppGroup(groupPosition);
+                imageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        DialogHelper.newConfirmDeleteAppGroupDialog(context, appGroupName,
+                                appGroupManager, AppGroupListAdapter.this).show();
+                        imageButton.setVisibility(View.GONE);
+                    }
+                });
                 return true;
             } else if (SwipeDetector.Action.LEFT_TO_RIGHT == swipeDetector.getAction()) {
                 ImageButton imageButton = (ImageButton) v.findViewById(R.id.trashButton);
@@ -244,5 +258,17 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
             }
         }
         return false;
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        Action action = (Action) data;
+        if (Action.APP_GROUP_UPDATED == action) {
+            selectedAppGroupName = null;
+            allAppGroups.clear();
+            allAppGroups.addAll(getSortedAllAppGroups());
+            appGroupToPackageListMap.clear();
+            notifyDataSetChanged();
+        }
     }
 }

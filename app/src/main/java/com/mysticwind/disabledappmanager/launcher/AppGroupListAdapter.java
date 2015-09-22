@@ -23,6 +23,7 @@ import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
+import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.ui.common.Action;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
@@ -55,10 +56,12 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     private final Map<String, List<String>> appGroupToPackageListMap = new HashMap<>();
     private final Dialog groupActionDialog;
     private String selectedAppGroupName;
+    private PackageListProvider packageListProvider;
 
     public AppGroupListAdapter(Context context, AppGroupManager appGroupManager,
                                AppIconProvider appIconProvider, AppNameProvider appNameProvider,
                                AppStateProvider appStateProvider,
+                               PackageListProvider packageListProvider,
                                PackageStateController packageStateController,
                                AppLauncher appLauncher, LayoutInflater layoutInflator,
                                SwipeDetector swipeDetector) {
@@ -67,6 +70,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         this.appIconProvider = appIconProvider;
         this.appNameProvider = appNameProvider;
         this.appStateProvider = appStateProvider;
+        this.packageListProvider = packageListProvider;
         this.packageStateController = packageStateController;
         this.appLauncher = appLauncher;
         this.layoutInflator = layoutInflator;
@@ -259,28 +263,53 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     @Override
     public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
         if (swipeDetector.swipeDetected()) {
+            final ImageButton addToGroupButton =
+                    (ImageButton) v.findViewById(R.id.add_to_group_button);
+            final ImageButton trashButton = (ImageButton) v.findViewById(R.id.trashButton);
+            final String appGroupName = getAppGroup(groupPosition);
             if (SwipeDetector.Action.RIGHT_TO_LEFT == swipeDetector.getAction()) {
-                final ImageButton imageButton = (ImageButton) v.findViewById(R.id.trashButton);
-                imageButton.setVisibility(View.VISIBLE);
-                imageButton.setFocusable(false);
-                final String appGroupName = getAppGroup(groupPosition);
-                imageButton.setOnClickListener(new View.OnClickListener() {
+                setGroupImageButtonAttributes(addToGroupButton, true);
+                addToGroupButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        DialogHelper.newPackageListForAddingToGroupDialog(context, appGroupName,
+                                packageListProvider, appIconProvider, appNameProvider,
+                                appGroupManager, AppGroupListAdapter.this).show();
+                        setGroupImageButtonAttributes(addToGroupButton, false);
+                        setGroupImageButtonAttributes(trashButton, false);
+                    }
+                });
+                setGroupImageButtonAttributes(trashButton, true);
+                trashButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         DialogHelper.newConfirmDeleteAppGroupDialog(context, appGroupName,
                                 appGroupManager, AppGroupListAdapter.this).show();
-                        imageButton.setVisibility(View.GONE);
+                        setGroupImageButtonAttributes(addToGroupButton, false);
+                        setGroupImageButtonAttributes(trashButton, false);
                     }
                 });
                 return true;
             } else if (SwipeDetector.Action.LEFT_TO_RIGHT == swipeDetector.getAction()) {
-                ImageButton imageButton = (ImageButton) v.findViewById(R.id.trashButton);
-                imageButton.setVisibility(View.GONE);
-                imageButton.setFocusable(false);
+                setGroupImageButtonAttributes(addToGroupButton, false);
+                setGroupImageButtonAttributes(trashButton, false);
                 return true;
             }
         }
         return false;
+    }
+
+    private void setGroupImageButtonAttributes(ImageButton imageButton, boolean visible) {
+        setViewVisibility(imageButton, visible);
+        setViewNotFocusable(imageButton);
+    }
+
+    private void setViewVisibility(View view, boolean visible) {
+        view.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    private void setViewNotFocusable(View view) {
+        view.setFocusable(false);
     }
 
     @Override
@@ -294,6 +323,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                 appGroupToPackageListMap.clear();
                 notifyDataSetChanged();
                 break;
+            case PACKAGE_ADDED_TO_APP_GROUP:
             case PACKAGE_REMOVED_FROM_APP_GROUP:
                 appGroupToPackageListMap.clear();
                 notifyDataSetChanged();

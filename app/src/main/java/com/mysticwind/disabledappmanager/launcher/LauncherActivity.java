@@ -18,6 +18,7 @@ import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.CachingAppInfoProvider;
+import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
@@ -52,6 +53,7 @@ public class LauncherActivity extends AppCompatActivity {
         SwipeDetector swipeDetector = new SwipeDetector();
         AppGroupListAdapter appGroupListAdapter = new AppGroupListAdapter(this, appGroupManager,
                 appIconProvider, appNameProvider, appStateProvider,
+                new PackageManagerAllPackageListProvider(getPackageManager()),
                 packageStateController, appLauncher, layoutInflater, swipeDetector);
         listView.setAdapter(appGroupListAdapter);
         listView.setOnItemLongClickListener(appGroupListAdapter);

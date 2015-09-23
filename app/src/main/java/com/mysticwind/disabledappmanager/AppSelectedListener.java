@@ -62,9 +62,9 @@ public class AppSelectedListener extends Observable
                 }
             }
         });
-        RadioButton appAppGroupRadioButton =
+        RadioButton newAppGroupRadioButton =
                 (RadioButton) appGroupDialogView.findViewById(R.id.new_app_group_radio_button);
-        appAppGroupRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        newAppGroupRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -74,6 +74,12 @@ public class AppSelectedListener extends Observable
                 }
             }
         });
+        if (!appGroupManager.getAllAppGroups().isEmpty()) {
+            appGroupSpinnerRadioButton.setChecked(true);
+        } else {
+            newAppGroupRadioButton.setChecked(true);
+        }
+
         dialogBuilder.setView(appGroupDialogView);
         dialogBuilder.setTitle("Select Group Name");
         dialogBuilder.setPositiveButton("Create", this);

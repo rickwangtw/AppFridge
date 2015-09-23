@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.mysticwind.disabledappmanager.launcher.LauncherActivity">
 
-    <item android:id="@+id/action_configure" android:title="Configure"
+    <item android:id="@+id/action_configure" android:title="@string/action_configure"
         android:orderInCategory="100" app:showAsAction="never" />
 
     <item android:id="@+id/action_settings" android:title="@string/action_settings"

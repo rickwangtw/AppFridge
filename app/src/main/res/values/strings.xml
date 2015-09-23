@@ -2,8 +2,14 @@
     <string name="app_name">DisabledAppManager</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="action_launcher">Launcher</string>
+    <string name="action_configure">Configure</string>
     <string name="action_settings">Settings</string>
 
+    <string name="add_to_group_button">Add to Group</string>
+    <string name="toggle_app_status_button">Toggle</string>
+    <string name="enable_app_status_button">Enable</string>
+    <string name="disable_app_status_button">Disable</string>
     <string-array name="app_status_selection_array">
         <item>All</item>
         <item>Enabled</item>
@@ -38,5 +44,6 @@
     <string name="toast_enabled_packages_msg_prefix">Enabled packages:</string>
     <string name="toast_disabled_packages_msg_prefix">Disabled packages:</string>
     <string name="toast_warn_no_launcher_intent_msg_prefix">No launching intent for package:</string>
+    <string name="toast_add_packages_to_app_group_msg_prefix">Adding packages</string>
 
 </resources>

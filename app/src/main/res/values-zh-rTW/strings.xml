@@ -3,8 +3,14 @@
     <string name="app_name">冷凍 App 管理員</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="action_launcher">啟動器</string>
+    <string name="action_configure">狀態控制</string>
     <string name="action_settings">設定</string>
 
+    <string name="add_to_group_button">加入群組</string>
+    <string name="toggle_app_status_button">變更狀態</string>
+    <string name="enable_app_status_button">解凍</string>
+    <string name="disable_app_status_button">冷凍</string>
     <string-array name="app_status_selection_array">
         <item>全部</item>
         <item>一般</item>
@@ -36,8 +42,9 @@
     <string name="group_action_dialog_enable_packages_button">解凍 App</string>
     <string name="group_action_dialog_disable_packages_button">冷凍 App</string>
 
-    <string name="toast_enabled_packages_msg_prefix">解凍的 App:</string>
-    <string name="toast_disabled_packages_msg_prefix">冷凍的 App:</string>
+    <string name="toast_enabled_packages_msg_prefix">解凍 App:</string>
+    <string name="toast_disabled_packages_msg_prefix">冷凍 App:</string>
     <string name="toast_warn_no_launcher_intent_msg_prefix">沒有能啟動的 Intent:</string>
+    <string name="toast_add_packages_to_app_group_msg_prefix">增加 App</string>
 
 </resources>

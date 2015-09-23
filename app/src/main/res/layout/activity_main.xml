@@ -17,7 +17,7 @@
 
     <Button
         android:id="@+id/add_to_group_button"
-        android:text="Add to Group"
+        android:text="@string/add_to_group_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -26,7 +26,7 @@
 
     <Button
         android:id="@+id/toggle_app_state_button"
-        android:text="Toggle"
+        android:text="@string/toggle_app_status_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -35,7 +35,7 @@
 
     <Button
         android:id="@+id/enable_app_button"
-        android:text="Enable"
+        android:text="@string/enable_app_status_button"
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
 
     <Button
         android:id="@+id/disable_app_button"
-        android:text="Disable"
+        android:text="@string/disable_app_status_button"
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

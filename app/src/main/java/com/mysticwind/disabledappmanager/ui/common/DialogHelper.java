@@ -128,7 +128,9 @@ public class DialogHelper {
                     return;
                 }
                 Toast.makeText(context,
-                        "Adding packages " + selectedPackages + " to " + appGroupName,
+                        context.getResources().getString(
+                                R.string.toast_add_packages_to_app_group_msg_prefix)
+                                + " " + selectedPackages + " -> " + appGroupName,
                         Toast.LENGTH_LONG).show();
                 appGroupManager.addPackagesToAppGroup(selectedPackages, appGroupName);
                 observer.update(null, Action.PACKAGE_ADDED_TO_APP_GROUP);

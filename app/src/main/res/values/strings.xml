@@ -9,5 +9,34 @@
         <item>Enabled</item>
         <item>Disabled</item>
     </string-array>
+
     <string name="title_activity_launcher">LauncherActivity</string>
+
+    <string name="app_group_dialog_title">Select Group Name</string>
+    <string name="app_group_dialog_positive_button">Create</string>
+    <string name="app_group_dialog_negative_button">Cancel</string>
+
+    <string name="progress_dialog_title_update_app_status">Updating application status</string>
+
+    <string name="confirm_delete_app_group_dialog_title_prefix">Are you sure you want to delete</string>
+    <string name="confirm_delete_app_group_dialog_positive_button">Confirm</string>
+    <string name="confirm_delete_app_group_dialog_negative_button">Cancel</string>
+
+    <string name="confirm_delete_package_from_app_group_dialog_title_prefix">Modify</string>
+    <string name="confirm_delete_package_from_app_group_dialog_msg_prefix">Are you sure you want to remove</string>
+    <string name="confirm_delete_package_from_app_group_dialog_positive_button">Confirm</string>
+    <string name="confirm_delete_package_from_app_group_dialog_negative_button">Cancel</string>
+
+    <string name="package_list_for_adding_to_group_dialog_title_prefix">Add packages to</string>
+    <string name="package_list_for_adding_to_group_dialog_positive_button">Add</string>
+    <string name="package_list_for_adding_to_group_dialog_negative_button">Cancel</string>
+
+    <string name="group_action_dialog_title_prefix">Actions for</string>
+    <string name="group_action_dialog_enable_packages_button">Enable Apps</string>
+    <string name="group_action_dialog_disable_packages_button">Disable App</string>
+
+    <string name="toast_enabled_packages_msg_prefix">Enabled packages:</string>
+    <string name="toast_disabled_packages_msg_prefix">Disabled packages:</string>
+    <string name="toast_warn_no_launcher_intent_msg_prefix">No launching intent for package:</string>
+
 </resources>

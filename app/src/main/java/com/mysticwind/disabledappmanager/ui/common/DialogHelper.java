@@ -33,7 +33,7 @@ import java.util.Set;
 public class DialogHelper {
     public static Dialog newProgressDialog(Context context) {
         ProgressDialog progressDialog = new ProgressDialog(context);
-        progressDialog.setTitle("Updating application status");
+        progressDialog.setTitle(R.string.progress_dialog_title_update_app_status);
         progressDialog.setIndeterminate(true);
         return progressDialog;
     }
@@ -41,15 +41,20 @@ public class DialogHelper {
     public static Dialog newConfirmDeleteAppGroupDialog(Context context, final String appGroupName,
             final AppGroupManager appGroupManager, final Observer observer) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setTitle("Are you sure you want to delete " + appGroupName + "?");
-        alertDialogBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+        String titlePrefix = context.getResources().getString(
+                R.string.confirm_delete_app_group_dialog_title_prefix);
+        alertDialogBuilder.setTitle(titlePrefix + " " + appGroupName);
+        alertDialogBuilder.setPositiveButton(
+                R.string.confirm_delete_app_group_dialog_positive_button,
+                new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 appGroupManager.deleteAppGroup(appGroupName);
                 observer.update(null, Action.APP_GROUP_UPDATED);
             }
         });
-        alertDialogBuilder.setNegativeButton("Cancel", null);
+        alertDialogBuilder.setNegativeButton(
+                R.string.confirm_delete_app_group_dialog_negative_button, null);
         return alertDialogBuilder.create();
     }
 
@@ -57,16 +62,26 @@ public class DialogHelper {
            final String packageName, final String appGroupName,
            final AppGroupManager appGroupManager, final Observer observer) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setTitle("Modify " + appGroupName);
-        alertDialogBuilder.setMessage("Are you sure you want to remove " + packageName + "?");
-        alertDialogBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+
+        String titlePrefix = context.getResources().getString(
+                R.string.confirm_delete_package_from_app_group_dialog_title_prefix);
+        alertDialogBuilder.setTitle(titlePrefix + " " + appGroupName);
+
+        String messagePrefix = context.getResources().getString(
+                R.string.confirm_delete_package_from_app_group_dialog_msg_prefix);
+        alertDialogBuilder.setMessage(messagePrefix + " " + packageName);
+
+        alertDialogBuilder.setPositiveButton(
+                R.string.confirm_delete_package_from_app_group_dialog_positive_button,
+                new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 appGroupManager.deletePackageFromAppGroup(packageName, appGroupName);
                 observer.update(null, Action.PACKAGE_REMOVED_FROM_APP_GROUP);
             }
         });
-        alertDialogBuilder.setNegativeButton("Cancel", null);
+        alertDialogBuilder.setNegativeButton(
+                R.string.confirm_delete_app_group_dialog_negative_button, null);
         return alertDialogBuilder.create();
     }
 
@@ -100,8 +115,13 @@ public class DialogHelper {
                     }
                 }),
                 null);
-        alertDialogBuilder.setTitle("Add packages to " + appGroupName);
-        alertDialogBuilder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+
+        String titlePrefix = context.getResources().getString(
+                R.string.package_list_for_adding_to_group_dialog_title_prefix);
+        alertDialogBuilder.setTitle(titlePrefix + " " + appGroupName);
+        alertDialogBuilder.setPositiveButton(
+                R.string.package_list_for_adding_to_group_dialog_positive_button,
+                new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (selectedPackages.isEmpty()) {
@@ -114,7 +134,8 @@ public class DialogHelper {
                 observer.update(null, Action.PACKAGE_ADDED_TO_APP_GROUP);
             }
         });
-        alertDialogBuilder.setNegativeButton("Cancel", null);
+        alertDialogBuilder.setNegativeButton(
+                R.string.package_list_for_adding_to_group_dialog_negative_button, null);
         return alertDialogBuilder.create();
     }
 

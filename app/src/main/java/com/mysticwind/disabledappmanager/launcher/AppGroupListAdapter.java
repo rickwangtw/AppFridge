@@ -186,7 +186,10 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         String appGroupName = (String) view.getTag();
         Log.d(TAG, "Long clicked group name: " + appGroupName);
         this.selectedAppGroupName = appGroupName;
-        groupActionDialog.setTitle("Actions for " + appGroupName);
+
+        String titlePrefix = context.getResources().getString(
+                R.string.group_action_dialog_title_prefix);
+        groupActionDialog.setTitle(titlePrefix + " " + appGroupName);
         groupActionDialog.show();
 
         return true;
@@ -194,23 +197,27 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
 
     private Dialog buildGroupActionDialog() {
         AlertDialog.Builder groupActionDialogBuilder = new AlertDialog.Builder(context)
-                .setPositiveButton("Enable Apps", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.group_action_dialog_enable_packages_button,
+                        new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Enable apps: " + packages);
                         packageStateController.enablePackages(packages);
-                        Toast.makeText(context, "Enabled packages: " + packages,
+                        Toast.makeText(context, context.getResources().getString(
+                                        R.string.toast_enabled_packages_msg_prefix) + " " + packages,
                                 Toast.LENGTH_SHORT).show();
                     }
                 })
-                .setNeutralButton("Disable Apps", new DialogInterface.OnClickListener() {
+                .setNeutralButton(R.string.group_action_dialog_disable_packages_button,
+                        new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Disable apps: " + packages);
                         packageStateController.disablePackages(packages);
-                        Toast.makeText(context, "Disabled packages: " + packages,
+                        Toast.makeText(context, context.getResources().getString(
+                                        R.string.toast_disabled_packages_msg_prefix)+ " " + packages,
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -247,13 +254,16 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         boolean isEnabled = appStateProvider.isPackageEnabled(packageName);
         if (!isEnabled) {
             Toast.makeText(
-                    context, "Enabling package: " + packageName, Toast.LENGTH_SHORT).show();
+                    context, context.getResources().getString(
+                            R.string.toast_enabled_packages_msg_prefix) + " " + packageName,
+                    Toast.LENGTH_SHORT).show();
             packageStateController.enablePackages(Arrays.asList(packageName));
         }
         Intent intent = appLauncher.getLaunchIntentForPackage(packageName);
         if (intent == null) {
-            Toast.makeText(context,
-                    "No launching intent for package: " + packageName, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getResources().getString(
+                            R.string.toast_warn_no_launcher_intent_msg_prefix) + " " + packageName,
+                    Toast.LENGTH_SHORT).show();
         } else {
             context.startActivity(intent);
         }

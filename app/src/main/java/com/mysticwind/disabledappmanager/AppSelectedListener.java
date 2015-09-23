@@ -81,9 +81,9 @@ public class AppSelectedListener extends Observable
         }
 
         dialogBuilder.setView(appGroupDialogView);
-        dialogBuilder.setTitle("Select Group Name");
-        dialogBuilder.setPositiveButton("Create", this);
-        dialogBuilder.setNegativeButton("Cancel", null);
+        dialogBuilder.setTitle(R.string.app_group_dialog_title);
+        dialogBuilder.setPositiveButton(R.string.app_group_dialog_positive_button, this);
+        dialogBuilder.setNegativeButton(R.string.app_group_dialog_negative_button, null);
         this.appGroupDialog = dialogBuilder.create();
 
         this.packageStateController = packageStateController;

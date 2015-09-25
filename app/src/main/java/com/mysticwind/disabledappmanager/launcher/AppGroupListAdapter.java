@@ -27,6 +27,7 @@ import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 import com.mysticwind.disabledappmanager.ui.common.Action;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
@@ -36,10 +37,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 public class AppGroupListAdapter extends BaseExpandableListAdapter
         implements AdapterView.OnItemLongClickListener, ExpandableListView.OnChildClickListener,
@@ -59,6 +62,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     private final Map<String, List<String>> appGroupToPackageListMap = new HashMap<>();
     private final Dialog groupActionDialog;
     private final Dialog progressDialog;
+    private final String allAppGroupName;
     private String selectedAppGroupName;
     private PackageListProvider packageListProvider;
 
@@ -80,6 +84,8 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         this.layoutInflator = layoutInflator;
         this.swipeDetector = swipeDetector;
         this.allAppGroups = getSortedAllAppGroups();
+        this.allAppGroupName = context.getResources().getString(R.string.generated_app_group_name_all);
+        this.allAppGroups.add(allAppGroupName);
         this.groupActionDialog = buildGroupActionDialog();
         this.progressDialog = DialogHelper.newProgressDialog(context);
     }
@@ -103,7 +109,16 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     private List<String> getPackageListOfAppGroupName(String appGroupName) {
         List<String> packageNameList = appGroupToPackageListMap.get(appGroupName);
         if (packageNameList == null) {
-            packageNameList = new ArrayList<>(appGroupManager.getPackagesOfAppGroup(appGroupName));
+            Set<String> appGroupSet;
+            if (allAppGroupName.equals(appGroupName)) {
+                appGroupSet = new HashSet<>();
+                for (AppInfo packageInfo : packageListProvider.getPackages()) {
+                    appGroupSet.add(packageInfo.getPackageName());
+                }
+            } else {
+                appGroupSet = appGroupManager.getPackagesOfAppGroup(appGroupName);
+            }
+            packageNameList = new ArrayList<>(appGroupSet);
             Collections.sort(packageNameList);
             appGroupToPackageListMap.put(appGroupName, packageNameList);
         }
@@ -326,13 +341,20 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         return true;
     }
 
+    private boolean isGeneratedGroup(String appGroupName) {
+        if (allAppGroupName.equals(appGroupName)) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-        if (swipeDetector.swipeDetected()) {
+        final String appGroupName = getAppGroup(groupPosition);
+        if (!isGeneratedGroup(appGroupName) && swipeDetector.swipeDetected()) {
             final ImageButton addToGroupButton =
                     (ImageButton) v.findViewById(R.id.add_to_group_button);
             final ImageButton trashButton = (ImageButton) v.findViewById(R.id.trashButton);
-            final String appGroupName = getAppGroup(groupPosition);
             if (SwipeDetector.Action.RIGHT_TO_LEFT == swipeDetector.getAction()) {
                 setGroupImageButtonAttributes(addToGroupButton, true);
                 addToGroupButton.setOnClickListener(new View.OnClickListener() {

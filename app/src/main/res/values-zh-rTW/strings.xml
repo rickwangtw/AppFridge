@@ -19,6 +19,8 @@
 
     <string name="title_activity_launcher">啟動器</string>
 
+    <string name="generated_app_group_name_all">全部</string>
+
     <string name="app_group_dialog_title">選擇 App 群組</string>
     <string name="app_group_dialog_positive_button">選擇</string>
     <string name="app_group_dialog_negative_button">取消</string>

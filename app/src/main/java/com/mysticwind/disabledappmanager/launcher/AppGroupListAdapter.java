@@ -303,6 +303,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                             R.string.toast_enabled_packages_msg_prefix) + " " + packageName,
                     Toast.LENGTH_SHORT).show();
             packageStateController.enablePackages(Arrays.asList(packageName));
+            update(null, Action.PACKAGE_STATE_UPDATED);
         }
         Intent intent = appLauncher.getLaunchIntentForPackage(packageName);
         if (intent == null) {

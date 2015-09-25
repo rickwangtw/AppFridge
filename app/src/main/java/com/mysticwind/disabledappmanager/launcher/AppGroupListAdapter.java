@@ -238,10 +238,14 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Enable apps: " + packages);
-                        packageStateController.enablePackages(packages);
-                        Toast.makeText(context, context.getResources().getString(
-                                        R.string.toast_enabled_packages_msg_prefix) + " " + packages,
-                                Toast.LENGTH_SHORT).show();
+                        new PackageStateUpdateAsyncTask(packageStateController, packages, true)
+                                .withProgressDialog(progressDialog)
+                                .withEndingToast(Toast.makeText(context,
+                                        context.getResources().getString(
+                                                R.string.toast_enabled_packages_msg_prefix) + " " + packages,
+                                        Toast.LENGTH_SHORT))
+                                .withNotification(AppGroupListAdapter.this, Action.PACKAGE_STATE_UPDATED)
+                                .execute();
                     }
                 })
                 .setNeutralButton(R.string.group_action_dialog_disable_packages_button,
@@ -250,10 +254,14 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Disable apps: " + packages);
-                        packageStateController.disablePackages(packages);
-                        Toast.makeText(context, context.getResources().getString(
-                                        R.string.toast_disabled_packages_msg_prefix)+ " " + packages,
-                                Toast.LENGTH_SHORT).show();
+                        new PackageStateUpdateAsyncTask(packageStateController, packages, false)
+                                .withProgressDialog(progressDialog)
+                                .withEndingToast(Toast.makeText(context,
+                                        context.getResources().getString(
+                                                R.string.toast_disabled_packages_msg_prefix)+ " " + packages,
+                                        Toast.LENGTH_SHORT))
+                                .withNotification(AppGroupListAdapter.this, Action.PACKAGE_STATE_UPDATED)
+                                .execute();
                     }
                 });
         return groupActionDialogBuilder.create();
@@ -371,6 +379,9 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
             case PACKAGE_ADDED_TO_APP_GROUP:
             case PACKAGE_REMOVED_FROM_APP_GROUP:
                 appGroupToPackageListMap.clear();
+                notifyDataSetChanged();
+                break;
+            case PACKAGE_STATE_UPDATED:
                 notifyDataSetChanged();
                 break;
         }

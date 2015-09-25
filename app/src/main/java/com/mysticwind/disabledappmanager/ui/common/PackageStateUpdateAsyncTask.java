@@ -7,6 +7,7 @@ import android.widget.Toast;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 
 import java.util.Collection;
+import java.util.Observer;
 
 public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Void> {
     private final PackageStateController packageStateController;
@@ -14,10 +15,11 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Void> {
     private final boolean state;
     private Dialog progressDialog;
     private Toast endingToast;
+    private Observer observer;
+    private Object message;
 
     public PackageStateUpdateAsyncTask(PackageStateController packageStateController,
                                        Collection<String> packages, boolean state) {
-        this.progressDialog = progressDialog;
         this.packageStateController = packageStateController;
         this.packages = packages;
         this.state = state;
@@ -30,6 +32,12 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Void> {
 
     public PackageStateUpdateAsyncTask withEndingToast(Toast endingToast) {
         this.endingToast = endingToast;
+        return this;
+    }
+
+    public PackageStateUpdateAsyncTask withNotification(Observer observer, Object message) {
+        this.observer = observer;
+        this.message = message;
         return this;
     }
 
@@ -46,6 +54,9 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Void> {
         super.onPostExecute(aVoid);
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
+        }
+        if (observer != null) {
+            observer.update(null, message);
         }
         if (endingToast != null) {
             endingToast.show();

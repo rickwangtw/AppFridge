@@ -189,6 +189,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                             enablingToastMessagePrefix + " " + packageName, Toast.LENGTH_SHORT);
                     new PackageStateUpdateAsyncTask(
                             packageStateController,
+                            appStateProvider,
                             Arrays.asList(packageName),
                             true
                     ).withEndingToast(toast).execute();
@@ -199,6 +200,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                             disablingToastMessagePrefix + " " + packageName, Toast.LENGTH_SHORT);
                     new PackageStateUpdateAsyncTask(
                             packageStateController,
+                            appStateProvider,
                             Arrays.asList(packageName),
                             false
                     ).withEndingToast(toast).execute();
@@ -238,7 +240,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Enable apps: " + packages);
-                        new PackageStateUpdateAsyncTask(packageStateController, packages, true)
+                        new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, packages, true)
                                 .withProgressDialog(progressDialog)
                                 .withEndingToast(Toast.makeText(context,
                                         context.getResources().getString(
@@ -254,7 +256,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Disable apps: " + packages);
-                        new PackageStateUpdateAsyncTask(packageStateController, packages, false)
+                        new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, packages, false)
                                 .withProgressDialog(progressDialog)
                                 .withEndingToast(Toast.makeText(context,
                                         context.getResources().getString(

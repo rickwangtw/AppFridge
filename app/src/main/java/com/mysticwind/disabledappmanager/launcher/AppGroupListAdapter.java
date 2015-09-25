@@ -11,9 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +29,7 @@ import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.ui.common.Action;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
+import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
 import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 
 import java.util.ArrayList;
@@ -55,6 +58,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     private final List<String> allAppGroups;
     private final Map<String, List<String>> appGroupToPackageListMap = new HashMap<>();
     private final Dialog groupActionDialog;
+    private final Dialog progressDialog;
     private String selectedAppGroupName;
     private PackageListProvider packageListProvider;
 
@@ -77,6 +81,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         this.swipeDetector = swipeDetector;
         this.allAppGroups = getSortedAllAppGroups();
         this.groupActionDialog = buildGroupActionDialog();
+        this.progressDialog = DialogHelper.newProgressDialog(context);
     }
 
     private List<String> getSortedAllAppGroups() {
@@ -165,11 +170,41 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         if (convertView == null) {
             convertView = layoutInflator.inflate(R.layout.launcher_app_item, null);
         }
-        String packageName
+        final String packageName
                 = getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
 
         ImageView iconView = (ImageView) convertView.findViewById(R.id.appicon);
         TextView packageNameTextView = (TextView) convertView.findViewById(R.id.packagename);
+        Switch appStateSwitch = (Switch) convertView.findViewById(R.id.appStateSwitch);
+        /* prevent unexpected behavior */
+        appStateSwitch.setOnCheckedChangeListener(null);
+        appStateSwitch.setChecked(appStateProvider.isPackageEnabled(packageName));
+        appStateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    String enablingToastMessagePrefix = context.getResources().getString(
+                            R.string.toast_enabled_packages_msg_prefix);
+                    Toast toast = Toast.makeText(context,
+                            enablingToastMessagePrefix + " " + packageName, Toast.LENGTH_SHORT);
+                    new PackageStateUpdateAsyncTask(
+                            packageStateController,
+                            Arrays.asList(packageName),
+                            true
+                    ).withEndingToast(toast).execute();
+                } else {
+                    String disablingToastMessagePrefix = context.getResources().getString(
+                            R.string.toast_disabled_packages_msg_prefix);
+                    Toast toast = Toast.makeText(context,
+                            disablingToastMessagePrefix + " " + packageName, Toast.LENGTH_SHORT);
+                    new PackageStateUpdateAsyncTask(
+                            packageStateController,
+                            Arrays.asList(packageName),
+                            false
+                    ).withEndingToast(toast).execute();
+                }
+            }
+        });
 
         iconView.setImageDrawable(appIconProvider.getAppIcon(packageName));
         packageNameTextView.setText(appNameProvider.getAppName(packageName));

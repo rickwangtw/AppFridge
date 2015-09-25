@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="fill_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
     <ImageView
@@ -12,7 +12,7 @@
 
     <TextView
         android:id="@+id/packagename"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="50dip"
         android:layout_weight="1"
         android:layout_toRightOf="@id/appicon"
@@ -21,15 +21,24 @@
         android:layout_marginLeft="10dip"
         android:layout_toLeftOf="@+id/checkbox" />
 
+    <Switch
+        android:id="@+id/appStateSwitch"
+        android:focusable="false"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/packagename"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/trashButton" />
+
     <ImageButton
         android:id="@+id/trashButton"
         android:src="@drawable/ic_delete_black_24dp"
         android:focusable="false"
         android:visibility="gone"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/packagename"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentRight="true" />
 
-</RelativeLayout>
+</LinearLayout>

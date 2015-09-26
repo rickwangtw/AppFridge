@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective">
 
-    <item android:id="@+id/action_configure" android:title="@string/action_perspective_packagestate"
+    <item android:id="@+id/action_switch_perspective" android:title="@string/action_perspective_packagestate"
         android:orderInCategory="100" app:showAsAction="never" />
 
     <item android:id="@+id/action_settings" android:title="@string/action_settings"

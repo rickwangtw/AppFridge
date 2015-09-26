@@ -75,7 +75,7 @@ public class AppGroupPerspective extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
-            case R.id.action_configure:
+            case R.id.action_switch_perspective:
                 startActivity(new Intent(this, PackageStatePerspective.class));
                 return true;
             case R.id.action_settings:

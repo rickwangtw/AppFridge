@@ -145,7 +145,7 @@ public class PackageStatePerspective extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
 
         switch (item.getItemId()) {
-            case R.id.action_launcher:
+            case R.id.action_switch_perspective:
                 startActivity(new Intent(this, AppGroupPerspective.class));
                 return true;
             case R.id.action_settings:

@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">冷凍 App 管理員</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="action_perspective_appgroup">群組視角</string>
     <string name="action_perspective_packagestate">狀態視角</string>
     <string name="action_new_appgroup">新群組</string>

@@ -236,6 +236,10 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         String appGroupName = (String) view.getTag();
+        if (appGroupName == null) {
+            /* do nothing when child items are long clicked */
+            return true;
+        }
         Log.d(TAG, "Long clicked group name: " + appGroupName);
         this.selectedAppGroupName = appGroupName;
 

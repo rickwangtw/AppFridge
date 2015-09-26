@@ -5,11 +5,15 @@
     <string name="help_about_title">About</string>
     <string name="help_about_author_label">Author</string>
     <string name="help_about_icon_designer_label">Icon Designer</string>
+    <string name="help_about_libraries_label">Libraries</string>
 
     <string name="help_about_author_name">Rick Wang</string>
     <string name="help_about_author_email">rickwangtw1014@gmail.com</string>
 
     <string name="help_about_icon_designer_nickname">zorua</string>
     <string name="help_about_icon_designer_twitter_url">https://twitter.com/ZoruaDazo</string>
+
+    <string name="help_about_libraries_material_design_icons">Material Design icons from Google</string>
+    <string name="help_about_libraries_material_design_icons_license">CC-BY 4.0</string>
 
 </resources>

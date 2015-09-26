@@ -16,8 +16,6 @@
         <item>Disabled</item>
     </string-array>
 
-    <string name="title_activity_launcher">LauncherActivity</string>
-
     <string name="generated_app_group_name_all">All</string>
 
     <string name="app_group_dialog_title">Select Group Name</string>

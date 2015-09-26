@@ -4,6 +4,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_perspective_appgroup">App Group Perspective</string>
     <string name="action_perspective_packagestate">App State Perspective</string>
+    <string name="action_new_appgroup">New Group</string>
     <string name="action_settings">Settings</string>
 
     <string name="add_to_group_button">Add to Group</string>
@@ -23,6 +24,10 @@
     <string name="app_group_dialog_negative_button">Cancel</string>
 
     <string name="progress_dialog_title_update_app_status">Updating application status</string>
+
+    <string name="new_app_group_dialog_title">New Group</string>
+    <string name="new_app_group_dialog_positive_button">Create</string>
+    <string name="new_app_group_dialog_negative_button">Cancel</string>
 
     <string name="confirm_delete_app_group_dialog_title_prefix">Are you sure you want to delete</string>
     <string name="confirm_delete_app_group_dialog_positive_button">Confirm</string>

@@ -5,6 +5,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_perspective_appgroup">群組視角</string>
     <string name="action_perspective_packagestate">狀態視角</string>
+    <string name="action_new_appgroup">新群組</string>
     <string name="action_settings">設定</string>
 
     <string name="add_to_group_button">加入群組</string>
@@ -24,6 +25,10 @@
     <string name="app_group_dialog_negative_button">取消</string>
 
     <string name="progress_dialog_title_update_app_status">更新 App 狀態</string>
+
+    <string name="new_app_group_dialog_title">新群組</string>
+    <string name="new_app_group_dialog_positive_button">建立</string>
+    <string name="new_app_group_dialog_negative_button">取消</string>
 
     <string name="confirm_delete_app_group_dialog_title_prefix">確定要刪除</string>
     <string name="confirm_delete_app_group_dialog_positive_button">確認</string>

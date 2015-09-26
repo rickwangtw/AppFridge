@@ -5,12 +5,14 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
@@ -35,6 +38,36 @@ public class DialogHelper {
         progressDialog.setTitle(R.string.progress_dialog_title_update_app_status);
         progressDialog.setIndeterminate(true);
         return progressDialog;
+    }
+
+    public static Dialog newNewAppGroupDialog(final Context context,
+                  final PackageListProvider packageListProvider,
+                  final AppIconProvider appIconProvider, final AppNameProvider appNameProvider,
+                  final AppGroupManager appGroupManager, final Observer observer) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(R.string.new_app_group_dialog_title);
+
+        final EditText appGroupNameEditText = new EditText(context);
+        appGroupNameEditText.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(appGroupNameEditText);
+
+        builder.setPositiveButton(R.string.new_app_group_dialog_positive_button,
+                new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String appGroupName = appGroupNameEditText.getText().toString();
+                newPackageListForAddingToGroupDialog(context, appGroupName, packageListProvider,
+                        appIconProvider, appNameProvider, appGroupManager, new Observer() {
+                            @Override
+                            public void update(Observable observable, Object data) {
+                                observer.update(null, Action.APP_GROUP_UPDATED);
+                            }
+                        }).show();
+            }
+        });
+        builder.setNegativeButton(R.string.new_app_group_dialog_negative_button, null);
+
+        return builder.create();
     }
 
     public static Dialog newConfirmDeleteAppGroupDialog(Context context, final String appGroupName,

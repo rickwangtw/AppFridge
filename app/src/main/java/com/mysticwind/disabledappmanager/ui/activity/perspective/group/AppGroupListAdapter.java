@@ -83,9 +83,8 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         this.appLauncher = appLauncher;
         this.layoutInflator = layoutInflator;
         this.swipeDetector = swipeDetector;
-        this.allAppGroups = getSortedAllAppGroups();
         this.allAppGroupName = context.getResources().getString(R.string.generated_app_group_name_all);
-        this.allAppGroups.add(allAppGroupName);
+        this.allAppGroups = getSortedAllAppGroups();
         this.groupActionDialog = buildGroupActionDialog();
         this.progressDialog = DialogHelper.newProgressDialog(context);
     }
@@ -93,6 +92,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     private List<String> getSortedAllAppGroups() {
         List<String> allAppGroups = new ArrayList<String>(appGroupManager.getAllAppGroups());
         Collections.sort(allAppGroups);
+        allAppGroups.add(allAppGroupName);
         return allAppGroups;
     }
 

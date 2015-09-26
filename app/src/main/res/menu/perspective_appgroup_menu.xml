@@ -6,6 +6,9 @@
     <item android:id="@+id/action_switch_perspective" android:title="@string/action_perspective_packagestate"
         android:orderInCategory="100" app:showAsAction="never" />
 
+    <item android:id="@+id/action_new_app_group" android:title="@string/action_new_appgroup"
+        android:orderInCategory="100" app:showAsAction="never" />
+
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>

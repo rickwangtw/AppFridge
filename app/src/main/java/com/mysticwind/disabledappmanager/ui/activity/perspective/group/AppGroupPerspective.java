@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
+import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspective;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
@@ -26,16 +27,29 @@ import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
+import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 
+import java.util.Observable;
+import java.util.Observer;
+
 public class AppGroupPerspective extends AppCompatActivity {
+    private static final String TAG = "AppGroupPerspective";
+
+    private AppGroupManager appGroupManager;
+    private AppIconProvider appIconProvider;
+    private AppNameProvider appNameProvider;
+    private AppStateProvider appStateProvider;
+    private PackageStateController packageStateController;
+    private PackageListProvider packageListProvider;
+    private AppGroupListAdapter appGroupListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
 
-        AppGroupManager appGroupManager = new AppGroupManagerImpl(new AppGroupDAO(this));
+        this.appGroupManager = new AppGroupManagerImpl(new AppGroupDAO(this));
 
         ExpandableListView listView = (ExpandableListView) findViewById(R.id.appGroupListView);
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -44,16 +58,16 @@ public class AppGroupPerspective extends AppCompatActivity {
                 new PackageMangerAppIconProvider(getPackageManager()),
                 new PackageMangerAppNameProvider(getPackageManager()),
                 getPackageManager());
-        AppIconProvider appIconProvider = appInfoProvider;
-        AppNameProvider appNameProvider = appInfoProvider;
-        AppStateProvider appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
-        PackageStateController packageStateController = new RootProcessPackageStateController();
+        this.appIconProvider = appInfoProvider;
+        this.appNameProvider = appInfoProvider;
+        this.appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
+        this.packageStateController = new RootProcessPackageStateController();
+        this.packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
         AppLauncher appLauncher = new PackageManagerAppLauncher(getPackageManager());
 
         SwipeDetector swipeDetector = new SwipeDetector();
-        AppGroupListAdapter appGroupListAdapter = new AppGroupListAdapter(this, appGroupManager,
-                appIconProvider, appNameProvider, appStateProvider,
-                new PackageManagerAllPackageListProvider(getPackageManager()),
+        appGroupListAdapter = new AppGroupListAdapter(this, appGroupManager,
+                appIconProvider, appNameProvider, appStateProvider, packageListProvider,
                 packageStateController, appLauncher, layoutInflater, swipeDetector);
         listView.setAdapter(appGroupListAdapter);
         listView.setOnItemLongClickListener(appGroupListAdapter);
@@ -77,6 +91,10 @@ public class AppGroupPerspective extends AppCompatActivity {
         switch(item.getItemId()) {
             case R.id.action_switch_perspective:
                 startActivity(new Intent(this, PackageStatePerspective.class));
+                return true;
+            case R.id.action_new_app_group:
+                DialogHelper.newNewAppGroupDialog(this, packageListProvider, appIconProvider,
+                        appNameProvider, appGroupManager, appGroupListAdapter).show();
                 return true;
             case R.id.action_settings:
                 return true;

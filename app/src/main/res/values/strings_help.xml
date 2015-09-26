@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_help">Help</string>
+
+    <string name="help_about_title">About</string>
+    <string name="help_about_author_label">Author</string>
+    <string name="help_about_icon_designer_label">Icon Designer</string>
+
+    <string name="help_about_author_name">Rick Wang</string>
+    <string name="help_about_author_email">rickwangtw1014@gmail.com</string>
+
+    <string name="help_about_icon_designer_nickname">zorua</string>
+    <string name="help_about_icon_designer_twitter_url">https://twitter.com/ZoruaDazo</string>
+
+</resources>

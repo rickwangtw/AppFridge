@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_help">幫助</string>
+
+    <string name="help_about_title">關於</string>
+    <string name="help_about_author_label">作者</string>
+    <string name="help_about_icon_designer_label">圖示設計師</string>
+
+</resources>

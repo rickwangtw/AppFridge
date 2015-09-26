@@ -5,7 +5,7 @@
     <string name="action_perspective_appgroup">群組視角</string>
     <string name="action_perspective_packagestate">狀態視角</string>
     <string name="action_new_appgroup">新群組</string>
-    <string name="action_settings">設定</string>
+    <string name="action_help">幫助</string>
 
     <string name="add_to_group_button">加入群組</string>
     <string name="toggle_app_status_button">變更狀態</string>

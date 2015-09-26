@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
+import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspective;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
@@ -94,6 +95,7 @@ public class AppGroupPerspective extends AppCompatActivity {
                         appNameProvider, appGroupManager, appGroupListAdapter).show();
                 return true;
             case R.id.action_settings:
+                startActivity(new Intent(this, HelpActivity.class));
                 return true;
         }
 

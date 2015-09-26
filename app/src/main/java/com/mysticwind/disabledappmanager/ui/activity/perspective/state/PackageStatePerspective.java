@@ -29,6 +29,7 @@ import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
+import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective;
 
 public class PackageStatePerspective extends AppCompatActivity {
@@ -149,6 +150,7 @@ public class PackageStatePerspective extends AppCompatActivity {
                 startActivity(new Intent(this, AppGroupPerspective.class));
                 return true;
             case R.id.action_settings:
+                startActivity(new Intent(this, HelpActivity.class));
                 return true;
         }
 

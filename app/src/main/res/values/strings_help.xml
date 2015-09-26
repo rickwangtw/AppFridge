@@ -13,7 +13,7 @@
     <string name="help_about_icon_designer_nickname">zorua</string>
     <string name="help_about_icon_designer_twitter_url">https://twitter.com/ZoruaDazo</string>
 
-    <string name="help_about_libraries_material_design_icons">Material Design icons from Google</string>
+    <string name="help_about_libraries_material_design_icons"><![CDATA[<a href="https://github.com/google/material-design-icons">Material Design icons</a> from Google]]></string>
     <string name="help_about_libraries_material_design_icons_license">CC-BY 4.0</string>
 
 </resources>

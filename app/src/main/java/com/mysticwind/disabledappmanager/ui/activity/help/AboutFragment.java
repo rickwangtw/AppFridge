@@ -58,11 +58,7 @@ public class AboutFragment extends Fragment implements AbsListView.OnItemClickLi
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        listAdapter = new StaticResourceAdapter(LayoutInflater.from(getActivity()),
-                Arrays.asList(
-                        R.layout.help_about_author,
-                        R.layout.help_about_icon_designer,
-                        R.layout.help_about_libraries));
+        listAdapter = new AboutListAdapter(getContext(), LayoutInflater.from(getActivity()));
     }
 
     @Override

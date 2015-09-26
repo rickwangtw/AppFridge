@@ -44,7 +44,7 @@ public class AppGroupPerspective extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launcher);
+        setContentView(R.layout.perspective_appgroup_activity);
 
         this.appGroupManager = new AppGroupManagerImpl(new AppGroupDAO(this));
 

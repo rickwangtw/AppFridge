@@ -48,7 +48,7 @@ public class PackageStatePerspective extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.perspective_state_activity);
 
         layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         defaultPackageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());

@@ -48,7 +48,7 @@ public class AppSelectedListener extends Observable
         this.progressDialog = DialogHelper.newProgressDialog(context);
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-        this.appGroupDialogView = layoutInflater.inflate(R.layout.app_group_dialog, null);
+        this.appGroupDialogView = layoutInflater.inflate(R.layout.perspective_state_app_group_dialog, null);
         this.appGroupSpinner = (Spinner) appGroupDialogView.findViewById(R.id.app_group_spinner);
         RadioButton appGroupSpinnerRadioButton =
                 (RadioButton) appGroupDialogView.findViewById(R.id.app_group_spinner_radio_button);

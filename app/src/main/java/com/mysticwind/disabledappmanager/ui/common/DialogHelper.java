@@ -194,7 +194,7 @@ public class DialogHelper {
             AppInfo packageInfo = getItem(position);
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext())
-                        .inflate(R.layout.applistitem, parent, false);
+                        .inflate(R.layout.perspective_state_app_item, parent, false);
             }
             ImageView icon = (ImageView) convertView.findViewById(R.id.appicon);
             icon.setImageDrawable(appIconProvider.getAppIcon(packageInfo.getPackageName()));

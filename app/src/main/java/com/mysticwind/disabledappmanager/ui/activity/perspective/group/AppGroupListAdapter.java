@@ -169,7 +169,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = layoutInflator.inflate(R.layout.launcher_group_item, null);
+            convertView = layoutInflator.inflate(R.layout.perspective_appgroup_group_item, null);
         }
         String appGroup = getAppGroup(groupPosition);
 
@@ -183,7 +183,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
                              View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = layoutInflator.inflate(R.layout.launcher_app_item, null);
+            convertView = layoutInflator.inflate(R.layout.perspective_appgroup_app_item, null);
         }
         final String packageName
                 = getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);

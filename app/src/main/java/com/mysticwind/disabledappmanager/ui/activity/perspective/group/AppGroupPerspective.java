@@ -65,7 +65,7 @@ public class AppGroupPerspective extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_launcher, menu);
+        getMenuInflater().inflate(R.menu.perspective_appgroup_menu, menu);
         return true;
     }
 

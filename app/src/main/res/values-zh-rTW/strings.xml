@@ -3,8 +3,8 @@
     <string name="app_name">冷凍 App 管理員</string>
 
     <string name="hello_world">Hello world!</string>
-    <string name="action_launcher">啟動器</string>
-    <string name="action_configure">狀態控制</string>
+    <string name="action_perspective_appgroup">群組視角</string>
+    <string name="action_perspective_packagestate">狀態視角</string>
     <string name="action_settings">設定</string>
 
     <string name="add_to_group_button">加入群組</string>

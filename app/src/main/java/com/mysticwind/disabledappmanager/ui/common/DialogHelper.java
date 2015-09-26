@@ -201,12 +201,14 @@ public class DialogHelper {
             TextView textView = (TextView) convertView.findViewById(R.id.packagename);
             textView.setText(appNameProvider.getAppName(packageInfo.getPackageName()));
             CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
+            checkBox.setTag(packageInfo.getPackageName());
+            /* prevent unexpected behavior when setting the status  */
+            checkBox.setOnCheckedChangeListener(null);
             if (selectedPositions.contains(position)) {
                 checkBox.setChecked(true);
             } else {
                 checkBox.setChecked(false);
             }
-            checkBox.setTag(packageInfo.getPackageName());
             checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

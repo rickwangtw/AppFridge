@@ -1,4 +1,4 @@
-package com.mysticwind.disabledappmanager.launcher;
+package com.mysticwind.disabledappmanager.ui.activity.perspective.group;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

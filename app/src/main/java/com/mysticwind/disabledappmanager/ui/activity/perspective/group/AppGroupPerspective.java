@@ -1,4 +1,4 @@
-package com.mysticwind.disabledappmanager.launcher;
+package com.mysticwind.disabledappmanager.ui.activity.perspective.group;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
-import com.mysticwind.disabledappmanager.MainActivity;
+import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspective;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
@@ -28,7 +28,7 @@ import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateControlle
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 
-public class LauncherActivity extends AppCompatActivity {
+public class AppGroupPerspective extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +76,7 @@ public class LauncherActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             case R.id.action_configure:
-                startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, PackageStatePerspective.class));
                 return true;
             case R.id.action_settings:
                 return true;

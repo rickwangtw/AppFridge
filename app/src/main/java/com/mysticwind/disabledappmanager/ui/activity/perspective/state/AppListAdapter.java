@@ -1,4 +1,4 @@
-package com.mysticwind.disabledappmanager;
+package com.mysticwind.disabledappmanager.ui.activity.perspective.state;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -11,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;

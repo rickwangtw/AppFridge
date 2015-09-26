@@ -21,7 +21,6 @@ import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
-import com.mysticwind.disabledappmanager.launcher.AppGroupListAdapter;
 
 import java.util.ArrayList;
 import java.util.Collection;

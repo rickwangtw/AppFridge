@@ -1,4 +1,4 @@
-package com.mysticwind.disabledappmanager;
+package com.mysticwind.disabledappmanager.ui.activity.perspective.state;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
@@ -28,9 +29,9 @@ import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
-import com.mysticwind.disabledappmanager.launcher.LauncherActivity;
+import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective;
 
-public class MainActivity extends AppCompatActivity {
+public class PackageStatePerspective extends AppCompatActivity {
     private LayoutInflater layoutInflater;
     private PackageListProvider defaultPackageListProvider;
     private PackageListProvider packageListProvider;
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.action_launcher:
-                startActivity(new Intent(this, LauncherActivity.class));
+                startActivity(new Intent(this, AppGroupPerspective.class));
                 return true;
             case R.id.action_settings:
                 return true;

@@ -1,51 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:orientation="vertical"
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/bullet_point"
+        android:text="@string/help_about_resource_item_bullet_point"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true" />
 
-        <TextView
-            android:text="@string/help_about_resource_item_bullet_point"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+    <TextView
+        android:text="@string/help_about_libraries_material_design_icons_description"
+        android:layout_gravity="bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/bullet_point"
+        android:layout_toLeftOf="@+id/material_design_icons_license"
+        android:layout_centerVertical="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentTop="true" />
 
-        <TextView
-            android:text="@string/help_about_libraries_material_design_icons_description"
-            android:layout_gravity="bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/material_design_icons_license"
+        android:text="@string/help_about_libraries_material_design_icons_license"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_toLeftOf="@+id/material_design_icons_link_button" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <Button
+        android:id="@+id/material_design_icons_link_button"
+        android:text="@string/help_about_resource_link_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true" />
 
-        <Space
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="0dp" />
-
-        <TextView
-            android:text="@string/help_about_libraries_material_design_icons_license"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <Button
-            android:id="@+id/material_design_icons_link_button"
-            android:text="@string/help_about_resource_link_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="?android:attr/buttonStyleSmall" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

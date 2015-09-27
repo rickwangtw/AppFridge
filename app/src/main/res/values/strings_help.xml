@@ -13,7 +13,11 @@
     <string name="help_about_icon_designer_nickname">zorua</string>
     <string name="help_about_icon_designer_twitter_url">https://twitter.com/ZoruaDazo</string>
 
-    <string name="help_about_libraries_material_design_icons"><![CDATA[<a href="https://github.com/google/material-design-icons">Material Design icons</a> from Google]]></string>
+    <string name="help_about_resource_item_bullet_point">&#160;&#8226;&#160;</string>
+    <string name="help_about_resource_link_label">Link</string>
+
+    <string name="help_about_libraries_material_design_url">https://github.com/google/material-design-icons</string>
     <string name="help_about_libraries_material_design_icons_license">CC-BY 4.0</string>
+    <string name="help_about_libraries_material_design_icons_description">Material Design icons from Google</string>
 
 </resources>

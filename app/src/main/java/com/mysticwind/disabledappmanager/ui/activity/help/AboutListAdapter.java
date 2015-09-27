@@ -1,14 +1,15 @@
 package com.mysticwind.disabledappmanager.ui.activity.help;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 
 import com.mysticwind.disabledappmanager.R;
-
-import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,10 +56,14 @@ public class AboutListAdapter extends BaseAdapter{
                 if (convertView == null) {
                     convertView = layoutInflater.inflate(RESOURCE_ID_LIST.get(position), null);
                 }
-                HtmlTextView textView = (HtmlTextView) convertView.findViewById(R.id.help_about_libraries_material_design_icons);
-                textView.setHtmlFromString(
-                        context.getResources().getString(R.string.help_about_libraries_material_design_icons),
-                        new HtmlTextView.LocalImageGetter());
+                Button linkButton = (Button) convertView.findViewById(R.id.material_design_icons_link_button);
+                linkButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String url = context.getResources().getString(R.string.help_about_libraries_material_design_url);
+                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    }
+                });
                 return convertView;
             default:
                 return null;

@@ -7,6 +7,6 @@
     <string name="help_about_icon_designer_label">圖示設計師</string>
     <string name="help_about_libraries_label">函式庫與資源</string>
 
-    <string name="help_about_libraries_material_design_icons"><![CDATA[來自谷歌的 <a href="https://github.com/google/material-design-icons">Material Design 圖示</a>]]></string>
+    <string name="help_about_libraries_material_design_icons_description">來自谷歌的 Material Design 圖示</string>
 
 </resources>

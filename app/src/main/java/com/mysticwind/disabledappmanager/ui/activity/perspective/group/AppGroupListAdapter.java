@@ -44,6 +44,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
+import de.greenrobot.event.EventBus;
+
 public class AppGroupListAdapter extends BaseExpandableListAdapter
         implements AdapterView.OnItemLongClickListener, ExpandableListView.OnChildClickListener,
         ExpandableListView.OnGroupClickListener, Observer {
@@ -87,6 +89,8 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         this.allAppGroups = getSortedAllAppGroups();
         this.groupActionDialog = buildGroupActionDialog();
         this.progressDialog = DialogHelper.newProgressDialog(context);
+
+        EventBus.getDefault().register(this);
     }
 
     private List<String> getSortedAllAppGroups() {
@@ -421,8 +425,14 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                 notifyDataSetChanged();
                 break;
             case PACKAGE_STATE_UPDATED:
+            case PACKAGE_ASSET_UPDATED:
                 notifyDataSetChanged();
                 break;
         }
+    }
+
+    // This method will be called from EventBus when Action is called
+    public void onEventMainThread(Action event){
+        update(null, event);
     }
 }

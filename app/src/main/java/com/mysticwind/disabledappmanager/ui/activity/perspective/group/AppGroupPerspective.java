@@ -30,6 +30,8 @@ import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 
+import de.greenrobot.event.EventBus;
+
 public class AppGroupPerspective extends AppCompatActivity {
     private static final String TAG = "AppGroupPerspective";
 

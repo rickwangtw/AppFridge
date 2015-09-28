@@ -17,12 +17,15 @@ import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
+import com.mysticwind.disabledappmanager.ui.common.Action;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+
+import de.greenrobot.event.EventBus;
 
 public class AppListAdapter extends BaseAdapter implements Observer {
     private static final String TAG = "AppListAdapter";
@@ -49,6 +52,8 @@ public class AppListAdapter extends BaseAdapter implements Observer {
 
         this.appInfoList = packageListProvider.getOrderedPackages();
         Log.i(TAG, "Size of packages: " + appInfoList.size());
+
+        EventBus.getDefault().register(this);
     }
 
     public int getCount() {
@@ -65,8 +70,6 @@ public class AppListAdapter extends BaseAdapter implements Observer {
 
     public class CachedAppInfo {
         public String packageName;
-        public String appName;
-        public Drawable icon;
         public AppInfo appInfo;
     }
 
@@ -84,10 +87,10 @@ public class AppListAdapter extends BaseAdapter implements Observer {
         }
 
         TextView textView = (TextView) view.findViewById(R.id.packagename);;
-        textView.setText(cachedAppInfoForPosition.appName);
+        textView.setText(appNameProvider.getAppName(cachedAppInfoForPosition.packageName));
 
         ImageView imageView = (ImageView) view.findViewById(R.id.appicon);
-        imageView.setImageDrawable(cachedAppInfoForPosition.icon);
+        imageView.setImageDrawable(appIconProvider.getAppIcon(cachedAppInfoForPosition.packageName));
 
         if (appStateProvider.isPackageEnabled(cachedAppInfoForPosition.packageName)) {
             view.setBackgroundColor(Color.WHITE);
@@ -110,9 +113,7 @@ public class AppListAdapter extends BaseAdapter implements Observer {
 
         final CachedAppInfo cachedAppInfo = new CachedAppInfo();
         cachedAppInfo.packageName = appInfo.getPackageName();
-        cachedAppInfo.appName = appNameProvider.getAppName(cachedAppInfo.packageName);
         cachedAppInfo.appInfo = appInfo;
-        cachedAppInfo.icon = appIconProvider.getAppIcon(cachedAppInfo.packageName);
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
         checkBox.setOnCheckedChangeListener(appSelectedListener);
         return cachedAppInfo;
@@ -123,5 +124,12 @@ public class AppListAdapter extends BaseAdapter implements Observer {
         this.appInfoList = packageListProvider.getOrderedPackages();
         this.positionToViewMap.clear();
         notifyDataSetChanged();
+    }
+
+    // This method will be called from EventBus when Action is called
+    public void onEventMainThread(Action event){
+        if (event == Action.PACKAGE_ASSET_UPDATED) {
+            notifyDataSetChanged();
+        }
     }
 }

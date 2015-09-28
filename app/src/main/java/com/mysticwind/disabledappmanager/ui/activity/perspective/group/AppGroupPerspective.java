@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
+import com.gmr.acacia.Acacia;
+import com.mysticwind.disabledappmanager.domain.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspective;
@@ -19,11 +21,8 @@ import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
-import com.mysticwind.disabledappmanager.domain.CachingAppInfoProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAppLauncher;
-import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
-import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
@@ -34,6 +33,7 @@ import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 public class AppGroupPerspective extends AppCompatActivity {
     private static final String TAG = "AppGroupPerspective";
 
+    private PackageAssetService packageAssetService;
     private AppGroupManager appGroupManager;
     private AppIconProvider appIconProvider;
     private AppNameProvider appNameProvider;
@@ -47,17 +47,15 @@ public class AppGroupPerspective extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_appgroup_activity);
 
+        packageAssetService = Acacia.createService(this, PackageAssetService.class);
+
         this.appGroupManager = new AppGroupManagerImpl(new AppGroupDAO(this));
 
         ExpandableListView listView = (ExpandableListView) findViewById(R.id.appGroupListView);
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        CachingAppInfoProvider appInfoProvider = CachingAppInfoProvider.INSTANCE.init(
-                new PackageMangerAppIconProvider(getPackageManager()),
-                new PackageMangerAppNameProvider(getPackageManager()),
-                getPackageManager());
-        this.appIconProvider = appInfoProvider;
-        this.appNameProvider = appInfoProvider;
+        this.appIconProvider = packageAssetService;
+        this.appNameProvider = packageAssetService;
         this.appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
         this.packageStateController = new RootProcessPackageStateController();
         this.packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());

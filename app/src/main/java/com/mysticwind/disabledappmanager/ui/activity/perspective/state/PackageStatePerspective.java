@@ -13,18 +13,17 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.gmr.acacia.Acacia;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
-import com.mysticwind.disabledappmanager.domain.CachingAppInfoProvider;
+import com.mysticwind.disabledappmanager.domain.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerDisabledPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerEnabledPackageListProvider;
-import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
-import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
@@ -33,6 +32,7 @@ import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective;
 
 public class PackageStatePerspective extends AppCompatActivity {
+    private PackageAssetService packageAssetService;
     private LayoutInflater layoutInflater;
     private PackageListProvider defaultPackageListProvider;
     private PackageListProvider packageListProvider;
@@ -51,16 +51,13 @@ public class PackageStatePerspective extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_state_activity);
 
+        packageAssetService = Acacia.createService(this, PackageAssetService.class);
+        this.appIconProvider = packageAssetService;
+        this.appNameProvider = packageAssetService;
+
         layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         defaultPackageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
         appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
-
-        CachingAppInfoProvider appInfoProvider = CachingAppInfoProvider.INSTANCE.init(
-                new PackageMangerAppIconProvider(getPackageManager()),
-                new PackageMangerAppNameProvider(getPackageManager()),
-                getPackageManager());
-        appIconProvider = appInfoProvider;
-        appNameProvider = appInfoProvider;
 
         packageStateController = new RootProcessPackageStateController();
 

@@ -31,6 +31,9 @@
             android:name=".ui.activity.HelpActivity"
             android:label="@string/title_activity_help" >
         </activity>
+
+        <service android:name="com.gmr.acacia.AcaciaService"/>
+
     </application>
 
 </manifest>

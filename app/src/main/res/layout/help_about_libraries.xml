@@ -11,5 +11,6 @@
 
     <include layout="@layout/help_about_libraries_material_design_icons" />
     <include layout="@layout/help_about_libraries_acacia" />
+    <include layout="@layout/help_about_libraries_eventbus" />
 
 </LinearLayout>

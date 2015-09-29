@@ -62,6 +62,9 @@ public class AboutListAdapter extends BaseAdapter{
                 setupButtonResourceIdWithLinkResourceId(
                         convertView, R.id.acacia_link_button,
                         R.string.help_about_libraries_acacia_url);
+                setupButtonResourceIdWithLinkResourceId(
+                        convertView, R.id.eventbus_link_button,
+                        R.string.help_about_libraries_eventbus_url);
                 return convertView;
             default:
                 return null;

@@ -56,17 +56,26 @@ public class AboutListAdapter extends BaseAdapter{
                 if (convertView == null) {
                     convertView = layoutInflater.inflate(RESOURCE_ID_LIST.get(position), null);
                 }
-                Button linkButton = (Button) convertView.findViewById(R.id.material_design_icons_link_button);
-                linkButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String url = context.getResources().getString(R.string.help_about_libraries_material_design_url);
-                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                    }
-                });
+                setupButtonResourceIdWithLinkResourceId(
+                        convertView, R.id.material_design_icons_link_button,
+                        R.string.help_about_libraries_material_design_url);
+                setupButtonResourceIdWithLinkResourceId(
+                        convertView, R.id.acacia_link_button,
+                        R.string.help_about_libraries_acacia_url);
                 return convertView;
             default:
                 return null;
         }
+    }
+
+    private void setupButtonResourceIdWithLinkResourceId(
+            View view, int buttonResourceId, final int linkResourceId) {
+        view.findViewById(buttonResourceId).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = context.getResources().getString(linkResourceId);
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            }
+        });
     }
 }

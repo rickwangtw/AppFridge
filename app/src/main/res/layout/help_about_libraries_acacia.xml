@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/bullet_point"
+        android:text="@string/help_about_resource_item_bullet_point"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:text="@string/help_about_libraries_acacia_description"
+        android:layout_gravity="bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/bullet_point"
+        android:layout_toLeftOf="@+id/acacia_license"
+        android:layout_centerVertical="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:id="@+id/acacia_license"
+        android:text="@string/help_about_libraries_acacia_license"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_toLeftOf="@+id/acacia_link_button" />
+
+    <Button
+        android:id="@+id/acacia_link_button"
+        android:text="@string/help_about_resource_link_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true" />
+
+</RelativeLayout>

@@ -10,5 +10,6 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <include layout="@layout/help_about_libraries_material_design_icons" />
+    <include layout="@layout/help_about_libraries_acacia" />
 
 </LinearLayout>

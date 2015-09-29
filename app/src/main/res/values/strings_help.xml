@@ -20,4 +20,8 @@
     <string name="help_about_libraries_material_design_icons_license">CC-BY 4.0</string>
     <string name="help_about_libraries_material_design_icons_description">Material Design icons from Google</string>
 
+    <string name="help_about_libraries_acacia_url">https://github.com/germnix/acacia</string>
+    <string name="help_about_libraries_acacia_license">Apache 2.0</string>
+    <string name="help_about_libraries_acacia_description">Acacia by germnix</string>
+
 </resources>

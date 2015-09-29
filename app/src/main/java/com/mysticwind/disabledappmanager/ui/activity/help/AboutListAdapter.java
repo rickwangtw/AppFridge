@@ -18,6 +18,7 @@ public class AboutListAdapter extends BaseAdapter{
     private static final List<Integer> RESOURCE_ID_LIST = Arrays.asList(
             R.layout.help_about_author,
             R.layout.help_about_icon_designer,
+            R.layout.help_about_website,
             R.layout.help_about_libraries);
 
     private final Context context;
@@ -53,6 +54,13 @@ public class AboutListAdapter extends BaseAdapter{
                 }
                 return convertView;
             case 2:
+                if (convertView == null) {
+                    convertView = layoutInflater.inflate(RESOURCE_ID_LIST.get(position), null);
+                }
+                setupButtonResourceIdWithLinkResourceId(
+                        convertView, R.id.website_link_button, R.string.help_about_website_url);
+                return convertView;
+            case 3:
                 if (convertView == null) {
                     convertView = layoutInflater.inflate(RESOURCE_ID_LIST.get(position), null);
                 }

@@ -5,6 +5,7 @@
     <string name="help_about_title">About</string>
     <string name="help_about_author_label">Author</string>
     <string name="help_about_icon_designer_label">Icon Designer</string>
+    <string name="help_about_website_label">Website</string>
     <string name="help_about_libraries_label">Libraries</string>
 
     <string name="help_about_author_name">Rick Wang</string>
@@ -12,6 +13,10 @@
 
     <string name="help_about_icon_designer_nickname">zorua</string>
     <string name="help_about_icon_designer_twitter_url">https://twitter.com/ZoruaDazo</string>
+
+    <string name="help_about_website_description">If you benefit a lot from this app, visit our website!</string>
+    <string name="help_about_website_button_label">Link</string>
+    <string name="help_about_website_url">http://rickwangtw.github.io/AppFridge</string>
 
     <string name="help_about_resource_item_bullet_point">&#160;&#8226;&#160;</string>
     <string name="help_about_resource_link_label">Link</string>

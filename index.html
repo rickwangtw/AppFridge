@@ -15,6 +15,29 @@
       <h1 class="title">App Fridge</h1>
     </header>
 
+    <div id="paypal-donate">
+    <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+    <input type="hidden" name="cmd" value="_donations">
+    <input type="hidden" name="business" value="3F278VQV6EUKC">
+    <input type="hidden" name="lc" value="TW">
+    <input type="hidden" name="item_name" value="App Fridge Donation">
+    <input type="hidden" name="button_subtype" value="services">
+    <input type="hidden" name="no_note" value="0">
+    <input type="hidden" name="cn" value="Add special instructions to the seller:">
+    <input type="hidden" name="no_shipping" value="2">
+    <input type="hidden" name="rm" value="1">
+    <input type="hidden" name="return" value="http://rickwangtw.github.io/AppFridge/donate_success">
+    <input type="hidden" name="cancel_return" value="http://rickwangtw.github.io/AppFridge/donate_cancel">
+    <input type="hidden" name="currency_code" value="USD">
+    <input type="hidden" name="bn" value="PP-BuyNowBF:btn_donateCC_LG.gif:NonHosted">
+    <table>
+    <tr><td><input type="hidden" name="on0" value="Your Email">Your Email</td></tr><tr><td><input type="text" name="os0" maxlength="200"></td></tr>
+    </table>
+    <input type="image" src="https://www.paypalobjects.com/en_US/TW/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+    <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+    </form>
+    </div>
+
 </body>
 </html>
 

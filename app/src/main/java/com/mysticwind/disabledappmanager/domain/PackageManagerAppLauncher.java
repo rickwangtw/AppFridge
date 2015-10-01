@@ -1,13 +1,15 @@
 package com.mysticwind.disabledappmanager.domain;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.ui.common.Action;
-import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
+import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 
 import java.util.Arrays;
 
@@ -28,33 +30,100 @@ public class PackageManagerAppLauncher implements AppLauncher {
 
     @Override
     public void launch(Context context, String packageName) {
-        boolean isEnabled = appStateProvider.isPackageEnabled(packageName);
-        if (!isEnabled) {
-            Toast.makeText(
-                    context, context.getResources().getString(
-                            R.string.toast_enabled_packages_msg_prefix) + " " + packageName,
-                    Toast.LENGTH_SHORT).show();
-            packageStateController.enablePackages(Arrays.asList(packageName));
-            postPackageStateUpdated();
+        Dialog progressDialog = DialogHelper.newProgressDialog(context);
+        new AppLauncherAsyncTask(context, progressDialog, packageName).execute();
+    }
+
+    private enum AppLaunchProgress {
+        NOTIFY_APP_ENABLING,
+        NOTIFY_APP_STATE_CHANGED,
+        APP_LAUNCH_READY,
+        NOTIFY_NO_LAUNCHING_INTENT,
+        NOTIFY_APP_DISABLED,
+        LAUNCH_APPLICATION,
+    }
+
+    private class AppLauncherAsyncTask extends AsyncTask<Void, AppLaunchProgress, Void> {
+        private final Context context;
+        private final Dialog progressDialog;
+        private final String packageName;
+        private Intent applicationLaunchIntent;
+
+        AppLauncherAsyncTask(Context context, Dialog progressDialog, String packageName) {
+            this.context = context;
+            this.progressDialog = progressDialog;
+            this.packageName = packageName;
         }
-        Intent intent = packageManager.getLaunchIntentForPackage(packageName);
-        if (intent == null) {
-            Toast.makeText(context, context.getResources().getString(
-                            R.string.toast_warn_no_launcher_intent_msg_prefix) + " " + packageName,
-                    Toast.LENGTH_SHORT).show();
-            /* disable back if the original status is disabled */
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            boolean isEnabled = appStateProvider.isPackageEnabled(packageName);
             if (!isEnabled) {
-                Toast toast = Toast.makeText(context, context.getResources().getString(
-                                R.string.toast_disabled_packages_msg_prefix) + " " + packageName,
-                        Toast.LENGTH_SHORT);
-                new PackageStateUpdateAsyncTask(
-                        packageStateController, appStateProvider, Arrays.asList(packageName), false)
-                        .withCompletedEvent(Action.PACKAGE_STATE_UPDATED)
-                        .withEndingToast(toast)
-                        .execute();
+                publishProgress(AppLaunchProgress.NOTIFY_APP_ENABLING);
+                packageStateController.enablePackages(Arrays.asList(packageName));
+                publishProgress(AppLaunchProgress.NOTIFY_APP_STATE_CHANGED);
             }
-        } else {
-            context.startActivity(intent);
+            applicationLaunchIntent = packageManager.getLaunchIntentForPackage(packageName);
+            publishProgress(AppLaunchProgress.APP_LAUNCH_READY);
+            if (applicationLaunchIntent == null) {
+                publishProgress(AppLaunchProgress.NOTIFY_NO_LAUNCHING_INTENT);
+                /* disable back if the original status is disabled */
+                if (!isEnabled) {
+                    packageStateController.disablePackages(Arrays.asList(packageName));
+                    publishProgress(AppLaunchProgress.NOTIFY_APP_DISABLED);
+                    publishProgress(AppLaunchProgress.NOTIFY_APP_STATE_CHANGED);
+                }
+            } else {
+                publishProgress(AppLaunchProgress.LAUNCH_APPLICATION);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(AppLaunchProgress... values) {
+            super.onProgressUpdate(values);
+            if (values.length == 0) {
+                return;
+            }
+            AppLaunchProgress progress = values[0];
+            switch (progress) {
+                case NOTIFY_APP_ENABLING:
+                    Toast.makeText(
+                            context, context.getResources().getString(
+                                    R.string.toast_enabled_packages_msg_prefix) + " " + packageName,
+                            Toast.LENGTH_SHORT).show();
+                    break;
+                case NOTIFY_APP_STATE_CHANGED:
+                    postPackageStateUpdated();
+                    break;
+                case APP_LAUNCH_READY:
+                    progressDialog.dismiss();
+                    break;
+                case NOTIFY_NO_LAUNCHING_INTENT:
+                    Toast.makeText(context, context.getResources().getString(
+                                    R.string.toast_warn_no_launcher_intent_msg_prefix) + " " + packageName,
+                            Toast.LENGTH_SHORT).show();
+                    break;
+                case NOTIFY_APP_DISABLED:
+                    Toast.makeText(context, context.getResources().getString(
+                                    R.string.toast_disabled_packages_msg_prefix) + " " + packageName,
+                            Toast.LENGTH_SHORT).show();
+                    break;
+                case LAUNCH_APPLICATION:
+                    context.startActivity(applicationLaunchIntent);
+                    break;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
         }
     }
 

@@ -87,7 +87,7 @@
 
       <!-- Donate Modal -->
       <div class="modal fade" id="donateModal" tabindex="-1" role="dialog" aria-labelledby="donateModalLabel">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -96,13 +96,11 @@
             <div class="modal-body">
               <div class="row">
                 <div class="col-lg-4">
-                  <h2>Flattr</h2>
                   <p>
                     <script id='fbve552'>(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=rickwangtw&button=compact&url=http%3A%2F%2Frickwangtw.github.io%2FAppFridge';f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('fbve552');</script>
                   </p>
                 </div>
                 <div class="col-lg-4">
-                  <h2>Paypal</h2>
                   <p>
                     <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
                       <input type="hidden" name="cmd" value="_donations">
@@ -127,9 +125,13 @@
                   </p>
                 </div>
                 <div class="col-lg-4">
-                  <h2>Alipay</h2>
                   <p>
-                    <img src="./images/alipay.png">
+                    <a class="btn collapse-data-btn" data-toggle="collapse" href="#alipay-qrcode">
+                      <img src="https://img.alipay.com/sys/personalprod/style/mc/btn-index.png">
+                    </a>
+                    <div id="alipay-qrcode" class="collapse">
+                      <img src="./images/alipay.png">
+                    </div>
                   </p>
                 </div>
               </div>

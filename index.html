@@ -13,6 +13,7 @@
   <body>
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="js/donate.js"></script>
 
     <!-- Fixed navbar -->
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -49,7 +50,17 @@
     </div>
     </nav>
 
-    <div class="container">
+    <div class="container" style="padding-top:70px;">
+
+      <div id="donate-success" class="alert alert-success alert-dismissible collapse" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        Thanks for donating to AppFridge!
+      </div>
+
+      <div id="donate-cancelled" class="alert alert-info alert-dismissible collapse" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        You cancelled the donation, but we thank you for considering the donation!
+      </div>
 
       <div class="jumbotron">
         <h1>App Fridge</h1>
@@ -112,8 +123,8 @@
                       <input type="hidden" name="cn" value="Add special instructions to the seller:">
                       <input type="hidden" name="no_shipping" value="2">
                       <input type="hidden" name="rm" value="1">
-                      <input type="hidden" name="return" value="http://rickwangtw.github.io/AppFridge/donate_success">
-                      <input type="hidden" name="cancel_return" value="http://rickwangtw.github.io/AppFridge/donate_cancel">
+                      <input type="hidden" name="return" value="http://rickwangtw.github.io/AppFridge/index?donate=success">
+                      <input type="hidden" name="cancel_return" value="http://rickwangtw.github.io/AppFridge/index?donate=cancelled">
                       <input type="hidden" name="currency_code" value="USD">
                       <input type="hidden" name="bn" value="PP-BuyNowBF:btn_donateCC_LG.gif:NonHosted">
                       <table>

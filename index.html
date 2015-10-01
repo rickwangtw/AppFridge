@@ -117,9 +117,15 @@
                       <input type="hidden" name="currency_code" value="USD">
                       <input type="hidden" name="bn" value="PP-BuyNowBF:btn_donateCC_LG.gif:NonHosted">
                       <table>
-                        <tr><td><input type="hidden" name="on0" value="Your Email">Your Email</td></tr><tr><td><input type="text" name="os0" maxlength="200"></td></tr>
+                        <tr><td><input type="hidden" name="on0" value="Your Email"></td></tr>
+                        <tr>
+                          <td>
+                              <input type="email" class="form-control" name="os0" maxlength="200" placeholder="Your email (optional)">
+                          </td>
+                        </tr>
                       </table>
-                      <input type="image" src="https://www.paypalobjects.com/en_US/TW/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                      <div class="col-xs-12" style="height:10px;"></div>
+                      <input class="center-block" type="image" src="https://www.paypalobjects.com/en_US/TW/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
                       <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
                     </form>
                   </p>

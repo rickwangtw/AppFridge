@@ -61,7 +61,8 @@ public class AppGroupPerspective extends AppCompatActivity {
         this.appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
         this.packageStateController = new RootProcessPackageStateController();
         this.packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
-        AppLauncher appLauncher = new PackageManagerAppLauncher(getPackageManager());
+        AppLauncher appLauncher = new PackageManagerAppLauncher(
+                getPackageManager(), appStateProvider, packageStateController);
 
         SwipeDetector swipeDetector = new SwipeDetector();
         appGroupListAdapter = new AppGroupListAdapter(this, appGroupManager,

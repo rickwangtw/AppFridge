@@ -319,33 +319,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                 return true;
             }
         }
-        boolean isEnabled = appStateProvider.isPackageEnabled(packageName);
-        if (!isEnabled) {
-            Toast.makeText(
-                    context, context.getResources().getString(
-                            R.string.toast_enabled_packages_msg_prefix) + " " + packageName,
-                    Toast.LENGTH_SHORT).show();
-            packageStateController.enablePackages(Arrays.asList(packageName));
-            update(null, Action.PACKAGE_STATE_UPDATED);
-        }
-        Intent intent = appLauncher.getLaunchIntentForPackage(packageName);
-        if (intent == null) {
-            Toast.makeText(context, context.getResources().getString(
-                            R.string.toast_warn_no_launcher_intent_msg_prefix) + " " + packageName,
-                    Toast.LENGTH_SHORT).show();
-            /* disable back if the original status is disabled */
-            if (!isEnabled) {
-                Toast toast = Toast.makeText(context, context.getResources().getString(
-                        R.string.toast_disabled_packages_msg_prefix) + " " + packageName,
-                        Toast.LENGTH_SHORT);
-                new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, Arrays.asList(packageName), false)
-                        .withNotification(AppGroupListAdapter.this, Action.PACKAGE_STATE_UPDATED)
-                        .withEndingToast(toast)
-                        .execute();
-            }
-        } else {
-            context.startActivity(intent);
-        }
+        appLauncher.launch(context, packageName);
         return true;
     }
 

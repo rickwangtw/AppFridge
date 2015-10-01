@@ -17,11 +17,13 @@ import com.gmr.acacia.Acacia;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
+import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
+import com.mysticwind.disabledappmanager.domain.PackageManagerAppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageManagerDisabledPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerEnabledPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
@@ -40,6 +42,7 @@ public class PackageStatePerspective extends AppCompatActivity {
     private AppNameProvider appNameProvider;
     private AppIconProvider appIconProvider;
     private PackageStateController packageStateController;
+    private AppLauncher appLauncher;
     private AppSelectedListener appSelectedListener;
     private int[] appStatusChangingButtonResourceIds = {
             R.id.toggle_app_state_button,
@@ -60,6 +63,9 @@ public class PackageStatePerspective extends AppCompatActivity {
         appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
 
         packageStateController = new RootProcessPackageStateController();
+
+        appLauncher = new PackageManagerAppLauncher(
+                getPackageManager(), appStateProvider, packageStateController);
 
         appSelectedListener = new AppSelectedListener(this, layoutInflater, packageStateController,
                 appStateProvider, new AppGroupManagerImpl(new AppGroupDAO(this)));
@@ -110,9 +116,9 @@ public class PackageStatePerspective extends AppCompatActivity {
     }
 
     private void generateListView(int showingButtonResourceId) {
-        AppListAdapter appListAdapter = new AppListAdapter(
+        AppListAdapter appListAdapter = new AppListAdapter(this,
                 packageListProvider, appStateProvider, appIconProvider,
-                appNameProvider, layoutInflater, appSelectedListener);
+                appNameProvider, appLauncher, layoutInflater, appSelectedListener);
 
         appSelectedListener.deleteObservers();
         appSelectedListener.addObserver(appListAdapter);

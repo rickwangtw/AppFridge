@@ -1,7 +1,7 @@
 package com.mysticwind.disabledappmanager.domain;
 
-import android.content.Intent;
+import android.content.Context;
 
 public interface AppLauncher {
-    Intent getLaunchIntentForPackage(String packageName);
+    void launch(Context context, String packageName);
 }

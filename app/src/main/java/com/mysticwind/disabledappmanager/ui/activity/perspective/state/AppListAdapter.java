@@ -1,7 +1,7 @@
 package com.mysticwind.disabledappmanager.ui.activity.perspective.state;
 
+import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
+import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
@@ -30,23 +31,28 @@ import de.greenrobot.event.EventBus;
 public class AppListAdapter extends BaseAdapter implements Observer {
     private static final String TAG = "AppListAdapter";
 
+    private final Context context;
     private final PackageListProvider packageListProvider;
     private final AppStateProvider appStateProvider;
     private final AppNameProvider appNameProvider;
     private final AppIconProvider appIconProvider;
+    private final AppLauncher appLauncher;
     private final LayoutInflater layoutInflater;
     private final AppSelectedListener appSelectedListener;
     private List<AppInfo> appInfoList;
+    private Map<Integer, CachedAppInfo> positionToViewMap = new HashMap<>();
 
-    public AppListAdapter(PackageListProvider packageListProvider, AppStateProvider appStateProvider,
+    public AppListAdapter(Context context, PackageListProvider packageListProvider, AppStateProvider appStateProvider,
                           AppIconProvider appIconProvider,
                           AppNameProvider appNameProvider,
-                          LayoutInflater layoutInflater,
+                          AppLauncher appLauncher, LayoutInflater layoutInflater,
                           AppSelectedListener appSelectedListener) {
+        this.context = context;
         this.packageListProvider = packageListProvider;
         this.appStateProvider = appStateProvider;
         this.appNameProvider = appNameProvider;
         this.appIconProvider = appIconProvider;
+        this.appLauncher = appLauncher;
         this.layoutInflater = layoutInflater;
         this.appSelectedListener = appSelectedListener;
 
@@ -73,49 +79,52 @@ public class AppListAdapter extends BaseAdapter implements Observer {
         public AppInfo appInfo;
     }
 
-    private Map<Integer, CachedAppInfo> positionToViewMap = new HashMap<>();
-
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = layoutInflater.inflate(R.layout.perspective_state_app_item, null);
+        if (convertView == null) {
+            convertView = layoutInflater.inflate(R.layout.perspective_state_app_item, null);
         }
         CachedAppInfo cachedAppInfoForPosition = positionToViewMap.get(position);
         if (cachedAppInfoForPosition == null) {
-            cachedAppInfoForPosition = newViewHolder(view, position);
+            cachedAppInfoForPosition = newViewHolder(position);
             positionToViewMap.put(position, cachedAppInfoForPosition);
         }
 
-        TextView textView = (TextView) view.findViewById(R.id.packagename);;
+        convertView.setTag(cachedAppInfoForPosition.packageName);
+        TextView textView = (TextView) convertView.findViewById(R.id.packagename);;
         textView.setText(appNameProvider.getAppName(cachedAppInfoForPosition.packageName));
 
-        ImageView imageView = (ImageView) view.findViewById(R.id.appicon);
+        ImageView imageView = (ImageView) convertView.findViewById(R.id.appicon);
         imageView.setImageDrawable(appIconProvider.getAppIcon(cachedAppInfoForPosition.packageName));
 
         if (appStateProvider.isPackageEnabled(cachedAppInfoForPosition.packageName)) {
-            view.setBackgroundColor(Color.WHITE);
-            view.setEnabled(true);
+            convertView.setBackgroundColor(Color.WHITE);
         } else {
-            view.setBackgroundColor(Color.GRAY);
-            view.setEnabled(false);
+            convertView.setBackgroundColor(Color.GRAY);
         }
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String packageName = (String) v.getTag();
+                appLauncher.launch(context, packageName);
+            }
+        });
 
-        CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+        CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
         checkBox.setTag(cachedAppInfoForPosition.packageName);
+        checkBox.setOnCheckedChangeListener(null);
         checkBox.setChecked(
                 appSelectedListener.isPackageNameSelected(cachedAppInfoForPosition.packageName));
+        checkBox.setOnCheckedChangeListener(appSelectedListener);
 
-        return view;
+        return convertView;
     }
 
-    private CachedAppInfo newViewHolder(View view, int position) {
+    private CachedAppInfo newViewHolder(int position) {
         AppInfo appInfo = appInfoList.get(position);
 
         final CachedAppInfo cachedAppInfo = new CachedAppInfo();
         cachedAppInfo.packageName = appInfo.getPackageName();
         cachedAppInfo.appInfo = appInfo;
-        CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
-        checkBox.setOnCheckedChangeListener(appSelectedListener);
         return cachedAppInfo;
     }
 
@@ -128,8 +137,15 @@ public class AppListAdapter extends BaseAdapter implements Observer {
 
     // This method will be called from EventBus when Action is called
     public void onEventMainThread(Action event){
-        if (event == Action.PACKAGE_ASSET_UPDATED) {
-            notifyDataSetChanged();
+        switch (event) {
+            case PACKAGE_ASSET_UPDATED:
+                notifyDataSetChanged();
+                break;
+            case PACKAGE_STATE_UPDATED:
+                this.appInfoList = packageListProvider.getOrderedPackages();
+                positionToViewMap.clear();
+                notifyDataSetChanged();
+                break;
         }
     }
 }

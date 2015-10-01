@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.Observer;
 import java.util.Set;
 
+import de.greenrobot.event.EventBus;
+
 public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collection<String>> {
     private static final String TAG = "PackageStateUpdateTask";
     private final PackageStateController packageStateController;
@@ -46,6 +48,11 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collectio
     public PackageStateUpdateAsyncTask withNotification(Observer observer, Object message) {
         this.observer = observer;
         this.message = message;
+        return this;
+    }
+
+    public PackageStateUpdateAsyncTask withCompletedEvent(Object event) {
+        EventBus.getDefault().post(event);
         return this;
     }
 

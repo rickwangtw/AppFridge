@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Service to detect app switch and automatically disable packages after not being used after a specified timeout.</string>
+</resources>

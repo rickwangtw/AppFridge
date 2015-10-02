@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">偵測顯示中的 app 改變以自動冷凍超過時間限制不使用的 app。</string>
+    <string name="toast_auto_disable_package_msg_prefix">自動冷凍</string>
+</resources>

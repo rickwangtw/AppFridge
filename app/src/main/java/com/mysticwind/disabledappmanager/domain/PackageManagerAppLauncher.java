@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.mysticwind.disabledappmanager.R;
+import com.mysticwind.disabledappmanager.domain.state.DisabledStateDetectionRequest;
 import com.mysticwind.disabledappmanager.ui.common.Action;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 
@@ -117,6 +118,8 @@ public class PackageManagerAppLauncher implements AppLauncher {
                     break;
                 case LAUNCH_APPLICATION:
                     context.startActivity(applicationLaunchIntent);
+                    // auto disable package after 1 min of not in foreground
+                    EventBus.getDefault().post(new DisabledStateDetectionRequest(packageName, 60));
                     break;
             }
         }

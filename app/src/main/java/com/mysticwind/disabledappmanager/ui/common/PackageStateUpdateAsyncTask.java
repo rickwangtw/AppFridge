@@ -25,6 +25,7 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collectio
     private Toast endingToast;
     private Observer observer;
     private Object message;
+    private Object eventToPost;
 
     public PackageStateUpdateAsyncTask(PackageStateController packageStateController,
                                        AppStateProvider appStateProvider,
@@ -52,7 +53,7 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collectio
     }
 
     public PackageStateUpdateAsyncTask withCompletedEvent(Object event) {
-        EventBus.getDefault().post(event);
+        this.eventToPost = event;
         return this;
     }
 
@@ -72,6 +73,9 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collectio
         }
         if (observer != null) {
             observer.update(null, message);
+        }
+        if (eventToPost != null) {
+            EventBus.getDefault().post(eventToPost);
         }
         if (endingToast != null) {
             endingToast.show();

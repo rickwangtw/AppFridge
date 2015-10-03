@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
 
+import com.google.common.collect.ImmutableList;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.config.AppSwitchDetectionServiceComponent;
 import com.mysticwind.disabledappmanager.config.AppSwitchDetectionServiceModule;
@@ -22,8 +23,6 @@ import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.domain.state.StateDecision;
 import com.mysticwind.disabledappmanager.ui.common.Action;
 import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
-
-import java.util.Arrays;
 
 import de.greenrobot.event.EventBus;
 
@@ -101,7 +100,7 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
         new PackageStateUpdateAsyncTask(
                     packageStateController,
                     appStateProvider,
-                    Arrays.asList(stateDecision.getPackageName()),
+                    ImmutableList.of(stateDecision.getPackageName()),
                     false)
                 .withCompletedEvent(Action.PACKAGE_STATE_UPDATED)
                 .withEndingToast(endingToast)

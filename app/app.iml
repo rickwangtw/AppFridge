@@ -93,6 +93,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="acacia-0.1.2" level="project" />
     <orderEntry type="library" exported="" name="javax.annotation-10.0-b28" level="project" />
+    <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" name="eventbus-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="lombok-1.16.6" level="project" />
     <orderEntry type="library" exported="" name="dagger-2.0.1" level="project" />

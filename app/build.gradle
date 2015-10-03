@@ -37,4 +37,6 @@ dependencies {
 
     provided "org.projectlombok:lombok:1.16.6"
     apt "org.projectlombok:lombok:1.16.6"
+
+    compile 'com.google.guava:guava:18.0'
 }

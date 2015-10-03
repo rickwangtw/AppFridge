@@ -27,10 +27,9 @@ import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
+import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
-
-import de.greenrobot.event.EventBus;
 
 public class AppGroupPerspective extends AppCompatActivity {
     private static final String TAG = "AppGroupPerspective";
@@ -94,6 +93,9 @@ public class AppGroupPerspective extends AppCompatActivity {
             case R.id.action_new_app_group:
                 DialogHelper.newNewAppGroupDialog(this, packageListProvider, appIconProvider,
                         appNameProvider, appGroupManager, appGroupListAdapter).show();
+                return true;
+            case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity_.class));
                 return true;
             case R.id.action_help:
                 startActivity(new Intent(this, HelpActivity.class));

@@ -28,6 +28,10 @@
             android:taskAffinity=".LauncherActivity" >
         </activity>
         <activity
+            android:name=".ui.activity.settings.SettingsActivity_"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
             android:name=".ui.activity.HelpActivity"
             android:label="@string/title_activity_help" >
         </activity>

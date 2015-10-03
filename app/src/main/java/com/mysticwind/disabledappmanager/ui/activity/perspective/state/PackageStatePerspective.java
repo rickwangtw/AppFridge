@@ -32,6 +32,7 @@ import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateControlle
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective;
+import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
 
 public class PackageStatePerspective extends AppCompatActivity {
     private PackageAssetService packageAssetService;
@@ -151,6 +152,9 @@ public class PackageStatePerspective extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_switch_perspective:
                 startActivity(new Intent(this, AppGroupPerspective.class));
+                return true;
+            case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity_.class));
                 return true;
             case R.id.action_help:
                 startActivity(new Intent(this, HelpActivity.class));

@@ -34,4 +34,7 @@ dependencies {
 
     // Needed specifically for annotations in Java 1.6
     compile 'org.glassfish:javax.annotation:10.0-b28'
+
+    provided "org.projectlombok:lombok:1.16.6"
+    apt "org.projectlombok:lombok:1.16.6"
 }

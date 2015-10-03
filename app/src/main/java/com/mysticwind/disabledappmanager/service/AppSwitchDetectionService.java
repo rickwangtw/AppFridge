@@ -10,18 +10,16 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
 
 import com.mysticwind.disabledappmanager.R;
+import com.mysticwind.disabledappmanager.config.AppSwitchDetectionServiceComponent;
+import com.mysticwind.disabledappmanager.config.AppSwitchDetectionServiceModule;
+import com.mysticwind.disabledappmanager.config.DaggerAppSwitchDetectionServiceComponent;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
-import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
-import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 import com.mysticwind.disabledappmanager.domain.state.DecisionObserver;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.DisabledStateDetectionRequest;
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.domain.state.StateDecision;
-import com.mysticwind.disabledappmanager.domain.state.TimerTriggeredDisabledPackageStateDecider;
-import com.mysticwind.disabledappmanager.domain.timer.AndroidHandlerTimerManager;
-import com.mysticwind.disabledappmanager.domain.timer.TimerManager;
 import com.mysticwind.disabledappmanager.ui.common.Action;
 import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
 
@@ -35,6 +33,7 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
     private DisabledPackageStateDecider disabledPackageStateDecider;
     private PackageStateController packageStateController;
     private AppStateProvider appStateProvider;
+    private AppSwitchDetectionServiceComponent component;
 
     @Override
     protected void onServiceConnected() {
@@ -46,13 +45,13 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
         config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
         setServiceInfo(config);
 
-        this.appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
-        this.packageStateController = new RootProcessPackageStateController();
+        component = DaggerAppSwitchDetectionServiceComponent.builder()
+                .appSwitchDetectionServiceModule(new AppSwitchDetectionServiceModule(this, this))
+                .build();
 
-        TimerManager timerManager = new AndroidHandlerTimerManager();
-        TimerTriggeredDisabledPackageStateDecider disabledPackageStateDecider =
-                new TimerTriggeredDisabledPackageStateDecider(this, timerManager);
-        this.disabledPackageStateDecider = disabledPackageStateDecider;
+        this.disabledPackageStateDecider = component.disabledPackageStateDecider();
+        this.appStateProvider = component.appStateProvider();
+        this.packageStateController = component.packageStateController();
 
         EventBus.getDefault().register(this);
     }

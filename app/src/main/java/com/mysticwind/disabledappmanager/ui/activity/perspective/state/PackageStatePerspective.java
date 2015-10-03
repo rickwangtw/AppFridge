@@ -152,7 +152,7 @@ public class PackageStatePerspective extends AppCompatActivity {
             case R.id.action_switch_perspective:
                 startActivity(new Intent(this, AppGroupPerspective.class));
                 return true;
-            case R.id.action_settings:
+            case R.id.action_help:
                 startActivity(new Intent(this, HelpActivity.class));
                 return true;
         }

@@ -95,7 +95,7 @@ public class AppGroupPerspective extends AppCompatActivity {
                 DialogHelper.newNewAppGroupDialog(this, packageListProvider, appIconProvider,
                         appNameProvider, appGroupManager, appGroupListAdapter).show();
                 return true;
-            case R.id.action_settings:
+            case R.id.action_help:
                 startActivity(new Intent(this, HelpActivity.class));
                 return true;
         }

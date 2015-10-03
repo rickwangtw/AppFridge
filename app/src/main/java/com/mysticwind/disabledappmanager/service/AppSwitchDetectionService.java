@@ -5,7 +5,6 @@ import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.ComponentName;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
 
@@ -25,10 +24,10 @@ import com.mysticwind.disabledappmanager.ui.common.Action;
 import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
 
 import de.greenrobot.event.EventBus;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class AppSwitchDetectionService extends AccessibilityService implements DecisionObserver {
-    private static final String TAG = "AppSwitchDetection";
-
     private DisabledPackageStateDecider disabledPackageStateDecider;
     private PackageStateController packageStateController;
     private AppStateProvider appStateProvider;
@@ -68,7 +67,7 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
             if (!isActivity) {
                 return;
             }
-            Log.d(TAG, "Window state change event: " + componentName.flattenToShortString());
+            log.debug("Window state change event: " + componentName.flattenToShortString());
             disabledPackageStateDecider.windowSwitchedTo(event.getPackageName().toString());
         }
     }
@@ -87,7 +86,7 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
 
     @Override
     public void update(StateDecision stateDecision) {
-        Log.d(TAG, String.format("StateDecision Update: (%s,%s)"
+        log.debug(String.format("StateDecision Update: (%s,%s)"
                 , stateDecision.getPackageName(), stateDecision.getDecidedState()));
         if (stateDecision.getDecidedState() != PackageState.DISABLE) {
             return;
@@ -109,7 +108,7 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
 
     // EventBus
     public void onEvent(DisabledStateDetectionRequest request) {
-        Log.d(TAG, String.format("Received disabled state detection request: (%s, %d)",
+        log.debug(String.format("Received disabled state detection request: (%s, %d)",
                 request.getPackageName(), request.getNoActivityTimeoutInSeconds()));
         disabledPackageStateDecider.addDetectionRequest(request);
     }

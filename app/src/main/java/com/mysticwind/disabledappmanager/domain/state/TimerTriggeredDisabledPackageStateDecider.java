@@ -1,17 +1,16 @@
 package com.mysticwind.disabledappmanager.domain.state;
 
-import android.util.Log;
-
 import com.mysticwind.disabledappmanager.domain.timer.TimerManager;
 import com.mysticwind.disabledappmanager.domain.timer.TimesUpObserver;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class TimerTriggeredDisabledPackageStateDecider
         implements DisabledPackageStateDecider, TimesUpObserver {
-    private static final String TAG = "PackageStateDecider";
-
     private final DecisionObserver observer;
     private final TimerManager timerManager;
     private final Map<String, DisabledStateDetectionRequest> packageNameToRequestMap;
@@ -37,13 +36,13 @@ public class TimerTriggeredDisabledPackageStateDecider
     }
 
     private void scheduleTimer(String packageName, long timeoutInSeconds) {
-        Log.d(TAG, "Scheduling timer task for " + packageName);
+        log.debug("Scheduling timer task for " + packageName);
         timerManager.schedule(this, packageName, timeoutInSeconds);
     }
 
     @Override
     public void windowSwitchedTo(String packageName) {
-        Log.d(TAG, "Switched to " + packageName);
+        log.debug("Switched to " + packageName);
         if (isPackageRequestedToDisable(packageName)) {
             cancelTimer(packageName);
         }
@@ -64,7 +63,7 @@ public class TimerTriggeredDisabledPackageStateDecider
         } catch (Exception e) {
             return;
         }
-        Log.d(TAG, "Cancelled timer for " + packageName);
+        log.debug("Cancelled timer for " + packageName);
     }
 
     private void packageSwitched(String previousOnScreenPackageName, String currentOnScreenPackageName) {

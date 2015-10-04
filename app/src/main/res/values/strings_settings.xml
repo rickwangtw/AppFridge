@@ -3,10 +3,11 @@
 
     <string name="pref_header_general">General</string>
 
-    <string name="pref_key_enable_app_launch_autodisable">enable_app_launch_autodisable</string>
+    <string name="pref_key_enable_app_launch_autodisable">isAutoDisablingOn</string>
     <string name="pref_title_app_launch_autodisable">Enable Auto-disabling Apps</string>
     <string name="pref_description_app_launch_autodisable">Apps that were disabled when launched will be disabled automatically if checked.</string>
 
+    <string name="pref_key_auto_disable_timeout">autoDisablingTimeoutInSeconds</string>
     <string name="pref_title_auto_disable_timeout">Auto disable timeout</string>
     <string name="pref_description_auto_disable_timeout">If the originally disabled application is not in the foreground for the specified timeout, it will be disabled.</string>
     <string-array name="pref_auto_disable_timeout_titles">

@@ -3,17 +3,15 @@
     <CheckBoxPreference
         android:key="@string/pref_key_enable_app_launch_autodisable"
         android:title="@string/pref_title_app_launch_autodisable"
-        android:summary="@string/pref_description_app_launch_autodisable"
-        android:defaultValue="false" />
+        android:summary="@string/pref_description_app_launch_autodisable" />
 
     <ListPreference
-        android:key="auto_disable_timeout"
+        android:key="@string/pref_key_auto_disable_timeout"
         android:title="@string/pref_title_auto_disable_timeout"
         android:summary="@string/pref_description_auto_disable_timeout"
         android:entries="@array/pref_auto_disable_timeout_titles"
         android:entryValues="@array/pref_auto_disable_timeout_values"
-        android:defaultValue="60"
-        android:dependency="enable_app_launch_autodisable"
+        android:dependency="@string/pref_key_enable_app_launch_autodisable"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null" />
 

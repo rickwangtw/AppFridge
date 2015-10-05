@@ -9,8 +9,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
-import com.gmr.acacia.Acacia;
-import com.mysticwind.disabledappmanager.domain.PackageAssetService;
+import com.mysticwind.disabledappmanager.config.DaggerPerspectiveCommonComponent;
+import com.mysticwind.disabledappmanager.config.PerspectiveCommonComponent;
+import com.mysticwind.disabledappmanager.config.PerspectiveCommonModule;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspective;
@@ -22,10 +23,7 @@ import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
-import com.mysticwind.disabledappmanager.domain.PackageManagerAppLauncher;
-import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
-import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
@@ -34,12 +32,14 @@ import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 public class AppGroupPerspective extends AppCompatActivity {
     private static final String TAG = "AppGroupPerspective";
 
-    private PackageAssetService packageAssetService;
-    private AppGroupManager appGroupManager;
+    private PerspectiveCommonComponent component;
     private AppIconProvider appIconProvider;
     private AppNameProvider appNameProvider;
-    private AppStateProvider appStateProvider;
     private PackageStateController packageStateController;
+    private AppStateProvider appStateProvider;
+    private AppLauncher appLauncher;
+
+    private AppGroupManager appGroupManager;
     private PackageListProvider packageListProvider;
     private AppGroupListAdapter appGroupListAdapter;
 
@@ -48,20 +48,22 @@ public class AppGroupPerspective extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_appgroup_activity);
 
-        packageAssetService = Acacia.createService(this, PackageAssetService.class);
+        component = DaggerPerspectiveCommonComponent.builder()
+                .perspectiveCommonModule(new PerspectiveCommonModule(this))
+                .build();
+
+        this.appIconProvider = component.appIconProvider();
+        this.appNameProvider = component.appNameProvider();
+        this.packageStateController = component.packageStateController();
+        this.appStateProvider = component.appStateProvider();
+        this.appLauncher = component.appLauncher();
 
         this.appGroupManager = new AppGroupManagerImpl(new AppGroupDAO(this));
+        this.packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
 
         ExpandableListView listView = (ExpandableListView) findViewById(R.id.appGroupListView);
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        this.appIconProvider = packageAssetService;
-        this.appNameProvider = packageAssetService;
-        this.appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
-        this.packageStateController = new RootProcessPackageStateController();
-        this.packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
-        AppLauncher appLauncher = new PackageManagerAppLauncher(
-                getPackageManager(), appStateProvider, packageStateController);
 
         SwipeDetector swipeDetector = new SwipeDetector();
         appGroupListAdapter = new AppGroupListAdapter(this, appGroupManager,

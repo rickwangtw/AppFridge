@@ -13,8 +13,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 
-import com.gmr.acacia.Acacia;
 import com.mysticwind.disabledappmanager.R;
+import com.mysticwind.disabledappmanager.config.DaggerPerspectiveCommonComponent;
+import com.mysticwind.disabledappmanager.config.PerspectiveCommonComponent;
+import com.mysticwind.disabledappmanager.config.PerspectiveCommonModule;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
@@ -23,27 +25,26 @@ import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
-import com.mysticwind.disabledappmanager.domain.PackageManagerAppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageManagerDisabledPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerEnabledPackageListProvider;
-import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
-import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective;
 import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
 
 public class PackageStatePerspective extends AppCompatActivity {
-    private PackageAssetService packageAssetService;
+    private PerspectiveCommonComponent component;
+
+    private AppIconProvider appIconProvider;
+    private AppNameProvider appNameProvider;
+    private PackageStateController packageStateController;
+    private AppStateProvider appStateProvider;
+    private AppLauncher appLauncher;
+
     private LayoutInflater layoutInflater;
     private PackageListProvider defaultPackageListProvider;
     private PackageListProvider packageListProvider;
-    private AppStateProvider appStateProvider;
-    private AppNameProvider appNameProvider;
-    private AppIconProvider appIconProvider;
-    private PackageStateController packageStateController;
-    private AppLauncher appLauncher;
     private AppSelectedListener appSelectedListener;
     private int[] appStatusChangingButtonResourceIds = {
             R.id.toggle_app_state_button,
@@ -55,18 +56,18 @@ public class PackageStatePerspective extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_state_activity);
 
-        packageAssetService = Acacia.createService(this, PackageAssetService.class);
-        this.appIconProvider = packageAssetService;
-        this.appNameProvider = packageAssetService;
+        component = DaggerPerspectiveCommonComponent.builder()
+                .perspectiveCommonModule(new PerspectiveCommonModule(this))
+                .build();
+
+        this.appIconProvider = component.appIconProvider();
+        this.appNameProvider = component.appNameProvider();
+        this.packageStateController = component.packageStateController();
+        this.appStateProvider = component.appStateProvider();
+        this.appLauncher = component.appLauncher();
 
         layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         defaultPackageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
-        appStateProvider = new PackageMangerAppStateProvider(getPackageManager());
-
-        packageStateController = new RootProcessPackageStateController();
-
-        appLauncher = new PackageManagerAppLauncher(
-                getPackageManager(), appStateProvider, packageStateController);
 
         appSelectedListener = new AppSelectedListener(this, layoutInflater, packageStateController,
                 appStateProvider, new AppGroupManagerImpl(new AppGroupDAO(this)));

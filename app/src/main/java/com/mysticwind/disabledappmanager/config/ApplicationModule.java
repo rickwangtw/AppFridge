@@ -13,6 +13,15 @@ import com.mysticwind.disabledappmanager.domain.PackageManagerAppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
+import com.mysticwind.disabledappmanager.domain.config.AnnotationGeneratedConfigAutoDisablingConfigService;
+import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigDataAccessor;
+import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigDataAccessorImpl;
+import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
+import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
+import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
+import com.mysticwind.disabledappmanager.domain.state.TimerTriggeredDisabledPackageStateDecider;
+import com.mysticwind.disabledappmanager.domain.timer.AndroidHandlerTimerManager;
+import com.mysticwind.disabledappmanager.domain.timer.TimerManager;
 
 import javax.inject.Singleton;
 
@@ -20,16 +29,23 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class PerspectiveCommonModule {
+public class ApplicationModule {
     private final Context context;
+    private final AutoDisablingConfig_ autoDisablingConfig;
 
-    public PerspectiveCommonModule(Context context) {
+    public ApplicationModule(Context context, AutoDisablingConfig_ autoDisablingConfig) {
         this.context = context;
+        this.autoDisablingConfig = autoDisablingConfig;
     }
 
     @Provides @Singleton
     public Context provideContext() {
         return this.context;
+    }
+
+    @Provides @Singleton
+    public AutoDisablingConfig_ provideAutoDisablingConfig() {
+        return this.autoDisablingConfig;
     }
 
     @Provides @Singleton
@@ -68,5 +84,27 @@ public class PerspectiveCommonModule {
                                           PackageStateController packageStateController) {
         return new PackageManagerAppLauncher(
                 packageManager, appStateProvider, packageStateController);
+    }
+
+    @Provides @Singleton
+    public TimerManager provideTimerManager() {
+        return new AndroidHandlerTimerManager();
+    }
+
+    @Provides @Singleton
+    public DisabledPackageStateDecider provideDisabledPackageStateDecider(TimerManager timerManager) {
+        return new TimerTriggeredDisabledPackageStateDecider(timerManager);
+    }
+
+    @Provides @Singleton
+    public AutoDisablingConfigDataAccessor provideAutoDisablingConfigDataAccessor(
+            AutoDisablingConfig_ autoDisablingConfig) {
+        return new AutoDisablingConfigDataAccessorImpl(autoDisablingConfig);
+    }
+
+    @Provides @Singleton
+    public AutoDisablingConfigService provideAutoDisablingConfigService(
+            AutoDisablingConfigDataAccessor autoDisablingConfigDataAccessor) {
+        return new AnnotationGeneratedConfigAutoDisablingConfigService(autoDisablingConfigDataAccessor);
     }
 }

@@ -10,9 +10,6 @@ import android.widget.Toast;
 
 import com.google.common.collect.ImmutableList;
 import com.mysticwind.disabledappmanager.R;
-import com.mysticwind.disabledappmanager.config.AppSwitchDetectionServiceComponent;
-import com.mysticwind.disabledappmanager.config.AppSwitchDetectionServiceModule;
-import com.mysticwind.disabledappmanager.config.DaggerAppSwitchDetectionServiceComponent;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.state.DecisionObserver;
@@ -21,6 +18,7 @@ import com.mysticwind.disabledappmanager.domain.state.DisabledStateDetectionRequ
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.domain.state.StateDecision;
 import com.mysticwind.disabledappmanager.ui.common.Action;
+import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
 
 import de.greenrobot.event.EventBus;
@@ -31,7 +29,6 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
     private DisabledPackageStateDecider disabledPackageStateDecider;
     private PackageStateController packageStateController;
     private AppStateProvider appStateProvider;
-    private AppSwitchDetectionServiceComponent component;
 
     @Override
     protected void onServiceConnected() {
@@ -43,13 +40,11 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
         config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
         setServiceInfo(config);
 
-        component = DaggerAppSwitchDetectionServiceComponent.builder()
-                .appSwitchDetectionServiceModule(new AppSwitchDetectionServiceModule(this, this))
-                .build();
+        this.disabledPackageStateDecider = ApplicationHelper.from(this).disabledPackageStateDecider();
+        this.appStateProvider = ApplicationHelper.from(this).appStateProvider();
+        this.packageStateController = ApplicationHelper.from(this).packageStateController();
 
-        this.disabledPackageStateDecider = component.disabledPackageStateDecider();
-        this.appStateProvider = component.appStateProvider();
-        this.packageStateController = component.packageStateController();
+        this.disabledPackageStateDecider.registerDecisionObserver(this);
 
         EventBus.getDefault().register(this);
     }

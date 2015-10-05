@@ -3,7 +3,9 @@ package com.mysticwind.disabledappmanager.domain.state;
 import com.mysticwind.disabledappmanager.domain.timer.TimerManager;
 import com.mysticwind.disabledappmanager.domain.timer.TimesUpObserver;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.extern.slf4j.Slf4j;
@@ -11,16 +13,28 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TimerTriggeredDisabledPackageStateDecider
         implements DisabledPackageStateDecider, TimesUpObserver {
-    private final DecisionObserver observer;
     private final TimerManager timerManager;
     private final Map<String, DisabledStateDetectionRequest> packageNameToRequestMap;
     private String previousOnScreenPackageName;
+    private final Set<DecisionObserver> decisionObservers = new HashSet<>();
 
-    public TimerTriggeredDisabledPackageStateDecider(
-            DecisionObserver observer, TimerManager timerManager) {
-        this.observer = observer;
+    public TimerTriggeredDisabledPackageStateDecider(TimerManager timerManager) {
         this.timerManager = timerManager;
         this.packageNameToRequestMap = new ConcurrentHashMap<>();
+    }
+
+    @Override
+    public void registerDecisionObserver(DecisionObserver decisionObserver) {
+        synchronized (decisionObservers) {
+            decisionObservers.add(decisionObserver);
+        }
+    }
+
+    @Override
+    public void unregisterDecisionObserver(DecisionObserver decisionObserver) {
+        synchronized (decisionObservers) {
+            decisionObservers.remove(decisionObserver);
+        }
     }
 
     @Override
@@ -86,7 +100,9 @@ public class TimerTriggeredDisabledPackageStateDecider
         if (!isPackageRequestedToDisable(packageName)) {
             return;
         }
-        observer.update(new StateDecision(packageName, PackageState.DISABLE));
+        for (DecisionObserver observer : decisionObservers) {
+            observer.update(new StateDecision(packageName, PackageState.DISABLE));
+        }
         cancelPackageDisableRequest(packageName);
     }
 

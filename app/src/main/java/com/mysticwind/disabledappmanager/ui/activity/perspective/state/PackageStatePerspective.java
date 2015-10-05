@@ -20,8 +20,11 @@ import com.mysticwind.disabledappmanager.domain.PackageManagerDisabledPackageLis
 import com.mysticwind.disabledappmanager.domain.PackageManagerEnabledPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.PerspectiveBase;
-import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective;
+import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective_;
 
+import org.androidannotations.annotations.EActivity;
+
+@EActivity
 public class PackageStatePerspective extends PerspectiveBase {
 
     private LayoutInflater layoutInflater;
@@ -34,7 +37,7 @@ public class PackageStatePerspective extends PerspectiveBase {
             R.id.enable_app_button};
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_state_activity);
 
@@ -124,7 +127,7 @@ public class PackageStatePerspective extends PerspectiveBase {
 
         switch (item.getItemId()) {
             case R.id.action_switch_perspective:
-                startActivity(new Intent(this, AppGroupPerspective.class));
+                startActivity(new Intent(this, AppGroupPerspective_.class));
                 return true;
         }
 

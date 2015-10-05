@@ -13,20 +13,16 @@ import android.provider.Settings;
 
 import com.google.common.base.Splitter;
 import com.mysticwind.disabledappmanager.R;
-import com.mysticwind.disabledappmanager.config.DaggerGeneralPreferenceFragmentComponent;
-import com.mysticwind.disabledappmanager.config.GeneralPreferenceFragmentComponent;
-import com.mysticwind.disabledappmanager.config.GeneralPreferenceFragmentModule;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
-import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
 import com.mysticwind.disabledappmanager.service.AppSwitchDetectionService;
+import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.PreferenceByKey;
 import org.androidannotations.annotations.PreferenceChange;
 import org.androidannotations.annotations.PreferenceScreen;
-import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,12 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GeneralPreferenceFragment extends PreferenceFragment {
 
-    private GeneralPreferenceFragmentComponent component;
     private AutoDisablingConfigService autoDisablingConfigService;
     private Dialog goToAccessibilitySettingsDialog;
-
-    @Pref
-    AutoDisablingConfig_ autoDisablingConfig;
 
     @PreferenceByKey(R.string.pref_key_enable_app_launch_autodisable)
     CheckBoxPreference enableAppLaunchAutoDisablePreference;
@@ -51,6 +43,8 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        autoDisablingConfigService = ApplicationHelper.from(this).autoDisablingConfigService();
 
         getPreferenceManager().setSharedPreferencesName(AutoDisablingConfig.class.getSimpleName());
 
@@ -68,13 +62,6 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
 
     @AfterPreferences
     void configurePreferences() {
-        component = DaggerGeneralPreferenceFragmentComponent.builder()
-                .generalPreferenceFragmentModule(
-                        new GeneralPreferenceFragmentModule(autoDisablingConfig))
-                .build();
-
-        autoDisablingConfigService = component.autoDisablingConfigService();
-
         enableAppLaunchAutoDisablePreference.setChecked(
                 autoDisablingConfigService.isAutoDisablingOn());
         autoDisableTimeoutPreference.setValue(

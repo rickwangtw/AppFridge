@@ -15,10 +15,13 @@ import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.PerspectiveBase;
-import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspective;
+import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspective_;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 
+import org.androidannotations.annotations.EActivity;
+
+@EActivity
 public class AppGroupPerspective extends PerspectiveBase {
 
     private AppGroupManager appGroupManager;
@@ -26,7 +29,7 @@ public class AppGroupPerspective extends PerspectiveBase {
     private AppGroupListAdapter appGroupListAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_appgroup_activity);
 
@@ -61,7 +64,7 @@ public class AppGroupPerspective extends PerspectiveBase {
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             case R.id.action_switch_perspective:
-                startActivity(new Intent(this, PackageStatePerspective.class));
+                startActivity(new Intent(this, PackageStatePerspective_.class));
                 return true;
             case R.id.action_new_app_group:
                 DialogHelper.newNewAppGroupDialog(this, packageListProvider, appIconProvider,

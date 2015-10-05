@@ -6,9 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.mysticwind.disabledappmanager.R;
-import com.mysticwind.disabledappmanager.config.DaggerPerspectiveCommonComponent;
-import com.mysticwind.disabledappmanager.config.PerspectiveCommonComponent;
-import com.mysticwind.disabledappmanager.config.PerspectiveCommonModule;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
@@ -16,10 +13,10 @@ import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
+import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 
-public class PerspectiveBase extends AppCompatActivity {
+public abstract class PerspectiveBase extends AppCompatActivity {
 
-    private PerspectiveCommonComponent component;
     protected AppIconProvider appIconProvider;
     protected AppNameProvider appNameProvider;
     protected PackageStateController packageStateController;
@@ -30,15 +27,11 @@ public class PerspectiveBase extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        component = DaggerPerspectiveCommonComponent.builder()
-                .perspectiveCommonModule(new PerspectiveCommonModule(this))
-                .build();
-
-        this.appIconProvider = component.appIconProvider();
-        this.appNameProvider = component.appNameProvider();
-        this.packageStateController = component.packageStateController();
-        this.appStateProvider = component.appStateProvider();
-        this.appLauncher = component.appLauncher();
+        this.appIconProvider = ApplicationHelper.from(this).appIconProvider();
+        this.appNameProvider = ApplicationHelper.from(this).appNameProvider();
+        this.packageStateController = ApplicationHelper.from(this).packageStateController();
+        this.appStateProvider = ApplicationHelper.from(this).appStateProvider();
+        this.appLauncher = ApplicationHelper.from(this).appLauncher();
     }
 
     @Override

@@ -2,42 +2,24 @@ package com.mysticwind.disabledappmanager.ui.activity.perspective.group;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
-import com.mysticwind.disabledappmanager.config.DaggerPerspectiveCommonComponent;
-import com.mysticwind.disabledappmanager.config.PerspectiveCommonComponent;
-import com.mysticwind.disabledappmanager.config.PerspectiveCommonModule;
-import com.mysticwind.disabledappmanager.domain.PackageListProvider;
-import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
-import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspective;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
-import com.mysticwind.disabledappmanager.domain.AppIconProvider;
-import com.mysticwind.disabledappmanager.domain.AppLauncher;
-import com.mysticwind.disabledappmanager.domain.AppNameProvider;
-import com.mysticwind.disabledappmanager.domain.AppStateProvider;
+import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
-import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
-import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
+import com.mysticwind.disabledappmanager.ui.activity.perspective.PerspectiveBase;
+import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspective;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 
-public class AppGroupPerspective extends AppCompatActivity {
-    private static final String TAG = "AppGroupPerspective";
-
-    private PerspectiveCommonComponent component;
-    private AppIconProvider appIconProvider;
-    private AppNameProvider appNameProvider;
-    private PackageStateController packageStateController;
-    private AppStateProvider appStateProvider;
-    private AppLauncher appLauncher;
+public class AppGroupPerspective extends PerspectiveBase {
 
     private AppGroupManager appGroupManager;
     private PackageListProvider packageListProvider;
@@ -48,22 +30,11 @@ public class AppGroupPerspective extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_appgroup_activity);
 
-        component = DaggerPerspectiveCommonComponent.builder()
-                .perspectiveCommonModule(new PerspectiveCommonModule(this))
-                .build();
-
-        this.appIconProvider = component.appIconProvider();
-        this.appNameProvider = component.appNameProvider();
-        this.packageStateController = component.packageStateController();
-        this.appStateProvider = component.appStateProvider();
-        this.appLauncher = component.appLauncher();
-
         this.appGroupManager = new AppGroupManagerImpl(new AppGroupDAO(this));
         this.packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
 
         ExpandableListView listView = (ExpandableListView) findViewById(R.id.appGroupListView);
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
 
         SwipeDetector swipeDetector = new SwipeDetector();
         appGroupListAdapter = new AppGroupListAdapter(this, appGroupManager,
@@ -95,12 +66,6 @@ public class AppGroupPerspective extends AppCompatActivity {
             case R.id.action_new_app_group:
                 DialogHelper.newNewAppGroupDialog(this, packageListProvider, appIconProvider,
                         appNameProvider, appGroupManager, appGroupListAdapter).show();
-                return true;
-            case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity_.class));
-                return true;
-            case R.id.action_help:
-                startActivity(new Intent(this, HelpActivity.class));
                 return true;
         }
 

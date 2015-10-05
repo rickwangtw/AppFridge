@@ -2,7 +2,6 @@ package com.mysticwind.disabledappmanager.ui.activity.perspective.state;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,33 +13,16 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.mysticwind.disabledappmanager.R;
-import com.mysticwind.disabledappmanager.config.DaggerPerspectiveCommonComponent;
-import com.mysticwind.disabledappmanager.config.PerspectiveCommonComponent;
-import com.mysticwind.disabledappmanager.config.PerspectiveCommonModule;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
-import com.mysticwind.disabledappmanager.domain.AppIconProvider;
-import com.mysticwind.disabledappmanager.domain.AppLauncher;
-import com.mysticwind.disabledappmanager.domain.AppNameProvider;
-import com.mysticwind.disabledappmanager.domain.AppStateProvider;
-import com.mysticwind.disabledappmanager.domain.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerDisabledPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerEnabledPackageListProvider;
-import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
-import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
+import com.mysticwind.disabledappmanager.ui.activity.perspective.PerspectiveBase;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective;
-import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
 
-public class PackageStatePerspective extends AppCompatActivity {
-    private PerspectiveCommonComponent component;
-
-    private AppIconProvider appIconProvider;
-    private AppNameProvider appNameProvider;
-    private PackageStateController packageStateController;
-    private AppStateProvider appStateProvider;
-    private AppLauncher appLauncher;
+public class PackageStatePerspective extends PerspectiveBase {
 
     private LayoutInflater layoutInflater;
     private PackageListProvider defaultPackageListProvider;
@@ -55,16 +37,6 @@ public class PackageStatePerspective extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_state_activity);
-
-        component = DaggerPerspectiveCommonComponent.builder()
-                .perspectiveCommonModule(new PerspectiveCommonModule(this))
-                .build();
-
-        this.appIconProvider = component.appIconProvider();
-        this.appNameProvider = component.appNameProvider();
-        this.packageStateController = component.packageStateController();
-        this.appStateProvider = component.appStateProvider();
-        this.appLauncher = component.appLauncher();
 
         layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         defaultPackageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
@@ -153,12 +125,6 @@ public class PackageStatePerspective extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_switch_perspective:
                 startActivity(new Intent(this, AppGroupPerspective.class));
-                return true;
-            case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity_.class));
-                return true;
-            case R.id.action_help:
-                startActivity(new Intent(this, HelpActivity.class));
                 return true;
         }
 

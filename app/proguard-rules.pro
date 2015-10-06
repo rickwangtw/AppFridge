@@ -16,6 +16,8 @@
 #   public *;
 #}
 
+-dontobfuscate
+
 -keepclassmembers class ** {
     public void onEvent*(**);
 }
@@ -29,3 +31,29 @@
 -keep class ch.qos.** { *; }
 -keep class org.slf4j.** { *; }
 -keepattributes *Annotation*
+-dontwarn ch.qos.logback.core.net.*
+
+# Guava
+-dontwarn javax.annotation.**
+-dontwarn javax.inject.**
+-dontwarn sun.misc.Unsafe
+-keep class com.google.common.collect.ImmutableList {
+    public static ** reverse(**);
+}
+-keep class com.google.common.collect.ImmutableSet {
+    public static ** reverse(**);
+}
+-keep class com.google.common.base.Splitter {
+    public static ** reverse(**);
+    public ** split(...);
+}
+
+# Android Annotations
+-dontwarn org.androidannotations.api.rest.**
+
+# Acacia
+-dontwarn rx.**
+-keep class com.mysticwind.disabledappmanager.** {
+    *;
+}
+

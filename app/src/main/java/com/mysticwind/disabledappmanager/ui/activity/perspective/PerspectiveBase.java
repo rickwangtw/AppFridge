@@ -11,6 +11,7 @@ import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
 import com.mysticwind.disabledappmanager.common.ApplicationHelper;
@@ -22,6 +23,7 @@ public abstract class PerspectiveBase extends AppCompatActivity {
     protected PackageStateController packageStateController;
     protected AppStateProvider appStateProvider;
     protected AppLauncher appLauncher;
+    protected ManualStateUpdateEventManager manualStateUpdateEventManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,7 @@ public abstract class PerspectiveBase extends AppCompatActivity {
         this.packageStateController = ApplicationHelper.from(this).packageStateController();
         this.appStateProvider = ApplicationHelper.from(this).appStateProvider();
         this.appLauncher = ApplicationHelper.from(this).appLauncher();
+        this.manualStateUpdateEventManager = ApplicationHelper.from(this).manualStateUpdateEventManager();
     }
 
     @Override

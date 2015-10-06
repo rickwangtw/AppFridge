@@ -42,7 +42,7 @@ public class AppGroupPerspective extends PerspectiveBase {
         SwipeDetector swipeDetector = new SwipeDetector();
         appGroupListAdapter = new AppGroupListAdapter(this, appGroupManager,
                 appIconProvider, appNameProvider, appStateProvider, packageListProvider,
-                packageStateController, appLauncher, layoutInflater, swipeDetector);
+                packageStateController, appLauncher, manualStateUpdateEventManager, layoutInflater, swipeDetector);
         listView.setAdapter(appGroupListAdapter);
         listView.setOnItemLongClickListener(appGroupListAdapter);
         listView.setOnGroupClickListener(appGroupListAdapter);

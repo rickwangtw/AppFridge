@@ -15,6 +15,7 @@ import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.state.DecisionObserver;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.DisabledStateDetectionRequest;
+import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.domain.state.StateDecision;
 import com.mysticwind.disabledappmanager.ui.common.Action;
@@ -29,6 +30,7 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
     private DisabledPackageStateDecider disabledPackageStateDecider;
     private PackageStateController packageStateController;
     private AppStateProvider appStateProvider;
+    private ManualStateUpdateEventManager manualStateUpdateEventManager;
 
     @Override
     protected void onServiceConnected() {
@@ -43,8 +45,10 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
         this.disabledPackageStateDecider = ApplicationHelper.from(this).disabledPackageStateDecider();
         this.appStateProvider = ApplicationHelper.from(this).appStateProvider();
         this.packageStateController = ApplicationHelper.from(this).packageStateController();
+        this.manualStateUpdateEventManager = ApplicationHelper.from(this).manualStateUpdateEventManager();
 
         this.disabledPackageStateDecider.registerDecisionObserver(this);
+        this.manualStateUpdateEventManager.registerListener(disabledPackageStateDecider);
 
         EventBus.getDefault().register(this);
     }

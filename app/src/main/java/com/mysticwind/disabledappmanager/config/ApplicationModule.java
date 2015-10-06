@@ -19,6 +19,8 @@ import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigDataAc
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
+import com.mysticwind.disabledappmanager.domain.state.EventBusManualStateUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.TimerTriggeredDisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.timer.AndroidHandlerTimerManager;
 import com.mysticwind.disabledappmanager.domain.timer.TimerManager;
@@ -27,6 +29,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import de.greenrobot.event.EventBus;
 
 @Module
 public class ApplicationModule {
@@ -108,5 +111,15 @@ public class ApplicationModule {
     public AutoDisablingConfigDataAccessor provideAutoDisablingConfigDataAccessor(
             AutoDisablingConfig_ autoDisablingConfig) {
         return new AutoDisablingConfigDataAccessorImpl(autoDisablingConfig);
+    }
+
+    @Provides @Singleton
+    public EventBus provideEventBus() {
+        return EventBus.getDefault();
+    }
+
+    @Provides @Singleton
+    public ManualStateUpdateEventManager provideManualStateUpdateEventManager(EventBus eventBus) {
+        return new EventBusManualStateUpdateEventManager(eventBus);
     }
 }

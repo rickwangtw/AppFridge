@@ -18,9 +18,12 @@ import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -37,13 +40,15 @@ public class AppSelectedListener extends Observable
     private final PackageStateController packageStateController;
     private final AppStateProvider appStateProvider;
     private final AppGroupManager appGroupManager;
+    private final ManualStateUpdateEventManager manualStateUpdateEventManager;
     private final Set<String> selectedPackageNames = new HashSet<>();
     private final View appGroupDialogView;
     private final Spinner appGroupSpinner;
 
     public AppSelectedListener(Context context, LayoutInflater layoutInflater,
                                PackageStateController packageStateController,
-                               AppStateProvider appStateProvider, AppGroupManager appGroupManager) {
+                               AppStateProvider appStateProvider, AppGroupManager appGroupManager,
+                               ManualStateUpdateEventManager manualStateUpdateEventManager) {
         this.context = context;
         this.progressDialog = DialogHelper.newProgressDialog(context);
 
@@ -89,6 +94,7 @@ public class AppSelectedListener extends Observable
         this.packageStateController = packageStateController;
         this.appStateProvider = appStateProvider;
         this.appGroupManager = appGroupManager;
+        this.manualStateUpdateEventManager = manualStateUpdateEventManager;
     }
 
     @Override
@@ -141,9 +147,11 @@ public class AppSelectedListener extends Observable
             protected Void doInBackground(String... params) {
                 switch (id) {
                     case R.id.enable_app_button:
+                        notifyManualStateUpdate(selectedPackageNames, true);
                         packageStateController.enablePackages(selectedPackageNames);
                         break;
                     case R.id.disable_app_button:
+                        notifyManualStateUpdate(selectedPackageNames, false);
                         packageStateController.disablePackages(selectedPackageNames);
                         break;
                     case R.id.toggle_app_state_button:
@@ -157,6 +165,13 @@ public class AppSelectedListener extends Observable
             }
         };
         packageStateUpdateTask.execute();
+    }
+
+    private void notifyManualStateUpdate(Collection<String> packageNames, boolean enable) {
+        PackageState packageState = enable ? PackageState.ENABLE : PackageState.DISABLE;
+        for (String packageName : packageNames) {
+            manualStateUpdateEventManager.publishUpdate(packageName, packageState);
+        }
     }
 
     private void displayAppGroupDialogWithAppGroups(Dialog appGroupDialog) {
@@ -183,9 +198,11 @@ public class AppSelectedListener extends Observable
             }
         }
         if (!packagesToDisable.isEmpty()) {
+            notifyManualStateUpdate(packagesToDisable, false);
             packageStateController.disablePackages(packagesToDisable);
         }
         if (!packagesToEnable.isEmpty()) {
+            notifyManualStateUpdate(packagesToEnable, true);
             packageStateController.enablePackages(packagesToEnable);
         }
     }

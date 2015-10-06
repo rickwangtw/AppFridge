@@ -109,4 +109,13 @@ public class TimerTriggeredDisabledPackageStateDecider
     private void cancelPackageDisableRequest(String packageName) {
         packageNameToRequestMap.remove(packageName);
     }
+
+    @Override
+    public void update(ManualStateUpdate manualStateUpdate) {
+        if (packageNameToRequestMap.containsKey(manualStateUpdate.getPackageName())) {
+            log.debug("Remove package caused by manual updates: " + manualStateUpdate.getPackageName());
+            packageNameToRequestMap.remove(manualStateUpdate.getPackageName());
+            cancelTimer(manualStateUpdate.getPackageName());
+        }
+    }
 }

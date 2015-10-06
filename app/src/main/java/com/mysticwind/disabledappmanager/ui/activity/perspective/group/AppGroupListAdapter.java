@@ -19,6 +19,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.collect.ImmutableSet;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
@@ -28,6 +29,8 @@ import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
+import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.ui.common.Action;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
@@ -35,6 +38,7 @@ import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,6 +64,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     private final AppStateProvider appStateProvider;
     private final PackageStateController packageStateController;
     private final AppLauncher appLauncher;
+    private final ManualStateUpdateEventManager manualStateUpdateEventManager;
     private final List<String> allAppGroups;
     private final Map<String, List<String>> appGroupToPackageListMap = new HashMap<>();
     private final Dialog groupActionDialog;
@@ -73,7 +78,9 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                                AppStateProvider appStateProvider,
                                PackageListProvider packageListProvider,
                                PackageStateController packageStateController,
-                               AppLauncher appLauncher, LayoutInflater layoutInflator,
+                               AppLauncher appLauncher,
+                               ManualStateUpdateEventManager manualStateUpdateEventManager,
+                               LayoutInflater layoutInflator,
                                SwipeDetector swipeDetector) {
         this.context = context;
         this.appGroupManager = appGroupManager;
@@ -83,6 +90,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         this.packageListProvider = packageListProvider;
         this.packageStateController = packageStateController;
         this.appLauncher = appLauncher;
+        this.manualStateUpdateEventManager = manualStateUpdateEventManager;
         this.layoutInflator = layoutInflator;
         this.swipeDetector = swipeDetector;
         this.allAppGroupName = context.getResources().getString(R.string.generated_app_group_name_all);
@@ -201,6 +209,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         appStateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                notifyManualStateUpdate(ImmutableSet.of(packageName), isChecked);
                 if (isChecked) {
                     String enablingToastMessagePrefix = context.getResources().getString(
                             R.string.toast_enabled_packages_msg_prefix);
@@ -230,6 +239,13 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         iconView.setImageDrawable(appIconProvider.getAppIcon(packageName));
         packageNameTextView.setText(appNameProvider.getAppName(packageName));
         return convertView;
+    }
+
+    private void notifyManualStateUpdate(Collection<String> packageNames, boolean enable) {
+        PackageState packageState = enable ? PackageState.ENABLE : PackageState.DISABLE;
+        for (String packageName : packageNames) {
+            manualStateUpdateEventManager.publishUpdate(packageName, packageState);
+        }
     }
 
     @Override
@@ -263,6 +279,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Enable apps: " + packages);
+                        notifyManualStateUpdate(packages, true);
                         new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, packages, true)
                                 .withProgressDialog(progressDialog)
                                 .withEndingToast(Toast.makeText(context,
@@ -279,6 +296,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         Log.d(TAG, "Disable apps: " + packages);
+                        notifyManualStateUpdate(packages, false);
                         new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, packages, false)
                                 .withProgressDialog(progressDialog)
                                 .withEndingToast(Toast.makeText(context,

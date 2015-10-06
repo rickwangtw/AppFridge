@@ -45,7 +45,8 @@ public class PackageStatePerspective extends PerspectiveBase {
         defaultPackageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
 
         appSelectedListener = new AppSelectedListener(this, layoutInflater, packageStateController,
-                appStateProvider, new AppGroupManagerImpl(new AppGroupDAO(this)));
+                appStateProvider, new AppGroupManagerImpl(new AppGroupDAO(this)),
+                manualStateUpdateEventManager);
 
         Button addToGroupButton = (Button) findViewById(R.id.add_to_group_button);
         addToGroupButton.setOnClickListener(appSelectedListener);

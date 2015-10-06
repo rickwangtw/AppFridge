@@ -15,6 +15,7 @@ import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
+import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 
 import org.androidannotations.annotations.EApplication;
 import org.androidannotations.annotations.sharedpreferences.Pref;
@@ -83,5 +84,10 @@ public class AppFridgeApplication extends Application implements ApplicationComp
     @Override
     public AutoDisablingConfigService autoDisablingConfigService() {
         return component.autoDisablingConfigService();
+    }
+
+    @Override
+    public ManualStateUpdateEventManager manualStateUpdateEventManager() {
+        return component.manualStateUpdateEventManager();
     }
 }

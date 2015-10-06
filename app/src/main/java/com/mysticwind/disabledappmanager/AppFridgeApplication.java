@@ -17,6 +17,8 @@ import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import org.androidannotations.annotations.EApplication;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
@@ -30,6 +32,8 @@ public class AppFridgeApplication extends Application implements ApplicationComp
     @Override
     public void onCreate() {
         super.onCreate();
+
+        JodaTimeAndroid.init(this);
 
         component = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this, autoDisablingConfig))

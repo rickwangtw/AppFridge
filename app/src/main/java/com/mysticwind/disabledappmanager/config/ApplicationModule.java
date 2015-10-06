@@ -9,7 +9,7 @@ import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageAssetService;
-import com.mysticwind.disabledappmanager.domain.PackageManagerAppLauncher;
+import com.mysticwind.disabledappmanager.domain.AutoDisablingAppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
@@ -79,10 +79,18 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public AppLauncher provideAppLauncher(PackageManager packageManager,
-                                          AppStateProvider appStateProvider,
-                                          PackageStateController packageStateController) {
-        return new PackageManagerAppLauncher(
+    public AutoDisablingConfigService provideAutoDisablingConfigService(
+            AutoDisablingConfigDataAccessor autoDisablingConfigDataAccessor) {
+        return new AnnotationGeneratedConfigAutoDisablingConfigService(autoDisablingConfigDataAccessor);
+    }
+
+    @Provides @Singleton
+    public AppLauncher provideAppLauncher(
+            AutoDisablingConfigService autoDisablingConfigService,
+            PackageManager packageManager,
+            AppStateProvider appStateProvider,
+            PackageStateController packageStateController) {
+        return new AutoDisablingAppLauncher(autoDisablingConfigService,
                 packageManager, appStateProvider, packageStateController);
     }
 
@@ -100,11 +108,5 @@ public class ApplicationModule {
     public AutoDisablingConfigDataAccessor provideAutoDisablingConfigDataAccessor(
             AutoDisablingConfig_ autoDisablingConfig) {
         return new AutoDisablingConfigDataAccessorImpl(autoDisablingConfig);
-    }
-
-    @Provides @Singleton
-    public AutoDisablingConfigService provideAutoDisablingConfigService(
-            AutoDisablingConfigDataAccessor autoDisablingConfigDataAccessor) {
-        return new AnnotationGeneratedConfigAutoDisablingConfigService(autoDisablingConfigDataAccessor);
     }
 }

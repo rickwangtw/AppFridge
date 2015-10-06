@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.mysticwind.disabledappmanager.R;
+import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
 import com.mysticwind.disabledappmanager.domain.state.DisabledStateDetectionRequest;
 import com.mysticwind.disabledappmanager.ui.common.Action;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
@@ -16,14 +17,17 @@ import java.util.Arrays;
 
 import de.greenrobot.event.EventBus;
 
-public class PackageManagerAppLauncher implements AppLauncher {
+public class AutoDisablingAppLauncher implements AppLauncher {
+    private final AutoDisablingConfigService autoDisablingConfigService;
     private final PackageManager packageManager;
     private final AppStateProvider appStateProvider;
     private final PackageStateController packageStateController;
 
-    public PackageManagerAppLauncher(PackageManager packageManager,
-                                     AppStateProvider appStateProvider,
-                                     PackageStateController packageStateController) {
+    public AutoDisablingAppLauncher(AutoDisablingConfigService autoDisablingConfigService,
+                                    PackageManager packageManager,
+                                    AppStateProvider appStateProvider,
+                                    PackageStateController packageStateController) {
+        this.autoDisablingConfigService = autoDisablingConfigService;
         this.packageManager = packageManager;
         this.appStateProvider = appStateProvider;
         this.packageStateController = packageStateController;
@@ -32,7 +36,11 @@ public class PackageManagerAppLauncher implements AppLauncher {
     @Override
     public void launch(Context context, String packageName) {
         Dialog progressDialog = DialogHelper.newProgressDialog(context);
-        new AppLauncherAsyncTask(context, progressDialog, packageName).execute();
+        new AppLauncherAsyncTask(
+                context, progressDialog, packageName,
+                autoDisablingConfigService.isAutoDisablingOn(),
+                autoDisablingConfigService.getAutoDisablingTimeoutInSeconds())
+                .execute();
     }
 
     private enum AppLaunchProgress {
@@ -49,11 +57,19 @@ public class PackageManagerAppLauncher implements AppLauncher {
         private final Dialog progressDialog;
         private final String packageName;
         private Intent applicationLaunchIntent;
+        private boolean isAutoDisablingOn;
+        private long inactiveTimeoutInSeconds;
 
-        AppLauncherAsyncTask(Context context, Dialog progressDialog, String packageName) {
+        AppLauncherAsyncTask(Context context,
+                             Dialog progressDialog,
+                             String packageName,
+                             boolean isAutoDisablingOn,
+                             long inactiveTimeoutInSeconds) {
             this.context = context;
             this.progressDialog = progressDialog;
             this.packageName = packageName;
+            this.isAutoDisablingOn = isAutoDisablingOn;
+            this.inactiveTimeoutInSeconds = inactiveTimeoutInSeconds;
         }
 
         @Override
@@ -119,7 +135,10 @@ public class PackageManagerAppLauncher implements AppLauncher {
                 case LAUNCH_APPLICATION:
                     context.startActivity(applicationLaunchIntent);
                     // auto disable package after 1 min of not in foreground
-                    EventBus.getDefault().post(new DisabledStateDetectionRequest(packageName, 60));
+                    if (isAutoDisablingOn) {
+                        EventBus.getDefault().post(
+                                new DisabledStateDetectionRequest(packageName, inactiveTimeoutInSeconds));
+                    }
                     break;
             }
         }

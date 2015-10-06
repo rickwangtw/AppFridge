@@ -13,5 +13,10 @@
     <string name="help_about_libraries_material_design_icons_description">來自谷歌的 Material Design 圖示</string>
     <string name="help_about_libraries_acacia_description">germnix 撰寫的 Acacia</string>
     <string name="help_about_libraries_eventbus_description">greenrobot 撰寫的 EventBus</string>
+    <string name="help_about_libraries_dagger2_description">來自谷歌的 Dagger2，源於 Square 的 Dagger</string>
+    <string name="help_about_libraries_lombok_description">開始於 Reinier Zwitserloot 與 Roel Spilker 的 Lombok</string>
+    <string name="help_about_libraries_guava_description">來自谷歌的 Guava</string>
+    <string name="help_about_libraries_logback_description">tony19 撰寫的 logback-android</string>
+    <string name="help_about_libraries_android_annotations_description">excilys 開發的 AndroidAnnotations</string>
 
 </resources>

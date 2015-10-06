@@ -12,5 +12,10 @@
     <include layout="@layout/help_about_libraries_material_design_icons" />
     <include layout="@layout/help_about_libraries_acacia" />
     <include layout="@layout/help_about_libraries_eventbus" />
+    <include layout="@layout/help_about_libraries_dagger2" />
+    <include layout="@layout/help_about_libraries_lombok" />
+    <include layout="@layout/help_about_libraries_guava" />
+    <include layout="@layout/help_about_libraries_logback" />
+    <include layout="@layout/help_about_libraries_androidannotations" />
 
 </LinearLayout>

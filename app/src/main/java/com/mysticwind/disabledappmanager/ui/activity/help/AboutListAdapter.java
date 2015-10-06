@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 
 import com.mysticwind.disabledappmanager.R;
 
@@ -73,6 +72,21 @@ public class AboutListAdapter extends BaseAdapter{
                 setupButtonResourceIdWithLinkResourceId(
                         convertView, R.id.eventbus_link_button,
                         R.string.help_about_libraries_eventbus_url);
+                setupButtonResourceIdWithLinkResourceId(
+                        convertView, R.id.dagger2_link_button,
+                        R.string.help_about_libraries_dagger2_url);
+                setupButtonResourceIdWithLinkResourceId(
+                        convertView, R.id.lombok_link_button,
+                        R.string.help_about_libraries_lombok_url);
+                setupButtonResourceIdWithLinkResourceId(
+                        convertView, R.id.guava_link_button,
+                        R.string.help_about_libraries_guava_url);
+                setupButtonResourceIdWithLinkResourceId(
+                        convertView, R.id.logback_link_button,
+                        R.string.help_about_libraries_logback_url);
+                setupButtonResourceIdWithLinkResourceId(
+                        convertView, R.id.androidannotations_link_button,
+                        R.string.help_about_libraries_android_annotations_url);
                 return convertView;
             default:
                 return null;

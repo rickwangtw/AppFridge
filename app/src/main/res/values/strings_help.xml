@@ -33,4 +33,24 @@
     <string name="help_about_libraries_eventbus_license">Apache 2.0</string>
     <string name="help_about_libraries_eventbus_description">EventBus by greenrobot</string>
 
+    <string name="help_about_libraries_dagger2_url">http://google.github.io/dagger/</string>
+    <string name="help_about_libraries_dagger2_license">Apache 2.0</string>
+    <string name="help_about_libraries_dagger2_description">Dagger2 by Google inspired by Dagger from Square</string>
+
+    <string name="help_about_libraries_lombok_url">https://projectlombok.org/</string>
+    <string name="help_about_libraries_lombok_license">MIT</string>
+    <string name="help_about_libraries_lombok_description">Lombok started by Reinier Zwitserloot and Roel Spilker</string>
+
+    <string name="help_about_libraries_guava_url">https://github.com/google/guava</string>
+    <string name="help_about_libraries_guava_license">Apache 2.0</string>
+    <string name="help_about_libraries_guava_description">Guava by Google</string>
+
+    <string name="help_about_libraries_logback_url">http://tony19.github.io/logback-android/</string>
+    <string name="help_about_libraries_logback_license">Eclipse Public License 1.0</string>
+    <string name="help_about_libraries_logback_description">logback-android by tony19</string>
+
+    <string name="help_about_libraries_android_annotations_url">http://androidannotations.org</string>
+    <string name="help_about_libraries_android_annotations_license">Apache 2.0</string>
+    <string name="help_about_libraries_android_annotations_description">AndroidAnnotations by excilys</string>
+
 </resources>

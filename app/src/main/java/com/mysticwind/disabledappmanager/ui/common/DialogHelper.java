@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.provider.Settings;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -223,5 +225,20 @@ public class DialogHelper {
 
             return convertView;
         }
+    }
+
+    public static Dialog newGoToAccessibilitySettings(final Context context) {
+        return new AlertDialog.Builder(context)
+                .setTitle(R.string.goto_accessibility_settings_dialog_title)
+                .setMessage(R.string.goto_accessibility_settings_dialog_msg)
+                .setPositiveButton(R.string.goto_accessibility_settings_dialog_positive_button,
+                        new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        context.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                    }
+                })
+                .setNegativeButton(R.string.goto_accessibility_settings_dialog_negative_button, null)
+                .create();
     }
 }

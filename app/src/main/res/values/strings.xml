@@ -46,6 +46,11 @@
     <string name="group_action_dialog_enable_packages_button">Enable Apps</string>
     <string name="group_action_dialog_disable_packages_button">Disable App</string>
 
+    <string name="goto_accessibility_settings_dialog_title">Enable service in accessibility settings</string>
+    <string name="goto_accessibility_settings_dialog_msg">The service must be enabled to detect the switching of apps!</string>
+    <string name="goto_accessibility_settings_dialog_positive_button">Go to Settings</string>
+    <string name="goto_accessibility_settings_dialog_negative_button">Cancel</string>
+
     <string name="toast_enabled_packages_msg_prefix">Enabled packages:</string>
     <string name="toast_disabled_packages_msg_prefix">Disabled packages:</string>
     <string name="toast_warn_no_launcher_intent_msg_prefix">No launching intent for package:</string>

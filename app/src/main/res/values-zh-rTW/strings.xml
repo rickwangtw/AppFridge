@@ -5,6 +5,7 @@
     <string name="action_perspective_appgroup">群組視角</string>
     <string name="action_perspective_packagestate">狀態視角</string>
     <string name="action_new_appgroup">新群組</string>
+    <string name="action_settings">設定</string>
     <string name="action_help">幫助</string>
 
     <string name="add_to_group_button">加入群組</string>
@@ -45,6 +46,11 @@
     <string name="group_action_dialog_title_prefix">操作</string>
     <string name="group_action_dialog_enable_packages_button">解凍 App</string>
     <string name="group_action_dialog_disable_packages_button">冷凍 App</string>
+
+    <string name="goto_accessibility_settings_dialog_title">在無障礙設定裡面啟動服務</string>
+    <string name="goto_accessibility_settings_dialog_msg">服務必須在無障礙設定獲得權限以偵測 App 改變</string>
+    <string name="goto_accessibility_settings_dialog_positive_button">去無障礙設定</string>
+    <string name="goto_accessibility_settings_dialog_negative_button">取消</string>
 
     <string name="toast_enabled_packages_msg_prefix">解凍 App:</string>
     <string name="toast_disabled_packages_msg_prefix">冷凍 App:</string>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_settings">設定</string>
+
+    <string name="pref_header_general">綜合</string>
+
+    <string name="pref_title_app_launch_autodisable">啟動自動冷凍 App</string>
+    <string name="pref_description_app_launch_autodisable">App 在冷凍狀態下啟動，可以透過此設定自動冷凍。</string>
+
+    <string name="pref_title_auto_disable_timeout">自動冷凍時間</string>
+    <string name="pref_description_auto_disable_timeout">假如原先為冷凍狀態的 App 經過指定時間不在前台，將會被冷凍。</string>
+    <string-array name="pref_auto_disable_timeout_titles">
+        <item>15 秒</item>
+        <item>30 秒</item>
+        <item>1 分鐘</item>
+        <item>2 分鐘</item>
+        <item>3 分鐘</item>
+        <item>4 分鐘</item>
+        <item>5 分鐘</item>
+    </string-array>
+</resources>

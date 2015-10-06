@@ -1,9 +1,6 @@
 package com.mysticwind.disabledappmanager.ui.activity.settings;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -17,6 +14,7 @@ import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
 import com.mysticwind.disabledappmanager.service.AppSwitchDetectionService;
 import com.mysticwind.disabledappmanager.common.ApplicationHelper;
+import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.EFragment;
@@ -48,16 +46,7 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
 
         getPreferenceManager().setSharedPreferencesName(AutoDisablingConfig.class.getSimpleName());
 
-        goToAccessibilitySettingsDialog = new AlertDialog.Builder(getActivity())
-                .setTitle("Please enable the service in accessibility settings")
-                .setMessage("The service must be enabled to detect the switching of apps!")
-                .setPositiveButton("Go to Settings", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        startAccessibilitySettings();
-                    }
-                })
-                .setNegativeButton("Cancel", null).create();
+        goToAccessibilitySettingsDialog = DialogHelper.newGoToAccessibilitySettings(getActivity());
     }
 
     @AfterPreferences
@@ -112,10 +101,6 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
         }
 
         return false;
-    }
-
-    private void startAccessibilitySettings() {
-        startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
     }
 
     @PreferenceChange(R.string.pref_key_auto_disable_timeout)

@@ -87,6 +87,12 @@ public class AboutListAdapter extends BaseAdapter{
                 setupButtonResourceIdWithLinkResourceId(
                         convertView, R.id.androidannotations_link_button,
                         R.string.help_about_libraries_android_annotations_url);
+                setupButtonResourceIdWithLinkResourceId(
+                        convertView, R.id.gson_link_button,
+                        R.string.help_about_libraries_gson_url);
+                setupButtonResourceIdWithLinkResourceId(
+                        convertView, R.id.joda_time_android_link_button,
+                        R.string.help_about_libraries_joda_time_android_url);
                 return convertView;
             default:
                 return null;

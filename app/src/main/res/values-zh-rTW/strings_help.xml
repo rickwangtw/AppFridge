@@ -18,5 +18,7 @@
     <string name="help_about_libraries_guava_description">來自谷歌的 Guava</string>
     <string name="help_about_libraries_logback_description">tony19 撰寫的 logback-android</string>
     <string name="help_about_libraries_android_annotations_description">excilys 開發的 AndroidAnnotations</string>
+    <string name="help_about_libraries_gson_description">來自谷歌的 Gson</string>
+    <string name="help_about_libraries_joda_time_android_description">dlew 移植給 Android 的 Joda-Time</string>
 
 </resources>

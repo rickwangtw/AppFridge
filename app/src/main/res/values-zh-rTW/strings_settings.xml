@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_activity_settings">設定</string>
+    <string name="pref_header_backup">備份與還原</string>
 
     <string name="pref_header_general">綜合</string>
 

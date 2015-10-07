@@ -54,8 +54,10 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
     }
 
     private void setupBackupAppGroupsNowPreference() {
+        String descriptionPrefix =
+                getString(R.string.settings_backup_preference_app_group_backup_path_description);
         backupAppGroupsNowPreference.setSummary(
-                "Backup will be generated in " + Constants.BACKUP_DIRECTORY.getAbsolutePath());
+                descriptionPrefix + " " + Constants.BACKUP_DIRECTORY.getAbsolutePath());
         backupAppGroupsNowPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -83,11 +85,14 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
                     protected void onPostExecute(Boolean success) {
                         super.onPostExecute(success);
 
+                        int toastStringResourceId;
                         if (success) {
-                            Toast.makeText(getActivity(), "Backup success!", Toast.LENGTH_SHORT).show();
+                            toastStringResourceId = R.string.toast_backup_success;
                         } else {
-                            Toast.makeText(getActivity(), "Backup failure!", Toast.LENGTH_SHORT).show();
+                            toastStringResourceId = R.string.toast_backup_failure;
                         }
+                        Toast.makeText(getActivity(), toastStringResourceId, Toast.LENGTH_SHORT).show();
+
                         backupAppGroupsNowPreference.setChecked(false);
                         backupAppGroupsNowPreference.setSelectable(true);
                         // update the groups available to restore
@@ -101,7 +106,9 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
 
     private void setupRestoreAppGroupsNowPreference() {
         File backupDirectory = Constants.BACKUP_DIRECTORY;
-        restoreAppGroupsPreference.setSummary("Restore a backup from " + backupDirectory.getAbsolutePath());
+        String descriptionPrefix =
+                getString(R.string.settings_backup_preference_app_group_restore_path_description);
+        restoreAppGroupsPreference.setSummary(descriptionPrefix + " " + backupDirectory.getAbsolutePath());
 
         List<BackupIdentifier> backupList = appGroupBackupManager.getAllBackupsOrdered();
 
@@ -121,31 +128,46 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 // always return false as we don't need to save the preference
                 final String backupUniqueId = (String) newValue;
-                new AsyncTask<Void, Void, Void>() {
-                    ProgressDialog progressDialog;
+                new AsyncTask<Void, Void, Boolean>() {
+                    private ProgressDialog progressDialog;
+                    private Throwable throwable;
+
                     @Override
                     protected void onPreExecute() {
                         super.onPreExecute();
                         progressDialog = new ProgressDialog(getActivity());
-                        progressDialog.setTitle("Restoring");
+                        progressDialog.setTitle(R.string.settings_backup_preference_app_group_restore_dialog_title);
                         progressDialog.setIndeterminate(true);
                         progressDialog.setCancelable(false);
-                        progressDialog.create();
                         progressDialog.show();
                         restoreAppGroupsPreference.setSelectable(false);
                     }
 
                     @Override
-                    protected Void doInBackground(Void... params) {
-                        appGroupBackupManager.restore(backupUniqueId);
-                        return null;
+                    protected Boolean doInBackground(Void... params) {
+                        try {
+                            appGroupBackupManager.restore(backupUniqueId);
+                            return true;
+                        } catch (Throwable t) {
+                            throwable = t;
+                            log.error("Failed to restore app groups!", t);
+                            return false;
+                        }
                     }
 
                     @Override
-                    protected void onPostExecute(Void aVoid) {
-                        super.onPostExecute(aVoid);
+                    protected void onPostExecute(Boolean success) {
+                        super.onPostExecute(success);
                         progressDialog.dismiss();
                         restoreAppGroupsPreference.setSelectable(true);
+
+                        int toastStringResourceId;
+                        if (success) {
+                            toastStringResourceId = R.string.toast_restore_success;
+                        } else {
+                            toastStringResourceId = R.string.toast_restore_failure;
+                        }
+                        Toast.makeText(getActivity(), toastStringResourceId, Toast.LENGTH_SHORT).show();
                     }
                 }.execute();
                 return false;

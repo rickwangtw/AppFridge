@@ -1,15 +1,15 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="App Groups"
+        android:title="@string/settings_backup_preference_group_app_group"
         android:key="pref_key_backup_appgroups">
 
         <SwitchPreference
             android:key="@string/pref_key_backup_appgroups_now"
-            android:title="Backup Now" />
+            android:title="@string/settings_backup_preference_app_group_backup" />
 
         <ListPreference
             android:key="@string/pref_key_restore_appgroups_now"
-            android:title="Restore"
+            android:title="@string/settings_backup_preference_app_group_restore"
             android:negativeButtonText="@null"
             android:positiveButtonText="@null" />
 

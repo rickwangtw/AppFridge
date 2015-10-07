@@ -1,0 +1,14 @@
+<resources>
+    <string name="settings_backup_preference_group_app_group">App 群組</string>
+
+    <string name="settings_backup_preference_app_group_backup">開始備份</string>
+    <string name="settings_backup_preference_app_group_backup_path_description">備份檔案將於以下目錄生成：</string>
+    <string name="toast_backup_success">備份成功！</string>
+    <string name="toast_backup_failure">備份失敗！</string>
+
+    <string name="settings_backup_preference_app_group_restore">還原</string>
+    <string name="settings_backup_preference_app_group_restore_path_description">還原來自以下目錄的檔案：</string>
+    <string name="settings_backup_preference_app_group_restore_dialog_title">還原中</string>
+    <string name="toast_restore_success">還原成功！</string>
+    <string name="toast_restore_failure">還原失敗！</string>
+</resources>

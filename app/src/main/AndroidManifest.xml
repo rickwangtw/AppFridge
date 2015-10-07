@@ -35,7 +35,7 @@
             android:label="@string/title_activity_settings" >
         </activity>
         <activity
-            android:name=".ui.activity.HelpActivity"
+            android:name=".ui.activity.help.HelpActivity"
             android:label="@string/title_activity_help" >
         </activity>
 

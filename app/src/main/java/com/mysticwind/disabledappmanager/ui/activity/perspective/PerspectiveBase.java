@@ -14,7 +14,7 @@ import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
-import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
+import com.mysticwind.disabledappmanager.ui.activity.help.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
 import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 

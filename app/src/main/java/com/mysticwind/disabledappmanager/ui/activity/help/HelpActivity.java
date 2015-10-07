@@ -1,4 +1,4 @@
-package com.mysticwind.disabledappmanager.ui.activity;
+package com.mysticwind.disabledappmanager.ui.activity.help;
 
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;

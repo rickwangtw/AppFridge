@@ -15,6 +15,8 @@ import com.mysticwind.disabledappmanager.domain.AutoDisablingAppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
+import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.appgroup.EventBusAppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.backup.DownloadDirectoryAppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.config.AnnotationGeneratedConfigAutoDisablingConfigService;
@@ -134,7 +136,14 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public AppGroupBackupManager provideAppGroupBackupManager(AppGroupManager appGroupManager) {
-        return new DownloadDirectoryAppGroupBackupManager(appGroupManager);
+    public AppGroupUpdateEventManager provideAppGroupUpdateEventManager(EventBus eventBus) {
+        return new EventBusAppGroupUpdateEventManager(eventBus);
+    }
+
+    @Provides @Singleton
+    public AppGroupBackupManager provideAppGroupBackupManager(
+                    AppGroupManager appGroupManager,
+                    AppGroupUpdateEventManager appGroupUpdateEventManager ) {
+        return new DownloadDirectoryAppGroupBackupManager(appGroupManager, appGroupUpdateEventManager);
     }
 }

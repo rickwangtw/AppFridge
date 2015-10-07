@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
+import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupOperation;
+import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -38,9 +40,12 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
     private static final Charset defaultCharset = Charsets.UTF_8;
 
     private final AppGroupManager appGroupManager;
+    private final AppGroupUpdateEventManager appGroupUpdateEventManager;
 
-    public DownloadDirectoryAppGroupBackupManager(AppGroupManager appGroupManager) {
+    public DownloadDirectoryAppGroupBackupManager(AppGroupManager appGroupManager,
+                                                  AppGroupUpdateEventManager appGroupUpdateEventManager) {
         this.appGroupManager = appGroupManager;
+        this.appGroupUpdateEventManager = appGroupUpdateEventManager;
     }
 
     @Override
@@ -122,7 +127,7 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
         }
         Type type = new TypeToken<Map<String, Set<String>>>(){}.getType();
         Map<String, Set<String>> appGroupToPackagesMap = new Gson().fromJson(reader, type);
-        restore(appGroupToPackagesMap);
+        restoreWithEventPublished(appGroupToPackagesMap);
         try {
             reader.close();
         } catch (IOException e) {
@@ -130,7 +135,7 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
         }
     }
 
-    private void restore(Map<String, Set<String>> appGroupToPackagesMap) {
+    private void restoreWithEventPublished(Map<String, Set<String>> appGroupToPackagesMap) {
         for (Map.Entry<String, Set<String>> entry : appGroupToPackagesMap.entrySet()) {
             String appGroupName = entry.getKey();
             Set<String> packages = entry.getValue();
@@ -138,7 +143,10 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
             Set<String> persistedPackages = appGroupManager.getPackagesOfAppGroup(appGroupName);
             packages.remove(persistedPackages);
 
-            appGroupManager.addPackagesToAppGroup(packages, appGroupName);
+            if (!packages.isEmpty()) {
+                appGroupManager.addPackagesToAppGroup(packages, appGroupName);
+                appGroupUpdateEventManager.publishUpdate(appGroupName, AppGroupOperation.ADD);
+            }
         }
     }
 }

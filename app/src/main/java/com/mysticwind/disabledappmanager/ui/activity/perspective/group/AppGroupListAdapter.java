@@ -28,6 +28,9 @@ import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupOperation;
+import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdate;
+import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateListener;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
@@ -52,7 +55,7 @@ import de.greenrobot.event.EventBus;
 
 public class AppGroupListAdapter extends BaseExpandableListAdapter
         implements AdapterView.OnItemLongClickListener, ExpandableListView.OnChildClickListener,
-        ExpandableListView.OnGroupClickListener, Observer {
+        ExpandableListView.OnGroupClickListener, Observer, AppGroupUpdateListener {
     private static final String TAG = "AppGroupListAdapter";
 
     private final Context context;
@@ -426,5 +429,15 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     // This method will be called from EventBus when Action is called
     public void onEventMainThread(Action event){
         update(null, event);
+    }
+
+    @Override
+    public void update(AppGroupUpdate event) {
+        switch (event.getOperation()) {
+            case ADD:
+            case DELETE:
+                update(null, Action.APP_GROUP_UPDATED);
+                return;
+        }
     }
 }

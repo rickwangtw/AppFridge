@@ -9,6 +9,7 @@ import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
@@ -35,4 +36,5 @@ public interface ApplicationComponent {
     ManualStateUpdateEventManager manualStateUpdateEventManager();
     AppGroupManager appGroupManager();
     AppGroupBackupManager appGroupBackupManager();
+    AppGroupUpdateEventManager appGroupUpdateEventManager();
 }

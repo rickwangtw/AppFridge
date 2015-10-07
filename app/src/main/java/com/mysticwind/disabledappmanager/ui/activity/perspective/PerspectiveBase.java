@@ -6,11 +6,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.mysticwind.disabledappmanager.R;
+import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.ui.activity.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
@@ -24,6 +26,8 @@ public abstract class PerspectiveBase extends AppCompatActivity {
     protected AppStateProvider appStateProvider;
     protected AppLauncher appLauncher;
     protected ManualStateUpdateEventManager manualStateUpdateEventManager;
+    protected AppGroupManager appGroupManager;
+    protected AppGroupUpdateEventManager appGroupUpdateEventManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,8 @@ public abstract class PerspectiveBase extends AppCompatActivity {
         this.appStateProvider = ApplicationHelper.from(this).appStateProvider();
         this.appLauncher = ApplicationHelper.from(this).appLauncher();
         this.manualStateUpdateEventManager = ApplicationHelper.from(this).manualStateUpdateEventManager();
+        this.appGroupManager = ApplicationHelper.from(this).appGroupManager();
+        this.appGroupUpdateEventManager = ApplicationHelper.from(this).appGroupUpdateEventManager();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.mysticwind.disabledappmanager.domain.state;
 
-public interface ManualStateUpdateListener {
-    void update(ManualStateUpdate manualStateUpdate);
+import com.mysticwind.disabledappmanager.domain.event.EventListener;
+
+public interface ManualStateUpdateListener extends EventListener<ManualStateUpdate> {
 }

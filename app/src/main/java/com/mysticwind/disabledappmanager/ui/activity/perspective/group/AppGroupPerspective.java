@@ -9,11 +9,8 @@ import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
 import com.mysticwind.disabledappmanager.R;
-import com.mysticwind.disabledappmanager.domain.AppGroupManager;
-import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
-import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.PerspectiveBase;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspective_;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
@@ -24,7 +21,6 @@ import org.androidannotations.annotations.EActivity;
 @EActivity
 public class AppGroupPerspective extends PerspectiveBase {
 
-    private AppGroupManager appGroupManager;
     private PackageListProvider packageListProvider;
     private AppGroupListAdapter appGroupListAdapter;
 
@@ -33,7 +29,6 @@ public class AppGroupPerspective extends PerspectiveBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_appgroup_activity);
 
-        this.appGroupManager = new AppGroupManagerImpl(new AppGroupDAO(this));
         this.packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
 
         ExpandableListView listView = (ExpandableListView) findViewById(R.id.appGroupListView);
@@ -43,6 +38,9 @@ public class AppGroupPerspective extends PerspectiveBase {
         appGroupListAdapter = new AppGroupListAdapter(this, appGroupManager,
                 appIconProvider, appNameProvider, appStateProvider, packageListProvider,
                 packageStateController, appLauncher, manualStateUpdateEventManager, layoutInflater, swipeDetector);
+
+        appGroupUpdateEventManager.registerListener(appGroupListAdapter);
+
         listView.setAdapter(appGroupListAdapter);
         listView.setOnItemLongClickListener(appGroupListAdapter);
         listView.setOnGroupClickListener(appGroupListAdapter);

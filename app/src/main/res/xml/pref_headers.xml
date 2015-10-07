@@ -4,4 +4,8 @@
         android:fragment="com.mysticwind.disabledappmanager.ui.activity.settings.GeneralPreferenceFragment_"
         android:title="@string/pref_header_general" />
 
+    <header
+        android:fragment="com.mysticwind.disabledappmanager.ui.activity.settings.BackupRestorePreferenceFragment_"
+        android:title="@string/pref_header_backup" />
+
 </preference-headers>

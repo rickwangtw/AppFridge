@@ -2,6 +2,7 @@
     <string name="title_activity_settings">Settings</string>
 
     <string name="pref_header_general">General</string>
+    <string name="pref_header_backup">Backup and Restore</string>
 
     <string name="pref_key_enable_app_launch_autodisable">isAutoDisablingOn</string>
     <string name="pref_title_app_launch_autodisable">Enable Auto-disabling Apps</string>
@@ -28,4 +29,8 @@
         <item>240</item>
         <item>300</item>
     </string-array>
+
+    <string name="pref_key_backup_appgroups_now">backupAppGroupsNow</string>
+    <string name="pref_key_restore_appgroups_now">restoreAppGroupsNow</string>
+
 </resources>

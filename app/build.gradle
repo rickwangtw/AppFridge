@@ -54,6 +54,7 @@ dependencies {
     provided 'javax.annotation:jsr250-api:1.0'
 
     compile 'net.danlew:android.joda:2.8.2'
+    compile 'com.google.code.gson:gson:2.4'
 }
 
 apt {

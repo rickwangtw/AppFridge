@@ -6,12 +6,14 @@ import android.content.Context;
 import com.mysticwind.disabledappmanager.config.ApplicationComponent;
 import com.mysticwind.disabledappmanager.config.ApplicationModule;
 import com.mysticwind.disabledappmanager.config.DaggerApplicationComponent;
+import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
@@ -93,5 +95,15 @@ public class AppFridgeApplication extends Application implements ApplicationComp
     @Override
     public ManualStateUpdateEventManager manualStateUpdateEventManager() {
         return component.manualStateUpdateEventManager();
+    }
+
+    @Override
+    public AppGroupManager appGroupManager() {
+        return component.appGroupManager();
+    }
+
+    @Override
+    public AppGroupBackupManager appGroupBackupManager() {
+        return component.appGroupBackupManager();
     }
 }

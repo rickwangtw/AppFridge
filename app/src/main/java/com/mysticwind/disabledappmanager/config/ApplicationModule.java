@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 
 import com.gmr.acacia.Acacia;
+import com.mysticwind.disabledappmanager.domain.AppGroupManager;
+import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
@@ -13,6 +15,8 @@ import com.mysticwind.disabledappmanager.domain.AutoDisablingAppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
+import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
+import com.mysticwind.disabledappmanager.domain.backup.DownloadDirectoryAppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.config.AnnotationGeneratedConfigAutoDisablingConfigService;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigDataAccessor;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigDataAccessorImpl;
@@ -22,6 +26,7 @@ import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecide
 import com.mysticwind.disabledappmanager.domain.state.EventBusManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.TimerTriggeredDisabledPackageStateDecider;
+import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 import com.mysticwind.disabledappmanager.domain.timer.AndroidHandlerTimerManager;
 import com.mysticwind.disabledappmanager.domain.timer.TimerManager;
 
@@ -121,5 +126,15 @@ public class ApplicationModule {
     @Provides @Singleton
     public ManualStateUpdateEventManager provideManualStateUpdateEventManager(EventBus eventBus) {
         return new EventBusManualStateUpdateEventManager(eventBus);
+    }
+
+    @Provides @Singleton
+    public AppGroupManager provideAppGroupManager(Context context) {
+        return new AppGroupManagerImpl(new AppGroupDAO(context));
+    }
+
+    @Provides @Singleton
+    public AppGroupBackupManager provideAppGroupBackupManager(AppGroupManager appGroupManager) {
+        return new DownloadDirectoryAppGroupBackupManager(appGroupManager);
     }
 }

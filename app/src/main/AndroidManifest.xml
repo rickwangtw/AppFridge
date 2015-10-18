@@ -53,6 +53,26 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibilityservice"/>
         </service>
+
+        <receiver android:name=".ui.widget.AppGroupLauncherWidget" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/app_group_launcher_widget_info" />
+        </receiver>
+
+        <activity android:name=".ui.widget.AppGroupLauncherWidgetConfigureActivity_" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.widget.AppGroupPackageGridDialogActivity_"
+            android:theme="@style/Theme.AppCompat.Dialog" >
+        </activity>
     </application>
 
 </manifest>

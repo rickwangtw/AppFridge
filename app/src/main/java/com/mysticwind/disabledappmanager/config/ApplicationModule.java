@@ -1,6 +1,7 @@
 package com.mysticwind.disabledappmanager.config;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
 import com.gmr.acacia.Acacia;
@@ -31,7 +32,10 @@ import com.mysticwind.disabledappmanager.domain.state.TimerTriggeredDisabledPack
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 import com.mysticwind.disabledappmanager.domain.timer.AndroidHandlerTimerManager;
 import com.mysticwind.disabledappmanager.domain.timer.TimerManager;
+import com.mysticwind.disabledappmanager.ui.widget.config.SharedPreferencesWidgetConfigDataAccessor;
+import com.mysticwind.disabledappmanager.ui.widget.config.WidgetConfigDataAccessor;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -145,5 +149,23 @@ public class ApplicationModule {
                     AppGroupManager appGroupManager,
                     AppGroupUpdateEventManager appGroupUpdateEventManager ) {
         return new DownloadDirectoryAppGroupBackupManager(appGroupManager, appGroupUpdateEventManager);
+    }
+
+    private static final String widgetConfigSharedPreferencesName = "widgetConfigSharedPreferencesName";
+
+    @Provides @Singleton @Named(widgetConfigSharedPreferencesName)
+    public String provideWidgetConfigSharedPreferencesName() {
+        return "AppGroupWidgetConfig";
+    }
+
+    @Provides @Singleton
+    public SharedPreferences provideWidgetConfigSharedPreferences(
+            @Named(widgetConfigSharedPreferencesName)String sharedPreferencesName) {
+        return context.getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE);
+    }
+
+    @Provides @Singleton
+    public WidgetConfigDataAccessor provideWidgetConfigDataAccessor(SharedPreferences sharedPreferences) {
+        return new SharedPreferencesWidgetConfigDataAccessor(sharedPreferences);
     }
 }

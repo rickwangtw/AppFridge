@@ -19,6 +19,7 @@ import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigServic
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
+import com.mysticwind.disabledappmanager.ui.widget.config.WidgetConfigDataAccessor;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -111,5 +112,10 @@ public class AppFridgeApplication extends Application implements ApplicationComp
     @Override
     public AppGroupUpdateEventManager appGroupUpdateEventManager() {
         return component.appGroupUpdateEventManager();
+    }
+
+    @Override
+    public WidgetConfigDataAccessor widgetConfigDataAccessor() {
+        return component.widgetConfigDataAccessor();
     }
 }

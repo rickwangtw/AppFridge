@@ -1,0 +1,24 @@
+<LinearLayout
+    android:id="@+id/appgroup_widget_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:theme="@style/Theme.Transparent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:src="@mipmap/ic_launcher"
+        android:layout_gravity="center"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/appwidget_text"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="10dip" />
+
+</LinearLayout>

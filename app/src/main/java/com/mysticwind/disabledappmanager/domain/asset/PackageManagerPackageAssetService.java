@@ -1,20 +1,13 @@
 package com.mysticwind.disabledappmanager.domain.asset;
 
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 
-import com.gmr.acacia.AcaciaService;
-import com.gmr.acacia.ServiceAware;
 import com.google.common.collect.ImmutableSet;
-import com.mysticwind.disabledappmanager.R;
-import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.common.thread.RequestStackThreadPoolExecutor;
-import com.mysticwind.disabledappmanager.domain.AppIconProvider;
-import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
-import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
-import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 
 import java.util.List;
@@ -26,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class PackageManagerPackageAssetService implements PackageAssetService, ServiceAware<AcaciaService> {
+public class PackageManagerPackageAssetService implements PackageAssetService {
     private static final int THREAD_POOL_SIZE = 5;
     private static final int MAX_POOL_SIZE = 1024;
     private final static Map<String, Drawable> PACKAGE_NAME_TO_ICON_MAP = new ConcurrentHashMap<>();
@@ -34,23 +27,22 @@ public class PackageManagerPackageAssetService implements PackageAssetService, S
     private final static ExecutorService THREAD_POOL_EXECUTOR =
             new RequestStackThreadPoolExecutor(THREAD_POOL_SIZE, MAX_POOL_SIZE, 5, TimeUnit.MINUTES);
 
-    private AppIconProvider appIconProvider;
-    private AppNameProvider appNameProvider;
-    private Drawable defaultIcon;
-    private AppAssetUpdateEventManager appAssetUpdateEventManager;
+    private final PackageManager packageManager;
+    private final AppAssetUpdateEventManager appAssetUpdateEventManager;
+    private final Drawable defaultIcon;
 
-    @Override
-    public void setAndroidService(AcaciaService androidService) {
-        appIconProvider = new PackageMangerAppIconProvider(androidService.getPackageManager());
-        appNameProvider = new PackageMangerAppNameProvider(androidService.getPackageManager());
-        defaultIcon = androidService.getResources().getDrawable(R.drawable.stub);
-        appAssetUpdateEventManager =
-                ApplicationHelper.from(androidService.getApplication()).appAssetUpdateEventManager();
+    public PackageManagerPackageAssetService(
+            PackageManager packageManager,
+            AppAssetUpdateEventManager appAssetUpdateEventManager,
+            Drawable defaultIcon) {
+        this.packageManager = packageManager;
+        this.appAssetUpdateEventManager = appAssetUpdateEventManager;
+        this.defaultIcon = defaultIcon;
 
-        preloadAssetForAllPackages(androidService.getPackageManager());
+        preloadAssetForAllPackages();
     }
 
-    private void preloadAssetForAllPackages(PackageManager packageManager) {
+    private void preloadAssetForAllPackages() {
         List<AppInfo> packageList =
                 new PackageManagerAllPackageListProvider(packageManager).getOrderedPackages();
         for (final AppInfo appInfo : packageList) {
@@ -79,26 +71,22 @@ public class PackageManagerPackageAssetService implements PackageAssetService, S
     }
 
     private void runPackageAssetLoaderAsyncTask(String packageName) {
-        new PackageAssetLoaderAsyncTask(
-                packageName, appIconProvider, appNameProvider, appAssetUpdateEventManager)
+        new PackageAssetLoaderAsyncTask(packageName, packageManager, appAssetUpdateEventManager)
                 .executeOnExecutor(THREAD_POOL_EXECUTOR);
     }
 
     private static class PackageAssetLoaderAsyncTask extends AsyncTask<Void, Void, Boolean> {
         private final String packageName;
-        private final AppIconProvider appIconProvider;
-        private final AppNameProvider appNameProvider;
+        private final PackageManager packageManager;
         private final AppAssetUpdateEventManager appAssetUpdateEventManager;
         private boolean appNameUpdated = false;
         private boolean appIconUpdated = false;
 
         PackageAssetLoaderAsyncTask(String packageName,
-                                    AppIconProvider appIconProvider,
-                                    AppNameProvider appNameProvider,
+                                    PackageManager packageManager,
                                     AppAssetUpdateEventManager appAssetUpdateEventManager) {
             this.packageName = packageName;
-            this.appIconProvider = appIconProvider;
-            this.appNameProvider = appNameProvider;
+            this.packageManager = packageManager;
             this.appAssetUpdateEventManager = appAssetUpdateEventManager;
             if (appAssetUpdateEventManager == null) {
                 log.warn("App asset update event manager not configured!");
@@ -107,13 +95,21 @@ public class PackageManagerPackageAssetService implements PackageAssetService, S
 
         @Override
         protected Boolean doInBackground(Void... params) {
+            ApplicationInfo appInfo;
+            try {
+                appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+            } catch (PackageManager.NameNotFoundException e) {
+                log.warn("Failed to get application info for package: " + packageName);
+                return false;
+            }
+
             if (!PACKAGE_NAME_TO_APP_NAME_MAP.containsKey(packageName)) {
-                String appName = appNameProvider.getAppName(packageName);
+                String appName = appInfo.loadLabel(packageManager).toString();
                 PACKAGE_NAME_TO_APP_NAME_MAP.put(packageName, appName);
                 appNameUpdated = true;
             }
             if (!PACKAGE_NAME_TO_ICON_MAP.containsKey(packageName)) {
-                Drawable icon = appIconProvider.getAppIcon(packageName);
+                Drawable icon = appInfo.loadIcon(packageManager);
                 PACKAGE_NAME_TO_ICON_MAP.put(packageName, icon);
                 appIconUpdated = true;
             }

@@ -3,8 +3,10 @@ package com.mysticwind.disabledappmanager.config;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 
 import com.gmr.acacia.Acacia;
+import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
@@ -20,6 +22,7 @@ import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventMana
 import com.mysticwind.disabledappmanager.domain.appgroup.EventBusAppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.EventBusAppAssetUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.asset.PackageManagerPackageAssetService;
 import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.backup.DownloadDirectoryAppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.config.AnnotationGeneratedConfigAutoDisablingConfigService;
@@ -70,8 +73,16 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public PackageAssetService providePackageAssetService(Context context) {
-        return Acacia.createService(context, PackageAssetService.class);
+    public Drawable provideDefaultIconStubDrawable() {
+        return context.getResources().getDrawable(R.drawable.stub);
+    }
+
+    @Provides @Singleton
+    public PackageAssetService providePackageAssetService(
+            PackageManager packageManager, AppAssetUpdateEventManager appAssetUpdateEventManager,
+            Drawable defaultIcon) {
+        return new PackageManagerPackageAssetService(
+                packageManager, appAssetUpdateEventManager, defaultIcon);
     }
 
     @Provides @Singleton

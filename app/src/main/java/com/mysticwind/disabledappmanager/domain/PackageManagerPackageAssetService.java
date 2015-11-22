@@ -129,7 +129,7 @@ public class PackageManagerPackageAssetService implements PackageAssetService, S
 
             ImmutableSet.Builder<AssetType> updatedAssetTypesBuilder = new ImmutableSet.Builder<>();
             if (appNameUpdated) {
-                updatedAssetTypesBuilder.add(AssetType.PACKAGE_NAME);
+                updatedAssetTypesBuilder.add(AssetType.APP_NAME);
             }
             if (appIconUpdated) {
                 updatedAssetTypesBuilder.add(AssetType.ICON);

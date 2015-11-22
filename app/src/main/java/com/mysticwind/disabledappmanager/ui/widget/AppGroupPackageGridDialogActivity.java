@@ -16,6 +16,10 @@ import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageAssetService;
+import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
+import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
+import com.mysticwind.disabledappmanager.domain.asset.AssetType;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -25,21 +29,25 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @EActivity
-public class AppGroupPackageGridDialogActivity extends AppCompatActivity {
+public class AppGroupPackageGridDialogActivity extends AppCompatActivity implements AppAssetUpdateListener {
     private static final int DEFAULT_COLUMN_COUNT = 4;
 
     private String appGroupName;
     private AppGroupManager appGroupManager;
     private PackageAssetService packageAssetService;
     private AppLauncher appLauncher;
+    private AppAssetUpdateEventManager appAssetUpdateEventManager;
     private int appGridLayoutWidth;
+    private Map<String, ViewHolder> packageNameToViewHolder = new ConcurrentHashMap<>();
 
     @ViewById(R.id.app_grid)
     GridLayout appGridLayout;
@@ -51,6 +59,12 @@ public class AppGroupPackageGridDialogActivity extends AppCompatActivity {
         private Drawable icon;
     }
 
+    @Value
+    private static class ViewHolder {
+        ImageView iconImageView;
+        TextView appNameTextView;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +72,9 @@ public class AppGroupPackageGridDialogActivity extends AppCompatActivity {
         appGroupManager = ApplicationHelper.from(this).appGroupManager();
         packageAssetService = ApplicationHelper.from(this).packageAssetService();
         appLauncher = ApplicationHelper.from(this).appLauncher();
+        appAssetUpdateEventManager = ApplicationHelper.from(this).appAssetUpdateEventManager();
+
+        appAssetUpdateEventManager.registerListener(this);
 
         appGroupName = getIntent().getStringExtra(WidgetConstants.APP_GROUP_NAME_EXTRA_KEY);
         setTitle(appGroupName);
@@ -114,6 +131,8 @@ public class AppGroupPackageGridDialogActivity extends AppCompatActivity {
                 ImageView icon = (ImageView) appItemView.findViewById(R.id.appicon);
                 TextView packageName = (TextView) appItemView.findViewById(R.id.packagename);
 
+                updateViewHolderOfPackage(icon, packageName, packageItem.getPackageName());
+
                 GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams(
                         GridLayout.spec(rowIndex), GridLayout.spec(columnIndex));
                 layoutParams.width = itemWidth;
@@ -132,6 +151,11 @@ public class AppGroupPackageGridDialogActivity extends AppCompatActivity {
                 appGridLayout.addView(appItemView, layoutParams);
             }
         }
+    }
+
+    private void updateViewHolderOfPackage(
+            ImageView iconImageView, TextView appNameTextView, String packageName) {
+        packageNameToViewHolder.put(packageName, new ViewHolder(iconImageView, appNameTextView));
     }
 
     private List<PackageItem> getSortedPackagesForAppGroup(String appGroupName) {
@@ -162,5 +186,27 @@ public class AppGroupPackageGridDialogActivity extends AppCompatActivity {
             }
         });
         return packageItemList;
+    }
+
+    @Override
+    public void update(AppAssetUpdate event) {
+        ViewHolder viewHolder = packageNameToViewHolder.get(event.getPackageName());
+        if (viewHolder == null) {
+            return;
+        }
+        if (event.getUpdatedAssetTypes().contains(AssetType.ICON)) {
+            updateIcon(event.getPackageName(), viewHolder.getIconImageView());
+        }
+        if (event.getUpdatedAssetTypes().contains(AssetType.APP_NAME)) {
+            updateAppName(event.getPackageName(), viewHolder.getAppNameTextView());
+        }
+    }
+
+    private void updateIcon(String packageName, ImageView iconImageView) {
+        iconImageView.setImageDrawable(packageAssetService.getAppIcon(packageName));
+    }
+
+    private void updateAppName(String packageName, TextView appNameTextView) {
+        appNameTextView.setText(packageAssetService.getAppName(packageName));
     }
 }

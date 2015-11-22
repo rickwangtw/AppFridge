@@ -39,7 +39,8 @@ public class AppGroupPerspective extends PerspectiveBase {
                 appIconProvider, appNameProvider, appStateProvider, packageListProvider,
                 packageStateController, appLauncher, manualStateUpdateEventManager, layoutInflater, swipeDetector);
 
-        appGroupUpdateEventManager.registerListener(appGroupListAdapter);
+        appGroupUpdateEventManager.registerListener(appGroupListAdapter.getAppGroupUpdateListener());
+        appAssetUpdateEventManager.registerListener(appGroupListAdapter.getAppAssetUpdateListener());
 
         listView.setAdapter(appGroupListAdapter);
         listView.setOnItemLongClickListener(appGroupListAdapter);

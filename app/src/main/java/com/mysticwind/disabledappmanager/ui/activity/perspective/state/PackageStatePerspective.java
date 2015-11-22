@@ -101,6 +101,8 @@ public class PackageStatePerspective extends PerspectiveBase {
         appSelectedListener.deleteObservers();
         appSelectedListener.addObserver(appListAdapter);
 
+        appAssetUpdateEventManager.registerListener(appListAdapter);
+
         ListView appListView = (ListView)findViewById(R.id.appListView);
         appListView.setAdapter(appListAdapter);
 

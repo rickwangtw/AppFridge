@@ -31,6 +31,8 @@ import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupOperation;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdate;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateListener;
+import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
+import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
@@ -55,7 +57,7 @@ import de.greenrobot.event.EventBus;
 
 public class AppGroupListAdapter extends BaseExpandableListAdapter
         implements AdapterView.OnItemLongClickListener, ExpandableListView.OnChildClickListener,
-        ExpandableListView.OnGroupClickListener, Observer, AppGroupUpdateListener {
+        ExpandableListView.OnGroupClickListener, Observer {
     private static final String TAG = "AppGroupListAdapter";
 
     private final Context context;
@@ -75,6 +77,25 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     private final String allAppGroupName;
     private String selectedAppGroupName;
     private PackageListProvider packageListProvider;
+
+    private AppGroupUpdateListener appGroupUpdateListener = new AppGroupUpdateListener() {
+        @Override
+        public void update(AppGroupUpdate event) {
+            switch (event.getOperation()) {
+                case ADD:
+                case DELETE:
+                    onAppGroupUpdated();
+                    return;
+            }
+        }
+    };
+
+    private AppAssetUpdateListener appAssetUpdateListener = new AppAssetUpdateListener() {
+        @Override
+        public void update(AppAssetUpdate event) {
+            notifyDataSetChanged();
+        }
+    };
 
     public AppGroupListAdapter(Context context, AppGroupManager appGroupManager,
                                AppIconProvider appIconProvider, AppNameProvider appNameProvider,
@@ -403,27 +424,28 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         view.setFocusable(false);
     }
 
+
     @Override
     public void update(Observable observable, Object data) {
         Action action = (Action) data;
         switch (action) {
-            case APP_GROUP_UPDATED:
-                selectedAppGroupName = null;
-                allAppGroups.clear();
-                allAppGroups.addAll(getSortedAllAppGroups());
-                appGroupToPackageListMap.clear();
-                notifyDataSetChanged();
-                break;
             case PACKAGE_ADDED_TO_APP_GROUP:
             case PACKAGE_REMOVED_FROM_APP_GROUP:
                 appGroupToPackageListMap.clear();
                 notifyDataSetChanged();
                 break;
             case PACKAGE_STATE_UPDATED:
-            case PACKAGE_ASSET_UPDATED:
                 notifyDataSetChanged();
                 break;
         }
+    }
+
+    private void onAppGroupUpdated() {
+        selectedAppGroupName = null;
+        allAppGroups.clear();
+        allAppGroups.addAll(getSortedAllAppGroups());
+        appGroupToPackageListMap.clear();
+        notifyDataSetChanged();
     }
 
     // This method will be called from EventBus when Action is called
@@ -431,13 +453,11 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         update(null, event);
     }
 
-    @Override
-    public void update(AppGroupUpdate event) {
-        switch (event.getOperation()) {
-            case ADD:
-            case DELETE:
-                update(null, Action.APP_GROUP_UPDATED);
-                return;
-        }
+    public AppGroupUpdateListener getAppGroupUpdateListener() {
+        return appGroupUpdateListener;
+    }
+
+    public AppAssetUpdateListener getAppAssetUpdateListener() {
+        return appAssetUpdateListener;
     }
 }

@@ -17,6 +17,8 @@ import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
+import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
+import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.ui.common.Action;
@@ -29,7 +31,7 @@ import java.util.Observer;
 
 import de.greenrobot.event.EventBus;
 
-public class AppListAdapter extends BaseAdapter implements Observer {
+public class AppListAdapter extends BaseAdapter implements Observer, AppAssetUpdateListener {
     private static final String TAG = "AppListAdapter";
 
     private final Context context;
@@ -139,14 +141,16 @@ public class AppListAdapter extends BaseAdapter implements Observer {
     // This method will be called from EventBus when Action is called
     public void onEventMainThread(Action event){
         switch (event) {
-            case PACKAGE_ASSET_UPDATED:
-                notifyDataSetChanged();
-                break;
             case PACKAGE_STATE_UPDATED:
                 this.appInfoList = packageListProvider.getOrderedPackages();
                 positionToViewMap.clear();
                 notifyDataSetChanged();
                 break;
         }
+    }
+
+    @Override
+    public void update(AppAssetUpdate event) {
+        notifyDataSetChanged();
     }
 }

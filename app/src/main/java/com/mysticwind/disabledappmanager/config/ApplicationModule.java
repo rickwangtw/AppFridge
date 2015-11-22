@@ -18,6 +18,8 @@ import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.appgroup.EventBusAppGroupUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.asset.EventBusAppAssetUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.backup.DownloadDirectoryAppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.config.AnnotationGeneratedConfigAutoDisablingConfigService;
@@ -80,6 +82,11 @@ public class ApplicationModule {
     @Provides @Singleton
     public AppNameProvider provideAppNameProvider(PackageAssetService packageAssetService) {
         return packageAssetService;
+    }
+
+    @Provides @Singleton
+    public AppAssetUpdateEventManager provideAppAssetUpdateEventManager(EventBus eventBus) {
+        return new EventBusAppAssetUpdateEventManager(eventBus);
     }
 
     @Provides @Singleton

@@ -3,12 +3,16 @@ package com.mysticwind.disabledappmanager.ui.activity.perspective.state;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 
@@ -31,10 +35,14 @@ public class PackageStatePerspective extends PerspectiveBase {
     private PackageListProvider defaultPackageListProvider;
     private PackageListProvider packageListProvider;
     private AppSelectedListener appSelectedListener;
+    private AppListAdapter appListAdapter;
     private int[] appStatusChangingButtonResourceIds = {
             R.id.toggle_app_state_button,
             R.id.disable_app_button,
             R.id.enable_app_button};
+    private MenuItem searchAction;
+    private boolean searchBarDisplayed = false;
+    private EditText searchEditText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,6 +90,11 @@ public class PackageStatePerspective extends PerspectiveBase {
                         break;
                 }
                 generateListView(showingButtonResourceId);
+                if (searchBarDisplayed) {
+                    appListAdapter.doSearch(searchEditText.getText().toString());
+                } else {
+                    appListAdapter.cancelSearch();
+                }
             }
 
             @Override
@@ -94,7 +107,7 @@ public class PackageStatePerspective extends PerspectiveBase {
     }
 
     private void generateListView(int showingButtonResourceId) {
-        AppListAdapter appListAdapter = new AppListAdapter(this,
+        appListAdapter = new AppListAdapter(this,
                 packageListProvider, appStateProvider, appIconProvider,
                 appNameProvider, appLauncher, layoutInflater, appSelectedListener);
 
@@ -123,6 +136,12 @@ public class PackageStatePerspective extends PerspectiveBase {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        searchAction = menu.findItem(R.id.action_search);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -132,8 +151,59 @@ public class PackageStatePerspective extends PerspectiveBase {
             case R.id.action_switch_perspective:
                 startActivity(new Intent(this, AppGroupPerspective_.class));
                 return true;
+            case R.id.action_search:
+                if (searchBarDisplayed) {
+                    closeSearchBar();
+                } else {
+                    openSearchBar();
+                }
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openSearchBar() {
+        // Set custom view on action bar.
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(R.layout.search_bar);
+
+        // Search edit text field setup.
+        searchEditText = (EditText) actionBar.getCustomView().findViewById(R.id.search_query);
+        searchEditText.addTextChangedListener(new SearchWatcher());
+        searchEditText.setText(searchEditText.getText());
+        searchEditText.requestFocus();
+
+        // Change search icon accordingly.
+        searchAction.setIcon(closeIconDrawable);
+        searchBarDisplayed = true;
+    }
+
+    private void closeSearchBar() {
+        // Remove custom view.
+        getSupportActionBar().setDisplayShowCustomEnabled(false);
+
+        // Change search icon accordingly.
+        searchAction.setIcon(searchIconDrawable);
+        searchBarDisplayed = false;
+        appListAdapter.cancelSearch();
+    }
+
+    /**
+     * Responsible for handling changes in search edit text.
+     */
+    private class SearchWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+        @Override
+        public void afterTextChanged(Editable editable) {
+            String searchQuery = searchEditText.getText().toString();
+            appListAdapter.doSearch(searchQuery);
+        }
     }
 }

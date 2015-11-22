@@ -1,6 +1,7 @@
 package com.mysticwind.disabledappmanager.ui.activity.perspective;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -30,6 +31,8 @@ public abstract class PerspectiveBase extends AppCompatActivity {
     protected ManualStateUpdateEventManager manualStateUpdateEventManager;
     protected AppGroupManager appGroupManager;
     protected AppGroupUpdateEventManager appGroupUpdateEventManager;
+    protected Drawable searchIconDrawable;
+    protected Drawable closeIconDrawable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,9 @@ public abstract class PerspectiveBase extends AppCompatActivity {
         this.manualStateUpdateEventManager = ApplicationHelper.from(this).manualStateUpdateEventManager();
         this.appGroupManager = ApplicationHelper.from(this).appGroupManager();
         this.appGroupUpdateEventManager = ApplicationHelper.from(this).appGroupUpdateEventManager();
+
+        this.searchIconDrawable = getResources().getDrawable(R.drawable.ic_search_white_48dp);
+        this.closeIconDrawable = getResources().getDrawable(R.drawable.ic_close_white_48dp);
     }
 
     @Override

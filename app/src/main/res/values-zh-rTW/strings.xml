@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">App 冷凍庫</string>
 
+    <string name="action_search">搜尋</string>
     <string name="action_perspective_appgroup">群組視角</string>
     <string name="action_perspective_packagestate">狀態視角</string>
     <string name="action_new_appgroup">新群組</string>

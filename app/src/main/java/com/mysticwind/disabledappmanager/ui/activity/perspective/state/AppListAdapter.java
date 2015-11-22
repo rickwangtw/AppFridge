@@ -11,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.common.collect.ImmutableList;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
@@ -43,7 +44,8 @@ public class AppListAdapter extends BaseAdapter implements Observer, AppAssetUpd
     private final LayoutInflater layoutInflater;
     private final AppSelectedListener appSelectedListener;
     private List<AppInfo> appInfoList;
-    private Map<Integer, CachedAppInfo> positionToViewMap = new HashMap<>();
+    private List<AppInfo> searchFilteredAppInfoList;
+    private boolean searchEnabled = false;
 
     public AppListAdapter(Context context, PackageListProvider packageListProvider, AppStateProvider appStateProvider,
                           AppIconProvider appIconProvider,
@@ -66,6 +68,9 @@ public class AppListAdapter extends BaseAdapter implements Observer, AppAssetUpd
     }
 
     public int getCount() {
+        if (searchEnabled) {
+            return searchFilteredAppInfoList.size();
+        }
         return appInfoList.size();
     }
 
@@ -77,29 +82,62 @@ public class AppListAdapter extends BaseAdapter implements Observer, AppAssetUpd
         return position;
     }
 
-    public class CachedAppInfo {
-        public String packageName;
-        public AppInfo appInfo;
+    public void doSearch(String searchQuery) {
+        ImmutableList.Builder<AppInfo> filteredAppInfoListBuilder = new ImmutableList.Builder<>();
+        for (AppInfo appInfo : appInfoList) {
+            String packageName = appInfo.getPackageName();
+            String appName = appNameProvider.getAppName(packageName);
+
+            if (matchesSearchQuery(searchQuery, appName, packageName)) {
+                filteredAppInfoListBuilder.add(appInfo);
+            }
+        }
+        this.searchFilteredAppInfoList = filteredAppInfoListBuilder.build();
+        this.searchEnabled = true;
+        notifyDataSetChanged();
+    }
+
+    private boolean matchesSearchQuery(String searchQuery, String appName, String packageName) {
+        String lowerCaseSearchQuery = searchQuery.toLowerCase();
+        if (packageName.toLowerCase().contains(lowerCaseSearchQuery)) {
+            return true;
+        } else if (packageName.equals(appName)) {
+            return false;
+        } else if (appName.toLowerCase().contains(lowerCaseSearchQuery)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void cancelSearch() {
+        this.searchEnabled = false;
+        this.searchFilteredAppInfoList = null;
+        notifyDataSetChanged();
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = layoutInflater.inflate(R.layout.perspective_state_app_item, null);
         }
-        CachedAppInfo cachedAppInfoForPosition = positionToViewMap.get(position);
-        if (cachedAppInfoForPosition == null) {
-            cachedAppInfoForPosition = newViewHolder(position);
-            positionToViewMap.put(position, cachedAppInfoForPosition);
+        List<AppInfo> appInfoList;
+        if (searchEnabled) {
+            appInfoList = searchFilteredAppInfoList;
+        } else {
+            appInfoList = this.appInfoList;
         }
 
-        convertView.setTag(cachedAppInfoForPosition.packageName);
+        String packageName = appInfoList.get(position).getPackageName();
+        String appName = appNameProvider.getAppName(packageName);
+
+        convertView.setTag(packageName);
         TextView textView = (TextView) convertView.findViewById(R.id.packagename);;
-        textView.setText(appNameProvider.getAppName(cachedAppInfoForPosition.packageName));
+        textView.setText(appName);
 
         ImageView imageView = (ImageView) convertView.findViewById(R.id.appicon);
-        imageView.setImageDrawable(appIconProvider.getAppIcon(cachedAppInfoForPosition.packageName));
+        imageView.setImageDrawable(appIconProvider.getAppIcon(packageName));
 
-        if (appStateProvider.isPackageEnabled(cachedAppInfoForPosition.packageName)) {
+        if (appStateProvider.isPackageEnabled(packageName)) {
             convertView.setBackgroundColor(Color.WHITE);
         } else {
             convertView.setBackgroundColor(Color.GRAY);
@@ -113,28 +151,17 @@ public class AppListAdapter extends BaseAdapter implements Observer, AppAssetUpd
         });
 
         CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
-        checkBox.setTag(cachedAppInfoForPosition.packageName);
+        checkBox.setTag(packageName);
         checkBox.setOnCheckedChangeListener(null);
-        checkBox.setChecked(
-                appSelectedListener.isPackageNameSelected(cachedAppInfoForPosition.packageName));
+        checkBox.setChecked(appSelectedListener.isPackageNameSelected(packageName));
         checkBox.setOnCheckedChangeListener(appSelectedListener);
 
         return convertView;
     }
 
-    private CachedAppInfo newViewHolder(int position) {
-        AppInfo appInfo = appInfoList.get(position);
-
-        final CachedAppInfo cachedAppInfo = new CachedAppInfo();
-        cachedAppInfo.packageName = appInfo.getPackageName();
-        cachedAppInfo.appInfo = appInfo;
-        return cachedAppInfo;
-    }
-
     @Override
     public void update(Observable observable, Object data) {
         this.appInfoList = packageListProvider.getOrderedPackages();
-        this.positionToViewMap.clear();
         notifyDataSetChanged();
     }
 
@@ -143,7 +170,6 @@ public class AppListAdapter extends BaseAdapter implements Observer, AppAssetUpd
         switch (event) {
             case PACKAGE_STATE_UPDATED:
                 this.appInfoList = packageListProvider.getOrderedPackages();
-                positionToViewMap.clear();
                 notifyDataSetChanged();
                 break;
         }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">App Fridge</string>
 
+    <string name="action_search">Search</string>
     <string name="action_perspective_appgroup">App Group Perspective</string>
     <string name="action_perspective_packagestate">App State Perspective</string>
     <string name="action_new_appgroup">New Group</string>

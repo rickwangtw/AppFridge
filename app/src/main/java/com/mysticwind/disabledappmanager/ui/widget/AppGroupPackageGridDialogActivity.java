@@ -15,7 +15,7 @@ import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
-import com.mysticwind.disabledappmanager.domain.PackageAssetService;
+import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;

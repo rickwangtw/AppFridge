@@ -1,4 +1,4 @@
-package com.mysticwind.disabledappmanager.domain;
+package com.mysticwind.disabledappmanager.domain.asset;
 
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -10,8 +10,11 @@ import com.google.common.collect.ImmutableSet;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.common.thread.RequestStackThreadPoolExecutor;
-import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
-import com.mysticwind.disabledappmanager.domain.asset.AssetType;
+import com.mysticwind.disabledappmanager.domain.AppIconProvider;
+import com.mysticwind.disabledappmanager.domain.AppNameProvider;
+import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
+import com.mysticwind.disabledappmanager.domain.PackageMangerAppIconProvider;
+import com.mysticwind.disabledappmanager.domain.PackageMangerAppNameProvider;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 
 import java.util.List;

@@ -3,8 +3,13 @@ package com.mysticwind.disabledappmanager.ui.activity.perspective;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
@@ -34,6 +39,14 @@ public abstract class PerspectiveBase extends AppCompatActivity {
     protected Drawable searchIconDrawable;
     protected Drawable closeIconDrawable;
 
+    // search
+    protected MenuItem searchAction;
+    protected boolean searchBarDisplayed = false;
+    protected EditText searchEditText;
+
+    protected abstract void performSearch(String searchQuery);
+    protected abstract void cancelSearch();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,11 +66,24 @@ public abstract class PerspectiveBase extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        searchAction = menu.findItem(R.id.action_search);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
+            case R.id.action_search:
+                if (searchBarDisplayed) {
+                    closeSearchBar();
+                } else {
+                    openSearchBar();
+                }
+                return true;
             case R.id.action_settings:
                 startActivity(new Intent(this, SettingsActivity_.class));
                 return true;
@@ -67,5 +93,53 @@ public abstract class PerspectiveBase extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openSearchBar() {
+        // Set custom view on action bar.
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(R.layout.search_bar);
+
+        // Search edit text field setup.
+        searchEditText = (EditText) actionBar.getCustomView().findViewById(R.id.search_query);
+        searchEditText.addTextChangedListener(new SearchWatcher());
+        searchEditText.setText(searchEditText.getText());
+        searchEditText.requestFocus();
+
+        // Change search icon accordingly.
+        searchAction.setIcon(closeIconDrawable);
+        searchBarDisplayed = true;
+
+        performSearch(searchEditText.getText().toString());
+    }
+
+    private void closeSearchBar() {
+        // Remove custom view.
+        getSupportActionBar().setDisplayShowCustomEnabled(false);
+
+        // Change search icon accordingly.
+        searchAction.setIcon(searchIconDrawable);
+        searchBarDisplayed = false;
+        cancelSearch();
+    }
+
+    /**
+     * Responsible for handling changes in search edit text.
+     */
+    private class SearchWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            String searchQuery = searchEditText.getText().toString();
+            performSearch(searchQuery);
+        }
     }
 }

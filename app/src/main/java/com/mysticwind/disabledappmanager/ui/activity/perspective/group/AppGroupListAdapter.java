@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +18,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
@@ -28,7 +28,6 @@ import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
-import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupOperation;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdate;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateListener;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
@@ -78,6 +77,12 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     private String selectedAppGroupName;
     private PackageListProvider packageListProvider;
 
+    // search
+    private boolean searchEnabled = false;
+    private String lowerCaseSearchQuery;
+    private Set<String> searchFilteredPackages;
+    private List<String> searchFilteredAppGroups;
+
     private AppGroupUpdateListener appGroupUpdateListener = new AppGroupUpdateListener() {
         @Override
         public void update(AppGroupUpdate event) {
@@ -93,6 +98,9 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     private AppAssetUpdateListener appAssetUpdateListener = new AppAssetUpdateListener() {
         @Override
         public void update(AppAssetUpdate event) {
+            if (searchEnabled) {
+                doSearch(lowerCaseSearchQuery);
+            }
             notifyDataSetChanged();
         }
     };
@@ -167,23 +175,58 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
 
     @Override
     public int getGroupCount() {
+        if (searchEnabled) {
+            return searchFilteredAppGroups.size();
+        }
         return allAppGroups.size();
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
+        if (searchEnabled) {
+            String appGroup = searchFilteredAppGroups.get(groupPosition);
+            List<String> packageNameList = getPackageListOfAppGroupName(appGroup);
+            int count = 0;
+            for (String packageName : packageNameList) {
+                if (searchFilteredPackages.contains(packageName)) {
+                    ++count;
+                }
+            }
+            return count;
+        }
         List<String> packageNameList = getPackageListOfGroupPosition(groupPosition);
         return packageNameList.size();
     }
 
     @Override
     public Object getGroup(int groupPosition) {
+        if (searchEnabled) {
+            return searchFilteredAppGroups.get(groupPosition);
+        }
         return getAppGroup(groupPosition);
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
+        if (searchEnabled) {
+            return getSearchFilteredPackageName(groupPosition, childPosition);
+        }
         return getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
+    }
+
+    private String getSearchFilteredPackageName(int groupPosition, int childPosition) {
+        String appGroupName = searchFilteredAppGroups.get(groupPosition);
+        List<String> packageNameList = getPackageListOfAppGroupName(appGroupName);
+        int count = 0;
+        for (String packageName : packageNameList) {
+            if (searchFilteredPackages.contains(packageName)) {
+                if (count == childPosition) {
+                    return packageName;
+                }
+                ++count;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -207,7 +250,12 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         if (convertView == null) {
             convertView = layoutInflator.inflate(R.layout.perspective_appgroup_group_item, null);
         }
-        String appGroup = getAppGroup(groupPosition);
+        String appGroup;
+        if (searchEnabled) {
+            appGroup = searchFilteredAppGroups.get(groupPosition);
+        } else {
+            appGroup = getAppGroup(groupPosition);
+        }
 
         convertView.setTag(appGroup);
         TextView appGroupNameTextView = (TextView) convertView.findViewById(R.id.app_group_name);
@@ -221,8 +269,12 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         if (convertView == null) {
             convertView = layoutInflator.inflate(R.layout.perspective_appgroup_app_item, null);
         }
-        final String packageName
-                = getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
+        final String packageName;
+        if (searchEnabled) {
+            packageName = getSearchFilteredPackageName(groupPosition, childPosition);
+        } else {
+            packageName = getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
+        }
 
         ImageView iconView = (ImageView) convertView.findViewById(R.id.appicon);
         TextView packageNameTextView = (TextView) convertView.findViewById(R.id.packagename);
@@ -338,8 +390,13 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     public boolean onChildClick(
             ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
         final String appGroupName = getAppGroup(groupPosition);
-        final String packageName =
-                getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
+        final String packageName;
+
+        if (searchEnabled) {
+            packageName = getSearchFilteredPackageName(groupPosition, childPosition);
+        } else {
+            packageName = getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
+        }
         if (swipeDetector.swipeDetected()) {
             if (SwipeDetector.Action.RIGHT_TO_LEFT == swipeDetector.getAction()) {
                 final ImageButton imageButton = (ImageButton) v.findViewById(R.id.trashButton);
@@ -374,7 +431,12 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
 
     @Override
     public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-        final String appGroupName = getAppGroup(groupPosition);
+        final String appGroupName;
+        if (searchEnabled) {
+            appGroupName = searchFilteredAppGroups.get(groupPosition);
+        } else {
+            appGroupName = getAppGroup(groupPosition);
+        }
         if (!isGeneratedGroup(appGroupName) && swipeDetector.swipeDetected()) {
             final ImageButton addToGroupButton =
                     (ImageButton) v.findViewById(R.id.add_to_group_button);
@@ -432,6 +494,9 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
             case PACKAGE_ADDED_TO_APP_GROUP:
             case PACKAGE_REMOVED_FROM_APP_GROUP:
                 appGroupToPackageListMap.clear();
+                if (searchEnabled) {
+                    doSearch(lowerCaseSearchQuery);
+                }
                 notifyDataSetChanged();
                 break;
             case PACKAGE_STATE_UPDATED:
@@ -445,6 +510,9 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         allAppGroups.clear();
         allAppGroups.addAll(getSortedAllAppGroups());
         appGroupToPackageListMap.clear();
+        if (searchEnabled) {
+            doSearch(lowerCaseSearchQuery);
+        }
         notifyDataSetChanged();
     }
 
@@ -459,5 +527,48 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
 
     public AppAssetUpdateListener getAppAssetUpdateListener() {
         return appAssetUpdateListener;
+    }
+
+    public void doSearch(String searchQuery) {
+        ImmutableSet.Builder matchingAppsBuilder = new ImmutableSet.Builder<>();
+        for (AppInfo appInfo : packageListProvider.getPackages()) {
+            String packageName = appInfo.getPackageName();
+            if (matchesSearchQuery(searchQuery, packageName, appNameProvider.getAppName(packageName))) {
+                matchingAppsBuilder.add(packageName);
+            }
+        }
+        searchFilteredPackages = matchingAppsBuilder.build();
+        ImmutableList.Builder displayingAppGroupsBuilder = new ImmutableList.Builder();
+        for (String appGroup : allAppGroups) {
+            if (matchesSearchQuery(searchQuery, appGroup)) {
+                displayingAppGroupsBuilder.add(appGroup);
+                continue;
+            }
+            List<String> packagesOfAppGroup = getPackageListOfAppGroupName(appGroup);
+            if (!Collections.disjoint(searchFilteredPackages, packagesOfAppGroup)) {
+                displayingAppGroupsBuilder.add(appGroup);
+            }
+        }
+        searchFilteredAppGroups = displayingAppGroupsBuilder.build();
+        searchEnabled = true;
+        notifyDataSetChanged();
+    }
+
+    private boolean matchesSearchQuery(String searchQuery, String... itemIdentifiers) {
+        lowerCaseSearchQuery = searchQuery.toLowerCase();
+        for (String itemIdentifier : itemIdentifiers) {
+            String lowerCaseItem = itemIdentifier.toLowerCase();
+            if (lowerCaseItem.contains(lowerCaseSearchQuery)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void cancelSearch() {
+        searchFilteredPackages = null;
+        searchFilteredAppGroups = null;
+        searchEnabled = false;
+        notifyDataSetChanged();
     }
 }

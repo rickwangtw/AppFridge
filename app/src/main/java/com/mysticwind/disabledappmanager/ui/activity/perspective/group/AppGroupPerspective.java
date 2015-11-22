@@ -18,6 +18,9 @@ import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
 
 import org.androidannotations.annotations.EActivity;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @EActivity
 public class AppGroupPerspective extends PerspectiveBase {
 
@@ -72,5 +75,15 @@ public class AppGroupPerspective extends PerspectiveBase {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void performSearch(String searchQuery) {
+        appGroupListAdapter.doSearch(searchQuery);
+    }
+
+    @Override
+    protected void cancelSearch() {
+        appGroupListAdapter.cancelSearch();
     }
 }

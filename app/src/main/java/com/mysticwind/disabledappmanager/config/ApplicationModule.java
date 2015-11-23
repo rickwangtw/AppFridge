@@ -32,7 +32,9 @@ import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigServic
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.EventBusManualStateUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.state.EventBusPackageStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.TimerTriggeredDisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 import com.mysticwind.disabledappmanager.domain.timer.AndroidHandlerTimerManager;
@@ -106,8 +108,14 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public PackageStateController providePackageStateController() {
-        return new RootProcessPackageStateController();
+    public PackageStateUpdateEventManager providePackageStateUpdateEventManager(EventBus eventBus) {
+        return new EventBusPackageStateUpdateEventManager(eventBus);
+    }
+
+    @Provides @Singleton
+    public PackageStateController providePackageStateController(
+            PackageStateUpdateEventManager packageStateUpdateEventManager) {
+        return new RootProcessPackageStateController(packageStateUpdateEventManager);
     }
 
     @Provides @Singleton

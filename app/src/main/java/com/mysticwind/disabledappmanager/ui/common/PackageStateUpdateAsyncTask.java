@@ -10,10 +10,7 @@ import com.mysticwind.disabledappmanager.domain.PackageStateController;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Observer;
 import java.util.Set;
-
-import de.greenrobot.event.EventBus;
 
 public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collection<String>> {
     private static final String TAG = "PackageStateUpdateTask";
@@ -23,9 +20,6 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collectio
     private final boolean state;
     private Dialog progressDialog;
     private Toast endingToast;
-    private Observer observer;
-    private Object message;
-    private Object eventToPost;
 
     public PackageStateUpdateAsyncTask(PackageStateController packageStateController,
                                        AppStateProvider appStateProvider,
@@ -46,17 +40,6 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collectio
         return this;
     }
 
-    public PackageStateUpdateAsyncTask withNotification(Observer observer, Object message) {
-        this.observer = observer;
-        this.message = message;
-        return this;
-    }
-
-    public PackageStateUpdateAsyncTask withCompletedEvent(Object event) {
-        this.eventToPost = event;
-        return this;
-    }
-
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -70,12 +53,6 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collectio
         super.onPostExecute(actionedPackages);
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
-        }
-        if (observer != null) {
-            observer.update(null, message);
-        }
-        if (eventToPost != null) {
-            EventBus.getDefault().post(eventToPost);
         }
         if (endingToast != null) {
             endingToast.show();

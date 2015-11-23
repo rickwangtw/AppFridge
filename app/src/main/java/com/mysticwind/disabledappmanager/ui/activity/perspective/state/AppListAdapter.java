@@ -21,18 +21,16 @@ import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
-import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
-import com.mysticwind.disabledappmanager.ui.common.Action;
+import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdate;
+import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateListener;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
 import de.greenrobot.event.EventBus;
 
-public class AppListAdapter extends BaseAdapter implements Observer, AppAssetUpdateListener {
+public class AppListAdapter extends BaseAdapter implements Observer {
     private static final String TAG = "AppListAdapter";
 
     private final Context context;
@@ -46,6 +44,21 @@ public class AppListAdapter extends BaseAdapter implements Observer, AppAssetUpd
     private List<AppInfo> appInfoList;
     private List<AppInfo> searchFilteredAppInfoList;
     private boolean searchEnabled = false;
+
+    private AppAssetUpdateListener appAssetUpdateListener = new AppAssetUpdateListener() {
+        @Override
+        public void update(AppAssetUpdate event) {
+            notifyDataSetChanged();
+        }
+    };
+
+    private PackageStateUpdateListener packageStateUpdateListener = new PackageStateUpdateListener() {
+        @Override
+        public void update(PackageStateUpdate event) {
+            appInfoList = packageListProvider.getOrderedPackages();
+            notifyDataSetChanged();
+        }
+    };
 
     public AppListAdapter(Context context, PackageListProvider packageListProvider, AppStateProvider appStateProvider,
                           AppIconProvider appIconProvider,
@@ -63,8 +76,6 @@ public class AppListAdapter extends BaseAdapter implements Observer, AppAssetUpd
 
         this.appInfoList = packageListProvider.getOrderedPackages();
         Log.i(TAG, "Size of packages: " + appInfoList.size());
-
-        EventBus.getDefault().register(this);
     }
 
     public int getCount() {
@@ -160,23 +171,17 @@ public class AppListAdapter extends BaseAdapter implements Observer, AppAssetUpd
     }
 
     @Override
+    // observer for app selection
     public void update(Observable observable, Object data) {
         this.appInfoList = packageListProvider.getOrderedPackages();
         notifyDataSetChanged();
     }
 
-    // This method will be called from EventBus when Action is called
-    public void onEventMainThread(Action event){
-        switch (event) {
-            case PACKAGE_STATE_UPDATED:
-                this.appInfoList = packageListProvider.getOrderedPackages();
-                notifyDataSetChanged();
-                break;
-        }
+    public AppAssetUpdateListener getAppAssetUpdateListener() {
+        return appAssetUpdateListener;
     }
 
-    @Override
-    public void update(AppAssetUpdate event) {
-        notifyDataSetChanged();
+    public PackageStateUpdateListener getPackageStateUpdateListener() {
+        return packageStateUpdateListener;
     }
 }

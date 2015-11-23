@@ -21,6 +21,7 @@ import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.ui.activity.help.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
 import com.mysticwind.disabledappmanager.common.ApplicationHelper;
@@ -36,6 +37,7 @@ public abstract class PerspectiveBase extends AppCompatActivity {
     protected ManualStateUpdateEventManager manualStateUpdateEventManager;
     protected AppGroupManager appGroupManager;
     protected AppGroupUpdateEventManager appGroupUpdateEventManager;
+    protected PackageStateUpdateEventManager packageStateUpdateEventManager;
     protected Drawable searchIconDrawable;
     protected Drawable closeIconDrawable;
 
@@ -60,6 +62,7 @@ public abstract class PerspectiveBase extends AppCompatActivity {
         this.manualStateUpdateEventManager = ApplicationHelper.from(this).manualStateUpdateEventManager();
         this.appGroupManager = ApplicationHelper.from(this).appGroupManager();
         this.appGroupUpdateEventManager = ApplicationHelper.from(this).appGroupUpdateEventManager();
+        this.packageStateUpdateEventManager = ApplicationHelper.from(this).packageStateUpdateEventManager();
 
         this.searchIconDrawable = getResources().getDrawable(R.drawable.ic_search_white_48dp);
         this.closeIconDrawable = getResources().getDrawable(R.drawable.ic_close_white_48dp);

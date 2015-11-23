@@ -20,6 +20,7 @@ import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigServic
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.ui.widget.config.WidgetConfigDataAccessor;
 
 import net.danlew.android.joda.JodaTimeAndroid;
@@ -78,6 +79,11 @@ public class AppFridgeApplication extends Application implements ApplicationComp
     @Override
     public AppStateProvider appStateProvider() {
         return component.appStateProvider();
+    }
+
+    @Override
+    public PackageStateUpdateEventManager packageStateUpdateEventManager() {
+        return component.packageStateUpdateEventManager();
     }
 
     @Override

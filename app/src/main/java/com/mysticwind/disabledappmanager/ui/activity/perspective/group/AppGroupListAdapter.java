@@ -29,14 +29,14 @@ import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdate;
-import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateListener;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
-import com.mysticwind.disabledappmanager.ui.common.Action;
+import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdate;
+import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateListener;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
 import com.mysticwind.disabledappmanager.ui.common.SwipeDetector;
@@ -49,15 +49,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
-
-import de.greenrobot.event.EventBus;
 
 public class AppGroupListAdapter extends BaseExpandableListAdapter
         implements AdapterView.OnItemLongClickListener, ExpandableListView.OnChildClickListener,
-        ExpandableListView.OnGroupClickListener, Observer {
+        ExpandableListView.OnGroupClickListener {
     private static final String TAG = "AppGroupListAdapter";
 
     private final Context context;
@@ -114,6 +110,13 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         }
     };
 
+    private PackageStateUpdateListener packageStateUpdateListener = new PackageStateUpdateListener() {
+        @Override
+        public void update(PackageStateUpdate event) {
+            notifyDataSetChanged();
+        }
+    };
+
     public AppGroupListAdapter(Context context, AppGroupManager appGroupManager,
                                AppIconProvider appIconProvider, AppNameProvider appNameProvider,
                                AppStateProvider appStateProvider,
@@ -138,8 +141,6 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         this.allAppGroups = getSortedAllAppGroups();
         this.groupActionDialog = buildGroupActionDialog();
         this.progressDialog = DialogHelper.newProgressDialog(context);
-
-        EventBus.getDefault().register(this);
     }
 
     private List<String> getSortedAllAppGroups() {
@@ -371,7 +372,6 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                                         context.getResources().getString(
                                                 R.string.toast_enabled_packages_msg_prefix) + " " + packages,
                                         Toast.LENGTH_SHORT))
-                                .withNotification(AppGroupListAdapter.this, Action.PACKAGE_STATE_UPDATED)
                                 .execute();
                     }
                 })
@@ -388,7 +388,6 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                                         context.getResources().getString(
                                                 R.string.toast_disabled_packages_msg_prefix)+ " " + packages,
                                         Toast.LENGTH_SHORT))
-                                .withNotification(AppGroupListAdapter.this, Action.PACKAGE_STATE_UPDATED)
                                 .execute();
                     }
                 });
@@ -495,17 +494,6 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         view.setFocusable(false);
     }
 
-
-    @Override
-    public void update(Observable observable, Object data) {
-        Action action = (Action) data;
-        switch (action) {
-            case PACKAGE_STATE_UPDATED:
-                notifyDataSetChanged();
-                break;
-        }
-    }
-
     private void onAppGroupUpdated() {
         selectedAppGroupName = null;
         allAppGroups.clear();
@@ -517,17 +505,16 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
         notifyDataSetChanged();
     }
 
-    // This method will be called from EventBus when Action is called
-    public void onEventMainThread(Action event){
-        update(null, event);
-    }
-
     public AppGroupUpdateListener getAppGroupUpdateListener() {
         return appGroupUpdateListener;
     }
 
     public AppAssetUpdateListener getAppAssetUpdateListener() {
         return appAssetUpdateListener;
+    }
+
+    public PackageStateUpdateListener getPackageStateUpdateListener() {
+        return packageStateUpdateListener;
     }
 
     public void doSearch(String searchQuery) {

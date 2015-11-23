@@ -10,7 +10,6 @@ import android.widget.Toast;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
 import com.mysticwind.disabledappmanager.domain.state.DisabledStateDetectionRequest;
-import com.mysticwind.disabledappmanager.ui.common.Action;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 
 import java.util.Arrays;
@@ -45,7 +44,6 @@ public class AutoDisablingAppLauncher implements AppLauncher {
 
     private enum AppLaunchProgress {
         NOTIFY_APP_ENABLING,
-        NOTIFY_APP_STATE_CHANGED,
         APP_LAUNCH_READY,
         NOTIFY_NO_LAUNCHING_INTENT,
         NOTIFY_APP_DISABLED,
@@ -84,7 +82,6 @@ public class AutoDisablingAppLauncher implements AppLauncher {
             if (!isEnabled) {
                 publishProgress(AppLaunchProgress.NOTIFY_APP_ENABLING);
                 packageStateController.enablePackages(Arrays.asList(packageName));
-                publishProgress(AppLaunchProgress.NOTIFY_APP_STATE_CHANGED);
             }
             applicationLaunchIntent = packageManager.getLaunchIntentForPackage(packageName);
             publishProgress(AppLaunchProgress.APP_LAUNCH_READY);
@@ -94,7 +91,6 @@ public class AutoDisablingAppLauncher implements AppLauncher {
                 if (!isEnabled) {
                     packageStateController.disablePackages(Arrays.asList(packageName));
                     publishProgress(AppLaunchProgress.NOTIFY_APP_DISABLED);
-                    publishProgress(AppLaunchProgress.NOTIFY_APP_STATE_CHANGED);
                 }
             } else {
                 publishProgress(AppLaunchProgress.LAUNCH_APPLICATION);
@@ -115,9 +111,6 @@ public class AutoDisablingAppLauncher implements AppLauncher {
                             context, context.getResources().getString(
                                     R.string.toast_enabled_packages_msg_prefix) + " " + packageName,
                             Toast.LENGTH_SHORT).show();
-                    break;
-                case NOTIFY_APP_STATE_CHANGED:
-                    postPackageStateUpdated();
                     break;
                 case APP_LAUNCH_READY:
                     progressDialog.dismiss();
@@ -147,9 +140,5 @@ public class AutoDisablingAppLauncher implements AppLauncher {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
         }
-    }
-
-    private void postPackageStateUpdated() {
-        EventBus.getDefault().post(Action.PACKAGE_STATE_UPDATED);
     }
 }

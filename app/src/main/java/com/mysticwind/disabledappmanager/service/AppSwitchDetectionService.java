@@ -18,7 +18,6 @@ import com.mysticwind.disabledappmanager.domain.state.DisabledStateDetectionRequ
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.domain.state.StateDecision;
-import com.mysticwind.disabledappmanager.ui.common.Action;
 import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
 
@@ -100,7 +99,6 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
                     appStateProvider,
                     ImmutableList.of(stateDecision.getPackageName()),
                     false)
-                .withCompletedEvent(Action.PACKAGE_STATE_UPDATED)
                 .withEndingToast(endingToast)
                 .execute();
     }

@@ -16,6 +16,7 @@ import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigServic
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.ui.widget.config.WidgetConfigDataAccessor;
 
 import javax.inject.Singleton;
@@ -32,6 +33,7 @@ public interface ApplicationComponent {
     AppIconProvider appIconProvider();
     AppNameProvider appNameProvider();
     AppStateProvider appStateProvider();
+    PackageStateUpdateEventManager packageStateUpdateEventManager();
     PackageStateController packageStateController();
     AppLauncher appLauncher();
     DisabledPackageStateDecider disabledPackageStateDecider();

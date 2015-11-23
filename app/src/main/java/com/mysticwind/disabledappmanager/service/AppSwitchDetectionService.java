@@ -14,14 +14,12 @@ import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.state.DecisionObserver;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
-import com.mysticwind.disabledappmanager.domain.state.DisabledStateDetectionRequest;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.domain.state.StateDecision;
 import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
 
-import de.greenrobot.event.EventBus;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -48,8 +46,6 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
 
         this.disabledPackageStateDecider.registerDecisionObserver(this);
         this.manualStateUpdateEventManager.registerListener(disabledPackageStateDecider);
-
-        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -101,12 +97,5 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
                     false)
                 .withEndingToast(endingToast)
                 .execute();
-    }
-
-    // EventBus
-    public void onEvent(DisabledStateDetectionRequest request) {
-        log.debug(String.format("Received disabled state detection request: (%s, %d)",
-                request.getPackageName(), request.getNoActivityTimeoutInSeconds()));
-        disabledPackageStateDecider.addDetectionRequest(request);
     }
 }

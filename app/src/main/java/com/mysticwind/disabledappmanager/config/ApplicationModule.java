@@ -129,9 +129,10 @@ public class ApplicationModule {
             AutoDisablingConfigService autoDisablingConfigService,
             PackageManager packageManager,
             AppStateProvider appStateProvider,
-            PackageStateController packageStateController) {
+            PackageStateController packageStateController,
+            DisabledPackageStateDecider disabledPackageStateDecider) {
         return new AutoDisablingAppLauncher(autoDisablingConfigService,
-                packageManager, appStateProvider, packageStateController);
+                packageManager, appStateProvider, packageStateController, disabledPackageStateDecider);
     }
 
     @Provides @Singleton

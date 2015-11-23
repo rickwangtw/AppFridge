@@ -9,27 +9,29 @@ import android.widget.Toast;
 
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
+import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.DisabledStateDetectionRequest;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 
 import java.util.Arrays;
-
-import de.greenrobot.event.EventBus;
 
 public class AutoDisablingAppLauncher implements AppLauncher {
     private final AutoDisablingConfigService autoDisablingConfigService;
     private final PackageManager packageManager;
     private final AppStateProvider appStateProvider;
     private final PackageStateController packageStateController;
+    private final DisabledPackageStateDecider disabledPackageStateDecider;
 
     public AutoDisablingAppLauncher(AutoDisablingConfigService autoDisablingConfigService,
                                     PackageManager packageManager,
                                     AppStateProvider appStateProvider,
-                                    PackageStateController packageStateController) {
+                                    PackageStateController packageStateController,
+                                    DisabledPackageStateDecider disabledPackageStateDecider) {
         this.autoDisablingConfigService = autoDisablingConfigService;
         this.packageManager = packageManager;
         this.appStateProvider = appStateProvider;
         this.packageStateController = packageStateController;
+        this.disabledPackageStateDecider = disabledPackageStateDecider;
     }
 
     @Override
@@ -129,7 +131,7 @@ public class AutoDisablingAppLauncher implements AppLauncher {
                     context.startActivity(applicationLaunchIntent);
                     // auto disable package after 1 min of not in foreground
                     if (isAutoDisablingOn) {
-                        EventBus.getDefault().post(
+                        disabledPackageStateDecider.addDetectionRequest(
                                 new DisabledStateDetectionRequest(packageName, inactiveTimeoutInSeconds));
                     }
                     break;

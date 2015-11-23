@@ -13,12 +13,10 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.mysticwind.disabledappmanager.R;
-import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerDisabledPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerEnabledPackageListProvider;
-import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.PerspectiveBase;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective_;
 
@@ -46,8 +44,7 @@ public class PackageStatePerspective extends PerspectiveBase {
         defaultPackageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
 
         appSelectedListener = new AppSelectedListener(this, layoutInflater, packageStateController,
-                appStateProvider, new AppGroupManagerImpl(new AppGroupDAO(this)),
-                manualStateUpdateEventManager);
+                appStateProvider, appGroupManager, manualStateUpdateEventManager);
 
         Button addToGroupButton = (Button) findViewById(R.id.add_to_group_button);
         addToGroupButton.setOnClickListener(appSelectedListener);

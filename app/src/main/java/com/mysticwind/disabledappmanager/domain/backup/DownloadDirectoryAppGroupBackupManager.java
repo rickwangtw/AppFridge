@@ -145,7 +145,6 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
 
             if (!packages.isEmpty()) {
                 appGroupManager.addPackagesToAppGroup(packages, appGroupName);
-                appGroupUpdateEventManager.publishUpdate(appGroupName, AppGroupOperation.ADD);
             }
         }
     }

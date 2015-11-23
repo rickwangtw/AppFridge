@@ -70,7 +70,7 @@ public class AppGroupPerspective extends PerspectiveBase {
                 return true;
             case R.id.action_new_app_group:
                 DialogHelper.newNewAppGroupDialog(this, packageListProvider, appIconProvider,
-                        appNameProvider, appGroupManager, appGroupListAdapter).show();
+                        appNameProvider, appGroupManager).show();
                 return true;
         }
 

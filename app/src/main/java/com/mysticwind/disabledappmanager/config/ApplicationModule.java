@@ -153,8 +153,9 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public AppGroupManager provideAppGroupManager(Context context) {
-        return new AppGroupManagerImpl(new AppGroupDAO(context));
+    public AppGroupManager provideAppGroupManager(
+            Context context, AppGroupUpdateEventManager appGroupUpdateEventManager) {
+        return new AppGroupManagerImpl(new AppGroupDAO(context), appGroupUpdateEventManager);
     }
 
     @Provides @Singleton

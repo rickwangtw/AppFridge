@@ -29,6 +29,7 @@ import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdate;
+import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateListener;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
@@ -91,6 +92,14 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                 case DELETE:
                     onAppGroupUpdated();
                     return;
+                case PACKAGE_ADDED:
+                case PACKAGE_REMOVED:
+                    appGroupToPackageListMap.clear();
+                    if (searchEnabled) {
+                        doSearch(lowerCaseSearchQuery);
+                    }
+                    notifyDataSetChanged();
+                    break;
             }
         }
     };
@@ -406,7 +415,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     @Override
                     public void onClick(View v) {
                         DialogHelper.newConfirmDeletePackageFromAppGroupDialog(context, packageName,
-                                appGroupName, appGroupManager, AppGroupListAdapter.this).show();
+                                appGroupName, appGroupManager).show();
                         imageButton.setVisibility(View.GONE);
                     }
                 });
@@ -448,7 +457,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     public void onClick(View v) {
                         DialogHelper.newPackageListForAddingToGroupDialog(context, appGroupName,
                                 packageListProvider, appIconProvider, appNameProvider,
-                                appGroupManager, AppGroupListAdapter.this).show();
+                                appGroupManager).show();
                         setGroupImageButtonAttributes(addToGroupButton, false);
                         setGroupImageButtonAttributes(trashButton, false);
                     }
@@ -458,7 +467,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     @Override
                     public void onClick(View v) {
                         DialogHelper.newConfirmDeleteAppGroupDialog(context, appGroupName,
-                                appGroupManager, AppGroupListAdapter.this).show();
+                                appGroupManager).show();
                         setGroupImageButtonAttributes(addToGroupButton, false);
                         setGroupImageButtonAttributes(trashButton, false);
                     }
@@ -491,14 +500,6 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
     public void update(Observable observable, Object data) {
         Action action = (Action) data;
         switch (action) {
-            case PACKAGE_ADDED_TO_APP_GROUP:
-            case PACKAGE_REMOVED_FROM_APP_GROUP:
-                appGroupToPackageListMap.clear();
-                if (searchEnabled) {
-                    doSearch(lowerCaseSearchQuery);
-                }
-                notifyDataSetChanged();
-                break;
             case PACKAGE_STATE_UPDATED:
                 notifyDataSetChanged();
                 break;

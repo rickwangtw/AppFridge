@@ -98,8 +98,8 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public AppAssetUpdateEventManager provideAppAssetUpdateEventManager(EventBus eventBus) {
-        return new EventBusAppAssetUpdateEventManager(eventBus);
+    public AppAssetUpdateEventManager provideAppAssetUpdateEventManager() {
+        return new EventBusAppAssetUpdateEventManager(new EventBus());
     }
 
     @Provides @Singleton
@@ -108,8 +108,8 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public PackageStateUpdateEventManager providePackageStateUpdateEventManager(EventBus eventBus) {
-        return new EventBusPackageStateUpdateEventManager(eventBus);
+    public PackageStateUpdateEventManager providePackageStateUpdateEventManager() {
+        return new EventBusPackageStateUpdateEventManager(new EventBus());
     }
 
     @Provides @Singleton
@@ -152,13 +152,8 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public EventBus provideEventBus() {
-        return EventBus.getDefault();
-    }
-
-    @Provides @Singleton
-    public ManualStateUpdateEventManager provideManualStateUpdateEventManager(EventBus eventBus) {
-        return new EventBusManualStateUpdateEventManager(eventBus);
+    public ManualStateUpdateEventManager provideManualStateUpdateEventManager() {
+        return new EventBusManualStateUpdateEventManager(new EventBus());
     }
 
     @Provides @Singleton
@@ -168,8 +163,8 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public AppGroupUpdateEventManager provideAppGroupUpdateEventManager(EventBus eventBus) {
-        return new EventBusAppGroupUpdateEventManager(eventBus);
+    public AppGroupUpdateEventManager provideAppGroupUpdateEventManager() {
+        return new EventBusAppGroupUpdateEventManager(new EventBus());
     }
 
     @Provides @Singleton

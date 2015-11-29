@@ -13,6 +13,9 @@ import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
+import com.mysticwind.disabledappmanager.domain.asset.DatabaseCachedPackageAssetServiceDecorator;
+import com.mysticwind.disabledappmanager.domain.asset.DefaultValuePackageAssetServiceDecorator;
+import com.mysticwind.disabledappmanager.domain.asset.MemCachedPackageAssetServiceDecorator;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.AutoDisablingAppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
@@ -23,6 +26,7 @@ import com.mysticwind.disabledappmanager.domain.appgroup.EventBusAppGroupUpdateE
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.EventBusAppAssetUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.PackageManagerPackageAssetService;
+import com.mysticwind.disabledappmanager.domain.asset.dao.CachedPackageAssetsDAO;
 import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.backup.DownloadDirectoryAppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.config.AnnotationGeneratedConfigAutoDisablingConfigService;
@@ -81,10 +85,18 @@ public class ApplicationModule {
 
     @Provides @Singleton
     public PackageAssetService providePackageAssetService(
-            PackageManager packageManager, AppAssetUpdateEventManager appAssetUpdateEventManager,
+            PackageManager packageManager, Context context, AppAssetUpdateEventManager appAssetUpdateEventManager,
             Drawable defaultIcon) {
-        return new PackageManagerPackageAssetService(
-                packageManager, appAssetUpdateEventManager, defaultIcon);
+        return new DefaultValuePackageAssetServiceDecorator(
+                new MemCachedPackageAssetServiceDecorator(
+                        new DatabaseCachedPackageAssetServiceDecorator(
+                                new PackageManagerPackageAssetService(
+                                        packageManager,
+                                        appAssetUpdateEventManager
+                                ),
+                                new CachedPackageAssetsDAO(context)
+                        )
+                ), defaultIcon);
     }
 
     @Provides @Singleton

@@ -72,6 +72,16 @@ public class PackageManagerPackageAssetService implements PackageAssetService {
                 .executeOnExecutor(THREAD_POOL_EXECUTOR);
     }
 
+    @Override
+    public PackageAssets getPackageAssets(String packageName) {
+        String appName = getAppName(packageName);
+        Drawable iconDrawable = getAppIcon(packageName);
+        if (appName == null || iconDrawable == null) {
+            return null;
+        }
+        return new PackageAssets(packageName, getAppName(packageName), getAppIcon(packageName));
+    }
+
     private static class PackageAssetLoaderAsyncTask extends AsyncTask<Void, Void, Boolean> {
         private final String packageName;
         private final PackageManager packageManager;

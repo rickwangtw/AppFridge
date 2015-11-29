@@ -29,15 +29,12 @@ public class PackageManagerPackageAssetService implements PackageAssetService {
 
     private final PackageManager packageManager;
     private final AppAssetUpdateEventManager appAssetUpdateEventManager;
-    private final Drawable defaultIcon;
 
     public PackageManagerPackageAssetService(
             PackageManager packageManager,
-            AppAssetUpdateEventManager appAssetUpdateEventManager,
-            Drawable defaultIcon) {
+            AppAssetUpdateEventManager appAssetUpdateEventManager) {
         this.packageManager = packageManager;
         this.appAssetUpdateEventManager = appAssetUpdateEventManager;
-        this.defaultIcon = defaultIcon;
 
         preloadAssetForAllPackages();
     }
@@ -55,7 +52,7 @@ public class PackageManagerPackageAssetService implements PackageAssetService {
         Drawable icon = PACKAGE_NAME_TO_ICON_MAP.get(packageName);
         if (icon == null) {
             runPackageAssetLoaderAsyncTask(packageName);
-            return defaultIcon;
+            return null;
         }
         return icon;
     }
@@ -65,7 +62,7 @@ public class PackageManagerPackageAssetService implements PackageAssetService {
         String applicationName = PACKAGE_NAME_TO_APP_NAME_MAP.get(packageName);
         if (applicationName == null) {
             runPackageAssetLoaderAsyncTask(packageName);
-            return packageName;
+            return null;
         }
         return applicationName;
     }

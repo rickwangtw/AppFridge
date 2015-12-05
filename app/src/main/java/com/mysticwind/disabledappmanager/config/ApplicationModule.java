@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 
-import com.gmr.acacia.Acacia;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
@@ -13,6 +12,8 @@ import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
+import com.mysticwind.disabledappmanager.domain.PackageListProvider;
+import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.asset.DatabaseCachedPackageAssetServiceDecorator;
 import com.mysticwind.disabledappmanager.domain.asset.DefaultValuePackageAssetServiceDecorator;
 import com.mysticwind.disabledappmanager.domain.asset.MemCachedPackageAssetServiceDecorator;
@@ -55,6 +56,10 @@ import de.greenrobot.event.EventBus;
 
 @Module
 public class ApplicationModule {
+    private static class PackageListProviderNames {
+        static final String ALL_PACKAGE_NAME = "allPackageListProvider";
+    }
+
     private final Context context;
     private final AutoDisablingConfig_ autoDisablingConfig;
 
@@ -168,10 +173,19 @@ public class ApplicationModule {
         return new EventBusManualStateUpdateEventManager(new EventBus());
     }
 
+    @Provides @Singleton @Named(PackageListProviderNames.ALL_PACKAGE_NAME)
+    public PackageListProvider providePackageListProvider(PackageManager packageManager) {
+        return new PackageManagerAllPackageListProvider(packageManager);
+    }
+
     @Provides @Singleton
     public AppGroupManager provideAppGroupManager(
-            Context context, AppGroupUpdateEventManager appGroupUpdateEventManager) {
-        return new AppGroupManagerImpl(new AppGroupDAO(context), appGroupUpdateEventManager);
+            Context context,
+            AppGroupUpdateEventManager appGroupUpdateEventManager,
+            @Named(PackageListProviderNames.ALL_PACKAGE_NAME)
+            PackageListProvider packageListProvider) {
+        return new AppGroupManagerImpl(
+                new AppGroupDAO(context), appGroupUpdateEventManager, packageListProvider);
     }
 
     @Provides @Singleton

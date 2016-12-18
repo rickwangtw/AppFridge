@@ -1,9 +1,11 @@
 package com.mysticwind.disabledappmanager.domain.backup;
 
+import android.content.ContentResolver;
 import android.support.v4.provider.DocumentFile;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
+import com.google.common.io.Closeables;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,10 +16,11 @@ import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventMana
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.Comparator;
@@ -42,11 +45,14 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
 
     private final AppGroupManager appGroupManager;
     private final AppGroupUpdateEventManager appGroupUpdateEventManager;
+    private final ContentResolver contentResolver;
 
     public DownloadDirectoryAppGroupBackupManager(final AppGroupManager appGroupManager,
-                                                  final AppGroupUpdateEventManager appGroupUpdateEventManager) {
+                                                  final AppGroupUpdateEventManager appGroupUpdateEventManager,
+                                                  final ContentResolver contentResolver) {
         this.appGroupManager = appGroupManager;
         this.appGroupUpdateEventManager = appGroupUpdateEventManager;
+        this.contentResolver = contentResolver;
     }
 
     @Override
@@ -112,22 +118,24 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
     }
 
     @Override
-    public void restore(String backupUniqueId) {
-        File backupToRestore = new File(Constants.BACKUP_DIRECTORY, backupUniqueId);
-        BufferedReader reader;
+    public void restore(DocumentFile backupDirectory, String backupUniqueId) {
+        DocumentFile fileToRestore = backupDirectory.findFile(backupUniqueId);
+        if (!fileToRestore.canRead()) {
+            throw new IllegalStateException("Unable to read file to restore: " + backupUniqueId);
+        }
+        InputStream inputStream = null;
         try {
-            reader = Files.newReader(backupToRestore, defaultCharset);
+            inputStream = contentResolver.openInputStream(fileToRestore.getUri());
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("File " + backupToRestore.getAbsolutePath() + " not readable!");
+            throw new RuntimeException("File not found: " + backupUniqueId, e);
         }
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+
         Type type = new TypeToken<Map<String, Set<String>>>(){}.getType();
-        Map<String, Set<String>> appGroupToPackagesMap = new Gson().fromJson(reader, type);
+        Map<String, Set<String>> appGroupToPackagesMap = new Gson().fromJson(inputStreamReader, type);
         restoreWithEventPublished(appGroupToPackagesMap);
-        try {
-            reader.close();
-        } catch (IOException e) {
-            log.warn("Failure closing reader for " + backupUniqueId, e);
-        }
+
+        Closeables.closeQuietly(inputStreamReader);
     }
 
     private void restoreWithEventPublished(Map<String, Set<String>> appGroupToPackagesMap) {

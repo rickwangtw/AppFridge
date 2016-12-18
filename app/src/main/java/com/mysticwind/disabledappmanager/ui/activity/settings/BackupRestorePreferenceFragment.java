@@ -224,7 +224,8 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
                     @Override
                     protected Boolean doInBackground(Void... params) {
                         try {
-                            appGroupBackupManager.restore(backupUniqueId);
+                            DocumentFile documentFile = DocumentFile.fromTreeUri(getActivity(), backupPathUri);
+                            appGroupBackupManager.restore(documentFile, backupUniqueId);
                             return true;
                         } catch (Throwable t) {
                             throwable = t;

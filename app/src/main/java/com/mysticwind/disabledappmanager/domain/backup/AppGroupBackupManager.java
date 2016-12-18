@@ -7,5 +7,5 @@ import java.util.List;
 public interface AppGroupBackupManager {
     void backup();
     List<BackupIdentifier> getBackupsOrderedUnderDirectory(DocumentFile documentFile);
-    void restore(String backupUniqueId);
+    void restore(DocumentFile backupDirectory, String backupUniqueId);
 }

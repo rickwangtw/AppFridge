@@ -220,9 +220,10 @@ public class ApplicationModule {
     @Provides @Singleton
     public AppGroupBackupManager provideAppGroupBackupManager(
                     final AppGroupManager appGroupManager,
-                    final AppGroupUpdateEventManager appGroupUpdateEventManager) {
+                    final AppGroupUpdateEventManager appGroupUpdateEventManager,
+                    final Context context) {
         return new DownloadDirectoryAppGroupBackupManager(
-                appGroupManager, appGroupUpdateEventManager);
+                appGroupManager, appGroupUpdateEventManager, context.getContentResolver());
     }
 
     private static final String widgetConfigSharedPreferencesName = "widgetConfigSharedPreferencesName";

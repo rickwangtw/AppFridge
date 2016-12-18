@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AppGroupDAO extends SQLiteOpenHelper {
-    private static final String TAG = "AppGroupDAO";
+
     private static final int DATABASE_VERSION = 1;
     private static final String TABLE_NAME = "app_groups";
     private static final String APP_GROUP_NAME_COLUMN = "app_group_name";

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class PackageMangerPackageListProviderBase extends AbstractPackageListProvider {
-    private static final String TAG = "PMPackageListProvider";
 
     private final PackageManager packageManager;
 

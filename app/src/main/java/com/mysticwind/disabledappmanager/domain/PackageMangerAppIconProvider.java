@@ -2,10 +2,11 @@ package com.mysticwind.disabledappmanager.domain;
 
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class PackageMangerAppIconProvider implements AppIconProvider {
-    private static final String TAG = "PMAppIconProvider";
 
     private final PackageManager packageManager;
 
@@ -19,7 +20,7 @@ public class PackageMangerAppIconProvider implements AppIconProvider {
             return packageManager.getApplicationIcon(packageName).getCurrent();
         } catch (PackageManager.NameNotFoundException e) {
             String errorMessage = "Failed to obtain application icon for package: " + packageName;
-            Log.e(TAG, errorMessage, e);
+            log.error(errorMessage, e);
             throw new IllegalArgumentException(errorMessage, e);
         }
     }

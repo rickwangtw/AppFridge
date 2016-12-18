@@ -2,10 +2,11 @@ package com.mysticwind.disabledappmanager.domain;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.util.Log;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class PackageMangerAppStateProvider implements AppStateProvider {
-    private static final String TAG = "PMAppStateProvider";
 
     private final PackageManager packageManager;
 
@@ -21,7 +22,7 @@ public class PackageMangerAppStateProvider implements AppStateProvider {
             return appInfo.enabled;
         } catch (PackageManager.NameNotFoundException e) {
             String errorMessage = "Failed to obtain application info for package: " + packageName;
-            Log.e(TAG, errorMessage, e);
+            log.error(errorMessage, e);
             throw new IllegalArgumentException(errorMessage, e);
         }
     }

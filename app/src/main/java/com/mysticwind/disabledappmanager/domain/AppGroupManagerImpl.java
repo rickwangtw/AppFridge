@@ -1,6 +1,5 @@
 package com.mysticwind.disabledappmanager.domain;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupOperation;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
@@ -12,7 +11,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AppGroupManagerImpl implements AppGroupManager {
-    private static final String TAG = "AppGroupManagerImpl";
 
     private final AppGroupDAO appGroupDAO;
     private final AppGroupUpdateEventManager appGroupUpdateEventManager;

@@ -2,7 +2,6 @@ package com.mysticwind.disabledappmanager.ui.common;
 
 import android.app.Dialog;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
@@ -12,12 +11,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collection<String>> {
-    private static final String TAG = "PackageStateUpdateTask";
+
     private final PackageStateController packageStateController;
     private final AppStateProvider appStateProvider;
     private final Collection<String> packages;
     private final boolean state;
+
     private Dialog progressDialog;
     private Toast endingToast;
 
@@ -57,7 +60,7 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collectio
         if (endingToast != null) {
             endingToast.show();
         }
-        Log.d(TAG, "Actioned (" + state + ") packages: " + actionedPackages);
+        log.debug("Actioned (" + state + ") packages: " + actionedPackages);
     }
 
     @Override

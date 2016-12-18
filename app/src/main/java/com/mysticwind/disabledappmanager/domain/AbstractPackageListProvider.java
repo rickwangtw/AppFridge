@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 
 public abstract class AbstractPackageListProvider implements PackageListProvider {
-    private static final String TAG = "AbstractPackageListProvider";
 
     @Override
     public List<AppInfo> getOrderedPackages() {

@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,10 +50,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class AppGroupListAdapter extends BaseExpandableListAdapter
         implements AdapterView.OnItemLongClickListener, ExpandableListView.OnChildClickListener,
         ExpandableListView.OnGroupClickListener {
-    private static final String TAG = "AppGroupListAdapter";
 
     private final Context context;
     private final AppGroupManager appGroupManager;
@@ -346,7 +347,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
             /* do nothing when child items are long clicked */
             return true;
         }
-        Log.d(TAG, "Long clicked group name: " + appGroupName);
+        log.debug("Long clicked group name: " + appGroupName);
         this.selectedAppGroupName = appGroupName;
 
         String titlePrefix = context.getResources().getString(
@@ -364,7 +365,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
-                        Log.d(TAG, "Enable apps: " + packages);
+                        log.debug("Enable apps: " + packages);
                         notifyManualStateUpdate(packages, true);
                         new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, packages, true)
                                 .withProgressDialog(progressDialog)
@@ -380,7 +381,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
-                        Log.d(TAG, "Disable apps: " + packages);
+                        log.debug("Disable apps: " + packages);
                         notifyManualStateUpdate(packages, false);
                         new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, packages, false)
                                 .withProgressDialog(progressDialog)

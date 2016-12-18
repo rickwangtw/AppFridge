@@ -2,7 +2,6 @@ package com.mysticwind.disabledappmanager.ui.activity.perspective.state;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +27,10 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import de.greenrobot.event.EventBus;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class AppListAdapter extends BaseAdapter implements Observer {
-    private static final String TAG = "AppListAdapter";
 
     private final Context context;
     private final PackageListProvider packageListProvider;
@@ -41,6 +40,7 @@ public class AppListAdapter extends BaseAdapter implements Observer {
     private final AppLauncher appLauncher;
     private final LayoutInflater layoutInflater;
     private final AppSelectedListener appSelectedListener;
+
     private List<AppInfo> appInfoList;
     private List<AppInfo> searchFilteredAppInfoList;
     private boolean searchEnabled = false;
@@ -75,7 +75,7 @@ public class AppListAdapter extends BaseAdapter implements Observer {
         this.appSelectedListener = appSelectedListener;
 
         this.appInfoList = packageListProvider.getOrderedPackages();
-        Log.i(TAG, "Size of packages: " + appInfoList.size());
+        log.info("Size of packages: " + appInfoList.size());
     }
 
     public int getCount() {

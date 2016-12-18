@@ -1,13 +1,15 @@
 package com.mysticwind.disabledappmanager.ui.common;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import lombok.extern.slf4j.Slf4j;
 
 /** SwipeDetector from
  * http://stackoverflow.com/questions/17520750/list-view-item-swipe-left-and-swipe-right
  *
  */
+@Slf4j
 public class SwipeDetector implements View.OnTouchListener {
 
     public enum Action {
@@ -18,7 +20,6 @@ public class SwipeDetector implements View.OnTouchListener {
         NONE
     }
 
-    private static final String TAG = "SwipeDetector";
     private static final int MIN_DISTANCE = 100;
 
     private float downX, downY, upX, upY;
@@ -51,12 +52,12 @@ public class SwipeDetector implements View.OnTouchListener {
                 if (Math.abs(deltaX) > MIN_DISTANCE) {
                     // left or right
                     if (deltaX < 0) {
-                        Log.d(TAG, "Swipe Left to Right");
+                        log.debug("Swipe Left to Right");
                         isSwipeDetected = Action.LEFT_TO_RIGHT;
                         return true;
                     }
                     if (deltaX > 0) {
-                        Log.d(TAG, "Swipe Right to Left");
+                        log.debug("Swipe Right to Left");
                         isSwipeDetected = Action.RIGHT_TO_LEFT;
                         return true;
                     }
@@ -66,12 +67,12 @@ public class SwipeDetector implements View.OnTouchListener {
                     if (Math.abs(deltaY) > MIN_DISTANCE) {
                         // top or down
                         if (deltaY < 0) {
-                            Log.d(TAG, "Swipe Top to Bottom");
+                            log.debug("Swipe Top to Bottom");
                             isSwipeDetected = Action.TOP_TO_BOTTOM;
                             return false;
                         }
                         if (deltaY > 0) {
-                            Log.d(TAG, "Swipe Bottom to Top");
+                            log.debug("Swipe Bottom to Top");
                             isSwipeDetected = Action.BOTTOM_TO_TOP;
                             return false;
                         }

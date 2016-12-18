@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -30,9 +29,11 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class AppSelectedListener extends Observable
         implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, DialogInterface.OnClickListener {
-    private static final String TAG ="AppSelectedListener";
 
     private final Context context;
     private final Dialog progressDialog;
@@ -105,7 +106,7 @@ public class AppSelectedListener extends Observable
         } else {
             selectedPackageNames.remove(packageName);
         }
-        Log.d(TAG, "Selected packages: " + selectedPackageNames);
+        log.debug("Selected packages: " + selectedPackageNames);
     }
 
     public boolean isPackageNameSelected(String packageName) {
@@ -115,7 +116,7 @@ public class AppSelectedListener extends Observable
     @Override
     public void onClick(View v) {
         if (selectedPackageNames.isEmpty()) {
-            Log.i(TAG, "No package selected ...");
+            log.info("No package selected ...");
             return;
         }
 
@@ -158,7 +159,7 @@ public class AppSelectedListener extends Observable
                         togglePackages(selectedPackageNames);
                         break;
                     default:
-                        Log.w(TAG, "Unsupported click action for view: " + id);
+                        log.warn("Unsupported click action for view: " + id);
                 }
                 selectedPackageNames.clear();
                 return null;
@@ -227,7 +228,7 @@ public class AppSelectedListener extends Observable
         if (appGroupName == null) {
             return;
         }
-        Log.i(TAG, "Adding " + selectedPackageNames + " to " + appGroupName);
+        log.info("Adding " + selectedPackageNames + " to " + appGroupName);
         appGroupManager.addPackagesToAppGroup(
                 new HashSet<String>(selectedPackageNames), appGroupName);
 

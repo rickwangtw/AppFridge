@@ -1,7 +1,5 @@
 package com.mysticwind.disabledappmanager.domain;
 
-import android.util.Log;
-
 import com.google.common.collect.ImmutableSet;
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
@@ -11,9 +9,11 @@ import java.util.Collection;
 import java.util.Set;
 
 import eu.chainfire.libsuperuser.Shell;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class RootProcessPackageStateController implements PackageStateController {
-    private static final String TAG = "RootPStateController";
+
     private static final String PACKAGE_COMMAND_FORMAT = "pm %s %s \n";
 
     private final PackageStateUpdateEventManager packageStateUpdateEventManager;
@@ -42,13 +42,13 @@ public class RootProcessPackageStateController implements PackageStateController
                 packageStateUpdateEventManager.publishUpdate(packageName, packageState);
             }
         } catch (Exception e) {
-            Log.w(TAG, "Error occurred on modifying (" + state + ") packages: " + packageNames, e);
+            log.warn("Error occurred on modifying (" + state + ") packages: " + packageNames, e);
         }
     }
 
     private void modifyPackageStatesToState(Set<String> packageNames, boolean state) throws IOException {
         for (String packageName : packageNames) {
-            Log.d(TAG, "Modifying (" + state + ") package: " + packageName);
+            log.debug("Modifying (" + state + ") package: " + packageName);
             Shell.SU.run(buildCommand(packageName, state));
         }
     }

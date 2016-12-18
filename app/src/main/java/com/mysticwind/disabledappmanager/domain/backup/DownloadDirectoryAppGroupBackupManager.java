@@ -1,12 +1,14 @@
 package com.mysticwind.disabledappmanager.domain.backup;
 
+import android.support.v4.provider.DocumentFile;
+
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
-import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupOperation;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 
 import org.joda.time.DateTime;
@@ -18,13 +20,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,8 +43,8 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
     private final AppGroupManager appGroupManager;
     private final AppGroupUpdateEventManager appGroupUpdateEventManager;
 
-    public DownloadDirectoryAppGroupBackupManager(AppGroupManager appGroupManager,
-                                                  AppGroupUpdateEventManager appGroupUpdateEventManager) {
+    public DownloadDirectoryAppGroupBackupManager(final AppGroupManager appGroupManager,
+                                                  final AppGroupUpdateEventManager appGroupUpdateEventManager) {
         this.appGroupManager = appGroupManager;
         this.appGroupUpdateEventManager = appGroupUpdateEventManager;
     }
@@ -68,35 +69,29 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
     }
 
     @Override
-    public List<BackupIdentifier> getAllBackupsOrdered() {
-        if (!Constants.BACKUP_DIRECTORY.exists() || !Constants.BACKUP_DIRECTORY.canRead()) {
-            return Collections.emptyList();
-        }
-        List<BackupIdentifier> backupIdentifierList = new LinkedList<>();
-        for (File file : Files.fileTreeTraverser().preOrderTraversal(Constants.BACKUP_DIRECTORY)) {
+    public List<BackupIdentifier> getBackupsOrderedUnderDirectory(DocumentFile backupDirectory) {
+        TreeSet<BackupIdentifier> backupIdentifierTreeSet = new TreeSet<>(new Comparator<BackupIdentifier>() {
+            @Override
+            public int compare(BackupIdentifier backupIdentifier1, BackupIdentifier backupIdentifier2) {
+                return -1 * backupIdentifier1.getCreatedDateTime().compareTo(backupIdentifier2.getCreatedDateTime());
+            }
+        });
+
+        for (DocumentFile file : backupDirectory.listFiles()) {
+            if (file.isDirectory()) {
+                continue;
+            }
             String fileName = file.getName();
             Matcher backupFileNameMatcher = BACKUP_FILE_NAME_PATTERN.matcher(fileName);
-
             if (!backupFileNameMatcher.matches()) {
                 continue;
             }
-
             long timestamp = Long.parseLong(backupFileNameMatcher.group(1));
             DateTime createdDateTime = new DateTime(timestamp);
 
-            backupIdentifierList.add(new BackupIdentifier(file.getName(), createdDateTime));
+            backupIdentifierTreeSet.add(new BackupIdentifier(file.getName(), createdDateTime));
         }
-
-        Collections.sort(backupIdentifierList, new Comparator<BackupIdentifier>() {
-            @Override
-            public int compare(BackupIdentifier lhs, BackupIdentifier rhs) {
-                return reverseOrder(lhs.getCreatedDateTime().compareTo(rhs.getCreatedDateTime()));
-            }
-            private int reverseOrder(int comparision) {
-                return comparision * -1;
-            }
-        });
-        return backupIdentifierList;
+        return ImmutableList.copyOf(backupIdentifierTreeSet);
     }
 
     private File getBackupFile() {

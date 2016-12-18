@@ -28,6 +28,7 @@ import org.androidannotations.annotations.PreferenceScreen;
 import org.joda.time.DateTime;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -181,7 +182,13 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
                 getString(R.string.settings_backup_preference_app_group_restore_path_description);
         restoreAppGroupsPreference.setSummary(descriptionPrefix + " " + backupDirectory.getAbsolutePath());
 
-        List<BackupIdentifier> backupList = appGroupBackupManager.getAllBackupsOrdered();
+        DocumentFile documentFile = DocumentFile.fromTreeUri(getActivity(), backupPathUri);
+        List<BackupIdentifier> backupList;
+        if (documentFile.canRead() && documentFile.isDirectory()) {
+            backupList = appGroupBackupManager.getBackupsOrderedUnderDirectory(documentFile);
+        } else {
+            backupList = Collections.emptyList();
+        }
 
         CharSequence[] backupDateTimeLabels = new CharSequence[backupList.size()];
         CharSequence[] backupUniqueIds = new CharSequence[backupList.size()];

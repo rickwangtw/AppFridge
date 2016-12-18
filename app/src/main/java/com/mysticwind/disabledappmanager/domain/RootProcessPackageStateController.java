@@ -6,11 +6,11 @@ import com.google.common.collect.ImmutableSet;
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
+
+import eu.chainfire.libsuperuser.Shell;
 
 public class RootProcessPackageStateController implements PackageStateController {
     private static final String TAG = "RootPStateController";
@@ -47,31 +47,13 @@ public class RootProcessPackageStateController implements PackageStateController
     }
 
     private void modifyPackageStatesToState(Set<String> packageNames, boolean state) throws IOException {
-        Process process = Runtime.getRuntime().exec("su");
-        DataOutputStream outputStream = new DataOutputStream(process.getOutputStream());
-
         for (String packageName : packageNames) {
             Log.d(TAG, "Modifying (" + state + ") package: " + packageName);
-            outputStream.writeBytes(buildCommand(packageName, state));
-            outputStream.flush();
+            Shell.SU.run(buildCommand(packageName, state));
         }
-        outputStream.writeBytes("exit\n");
-        int result = waitForResult(process);
-        Log.d(TAG, "Root process result: " + result);
-
-        outputStream.close();
     }
 
     private String buildCommand(String packageName, boolean state) {
         return String.format(PACKAGE_COMMAND_FORMAT, state ? "enable" : "disable", packageName);
-    }
-
-    private int waitForResult(Process process) {
-        try {
-            return process.waitFor();
-        } catch (InterruptedException e) {
-            Log.d(TAG, "Root process Interrupted!");
-            return -1;
-        }
     }
 }

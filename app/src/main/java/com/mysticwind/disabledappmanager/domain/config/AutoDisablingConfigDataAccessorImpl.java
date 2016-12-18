@@ -24,6 +24,6 @@ public class AutoDisablingConfigDataAccessorImpl implements AutoDisablingConfigD
 
     @Override
     public void setAutoDisablingTimeout(long timeoutInSeconds) {
-        config.edit().autoDisablingTimeoutInSeconds().put(timeoutInSeconds);
+        config.edit().autoDisablingTimeoutInSeconds().put(timeoutInSeconds).apply();
     }
 }

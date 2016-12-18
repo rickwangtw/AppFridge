@@ -52,8 +52,8 @@ dependencies {
     compile 'com.github.tony19:logback-android-classic:1.1.1-4'
     compile 'org.slf4j:slf4j-api:1.7.12'
 
-    apt "org.androidannotations:androidannotations:3.3.2"
-    compile "org.androidannotations:androidannotations-api:3.3.2"
+    apt "org.androidannotations:androidannotations:4.2.0"
+    compile "org.androidannotations:androidannotations-api:4.2.0"
 
     provided 'javax.annotation:jsr250-api:1.0'
 

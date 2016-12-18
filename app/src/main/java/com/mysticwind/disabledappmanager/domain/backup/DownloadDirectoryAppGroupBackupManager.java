@@ -6,7 +6,6 @@ import android.support.v4.provider.DocumentFile;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Closeables;
-import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
@@ -15,7 +14,6 @@ import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventMana
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -115,19 +113,6 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
             backupIdentifierTreeSet.add(new BackupIdentifier(file.getName(), createdDateTime));
         }
         return ImmutableList.copyOf(backupIdentifierTreeSet);
-    }
-
-    private File getBackupFile() {
-        File backupFile = new File(Constants.BACKUP_DIRECTORY, getBackupFileName());
-        if (backupFile.exists()) {
-            throw new RuntimeException("Backup file exists: " + backupFile.getAbsolutePath());
-        }
-        try {
-            Files.createParentDirs(backupFile);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to create parent directories for " + backupFile);
-        }
-        return backupFile;
     }
 
     private String getBackupFileName() {

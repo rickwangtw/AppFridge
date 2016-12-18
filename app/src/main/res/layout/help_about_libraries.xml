@@ -19,5 +19,6 @@
     <include layout="@layout/help_about_libraries_androidannotations" />
     <include layout="@layout/help_about_libraries_joda_time_android" />
     <include layout="@layout/help_about_libraries_gson" />
+    <include layout="@layout/help_about_libraries_libsuperuser" />
 
 </LinearLayout>

@@ -60,4 +60,8 @@
     <string name="help_about_libraries_joda_time_android_url">https://github.com/dlew/joda-time-android</string>
     <string name="help_about_libraries_joda_time_android_license">Apache 2.0</string>
     <string name="help_about_libraries_joda_time_android_description">Joda-Time ported for Android by dlew</string>
+
+    <string name="help_about_libraries_libsuperuser_url">https://github.com/Chainfire/libsuperuser</string>
+    <string name="help_about_libraries_libsuperuser_license">Apache 2.0</string>
+    <string name="help_about_libraries_libsuperuser_description">libsuperuser by Chainfire</string>
 </resources>

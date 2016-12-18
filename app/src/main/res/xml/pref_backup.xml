@@ -3,6 +3,10 @@
         android:title="@string/settings_backup_preference_group_app_group"
         android:key="pref_key_backup_appgroups">
 
+        <Preference
+            android:key="@string/pref_key_backup_appgroups_path"
+            android:title="@string/settings_backup_preference_app_group_path" />
+
         <SwitchPreference
             android:key="@string/pref_key_backup_appgroups_now"
             android:title="@string/settings_backup_preference_app_group_backup" />

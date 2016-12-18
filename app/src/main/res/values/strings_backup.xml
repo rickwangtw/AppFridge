@@ -1,6 +1,8 @@
 <resources>
     <string name="settings_backup_preference_group_app_group">App Groups</string>
 
+    <string name="settings_backup_preference_app_group_path">Backup Path</string>
+
     <string name="settings_backup_preference_app_group_backup">Backup Now</string>
     <string name="settings_backup_preference_app_group_backup_path_description">Backup will be generated in</string>
     <string name="toast_backup_success">Backup success!</string>

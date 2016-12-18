@@ -30,6 +30,7 @@
         <item>300</item>
     </string-array>
 
+    <string name="pref_key_backup_appgroups_path">backupAppGroupsPath</string>
     <string name="pref_key_backup_appgroups_now">backupAppGroupsNow</string>
     <string name="pref_key_restore_appgroups_now">restoreAppGroupsNow</string>
 

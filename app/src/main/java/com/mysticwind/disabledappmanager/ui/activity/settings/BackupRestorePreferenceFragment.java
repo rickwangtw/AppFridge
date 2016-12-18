@@ -1,12 +1,16 @@
 package com.mysticwind.disabledappmanager.ui.activity.settings;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
+import android.provider.DocumentsContract;
+import android.support.v4.provider.DocumentFile;
 import android.text.format.DateUtils;
 import android.widget.Toast;
 
@@ -15,6 +19,7 @@ import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.backup.BackupIdentifier;
 import com.mysticwind.disabledappmanager.domain.backup.Constants;
+import com.mysticwind.disabledappmanager.domain.config.BackupConfigService;
 
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.EFragment;
@@ -27,12 +32,22 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static android.app.Activity.RESULT_OK;
+
 @PreferenceScreen(R.xml.pref_backup)
 @EFragment
 @Slf4j
 public class BackupRestorePreferenceFragment extends PreferenceFragment {
 
+    private static final int BACKUP_PATH_REQUEST_CODE = 0xBA;
+
     private AppGroupBackupManager appGroupBackupManager;
+    private BackupConfigService backupConfigService;
+
+    private Uri backupPathUri;
+
+    @PreferenceByKey(R.string.pref_key_backup_appgroups_path)
+    Preference backupAppGroupsPathPreference;
 
     @PreferenceByKey(R.string.pref_key_backup_appgroups_now)
     SwitchPreference backupAppGroupsNowPreference;
@@ -45,12 +60,68 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
 
         appGroupBackupManager = ApplicationHelper.from(this).appGroupBackupManager();
+        backupConfigService = ApplicationHelper.from(this).backupConfigService();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        if (requestCode == BACKUP_PATH_REQUEST_CODE) {
+            backupPathUri = data.getData();
+            backupConfigService.setBackupPath(backupPathUri.toString());
+
+            updateUi();
+        }
     }
 
     @AfterPreferences
     void configurePreferences() {
+        setupBackupAppGroupsPathPreference();
         setupBackupAppGroupsNowPreference();
         setupRestoreAppGroupsNowPreference();
+
+        updateUi();
+    }
+
+    private void updateUi() {
+        if (backupPathUri != null) {
+            String backupPath = DocumentsContract.getTreeDocumentId(backupPathUri);
+            backupAppGroupsPathPreference.setSummary(backupPath);
+            backupAppGroupsNowPreference.setEnabled(true);
+            restoreAppGroupsPreference.setEnabled(true);
+        } else {
+            backupAppGroupsNowPreference.setEnabled(false);
+            restoreAppGroupsPreference.setEnabled(false);
+        }
+    }
+
+
+    private void setupBackupAppGroupsPathPreference() {
+        // for Android versions below 5.0 without Document Tree API
+        if (Constants.BACKUP_DIRECTORY.canWrite()) {
+            backupAppGroupsPathPreference.setEnabled(false);
+            backupConfigService.setBackupPath(Constants.BACKUP_DIRECTORY.getAbsolutePath());
+        }
+
+        String backupPath = backupConfigService.getBackupPath();
+        backupPathUri = isBackupPathValid(backupPath) ? Uri.parse(backupPath) : null;
+        backupAppGroupsPathPreference.setSummary(backupPath);
+
+        backupAppGroupsPathPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                startActivityForResult(intent, BACKUP_PATH_REQUEST_CODE);
+                return true;
+            }
+        });
+    }
+
+    private boolean isBackupPathValid(String backupPath) {
+        return backupPath != null && backupPath.length() > 0;
     }
 
     private void setupBackupAppGroupsNowPreference() {

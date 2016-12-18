@@ -14,6 +14,8 @@ import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager
 import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
+import com.mysticwind.disabledappmanager.domain.config.BackupConfigService;
+import com.mysticwind.disabledappmanager.domain.config.BackupConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
@@ -28,6 +30,7 @@ import dagger.Component;
 public interface ApplicationComponent {
     void inject(Context context);
     void inject(AutoDisablingConfig_ autoDisablingConfig);
+    void inject(BackupConfig_ backupConfig);
     PackageAssetService packageAssetService();
     AppAssetUpdateEventManager appAssetUpdateEventManager();
     AppIconProvider appIconProvider();
@@ -38,6 +41,7 @@ public interface ApplicationComponent {
     AppLauncher appLauncher();
     DisabledPackageStateDecider disabledPackageStateDecider();
     AutoDisablingConfigService autoDisablingConfigService();
+    BackupConfigService backupConfigService();
     ManualStateUpdateEventManager manualStateUpdateEventManager();
     AppGroupManager appGroupManager();
     AppGroupBackupManager appGroupBackupManager();

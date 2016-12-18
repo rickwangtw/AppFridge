@@ -18,6 +18,8 @@ import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager
 import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
+import com.mysticwind.disabledappmanager.domain.config.BackupConfigService;
+import com.mysticwind.disabledappmanager.domain.config.BackupConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
@@ -30,10 +32,14 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 
 @EApplication
 public class AppFridgeApplication extends Application implements ApplicationComponent {
+
     private ApplicationComponent component;
 
     @Pref
     AutoDisablingConfig_ autoDisablingConfig;
+
+    @Pref
+    BackupConfig_ backupConfig;
 
     @Override
     public void onCreate() {
@@ -42,7 +48,7 @@ public class AppFridgeApplication extends Application implements ApplicationComp
         JodaTimeAndroid.init(this);
 
         component = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this, autoDisablingConfig))
+                .applicationModule(new ApplicationModule(this, autoDisablingConfig, backupConfig))
                 .build();
     }
 
@@ -53,6 +59,11 @@ public class AppFridgeApplication extends Application implements ApplicationComp
 
     @Override
     public void inject(AutoDisablingConfig_ autoDisablingConfig) {
+        throw new RuntimeException("Unsupported operation");
+    }
+
+    @Override
+    public void inject(BackupConfig_ backupConfig) {
         throw new RuntimeException("Unsupported operation");
     }
 
@@ -104,6 +115,11 @@ public class AppFridgeApplication extends Application implements ApplicationComp
     @Override
     public AutoDisablingConfigService autoDisablingConfigService() {
         return component.autoDisablingConfigService();
+    }
+
+    @Override
+    public BackupConfigService backupConfigService() {
+        return component.backupConfigService();
     }
 
     @Override

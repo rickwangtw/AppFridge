@@ -12,20 +12,20 @@ import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
+import com.mysticwind.disabledappmanager.domain.AutoDisablingAppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
-import com.mysticwind.disabledappmanager.domain.asset.DatabaseCachedPackageAssetServiceDecorator;
-import com.mysticwind.disabledappmanager.domain.asset.DefaultValuePackageAssetServiceDecorator;
-import com.mysticwind.disabledappmanager.domain.asset.MemCachedPackageAssetServiceDecorator;
-import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
-import com.mysticwind.disabledappmanager.domain.AutoDisablingAppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.appgroup.EventBusAppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.asset.DatabaseCachedPackageAssetServiceDecorator;
+import com.mysticwind.disabledappmanager.domain.asset.DefaultValuePackageAssetServiceDecorator;
 import com.mysticwind.disabledappmanager.domain.asset.EventBusAppAssetUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.asset.MemCachedPackageAssetServiceDecorator;
+import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.asset.PackageManagerPackageAssetService;
 import com.mysticwind.disabledappmanager.domain.asset.dao.CachedPackageAssetsDAO;
 import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
@@ -35,6 +35,11 @@ import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigDataAc
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigDataAccessorImpl;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
+import com.mysticwind.disabledappmanager.domain.config.BackupConfigDataAccessor;
+import com.mysticwind.disabledappmanager.domain.config.BackupConfigDataAccessorImpl;
+import com.mysticwind.disabledappmanager.domain.config.BackupConfigService;
+import com.mysticwind.disabledappmanager.domain.config.BackupConfigServiceImpl;
+import com.mysticwind.disabledappmanager.domain.config.BackupConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.EventBusManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.EventBusPackageStateUpdateEventManager;
@@ -62,10 +67,14 @@ public class ApplicationModule {
 
     private final Context context;
     private final AutoDisablingConfig_ autoDisablingConfig;
+    private final BackupConfig_ backupConfig;
 
-    public ApplicationModule(Context context, AutoDisablingConfig_ autoDisablingConfig) {
+    public ApplicationModule(final Context context,
+                             final AutoDisablingConfig_ autoDisablingConfig,
+                             final BackupConfig_ backupConfig) {
         this.context = context;
         this.autoDisablingConfig = autoDisablingConfig;
+        this.backupConfig = backupConfig;
     }
 
     @Provides @Singleton
@@ -76,6 +85,33 @@ public class ApplicationModule {
     @Provides @Singleton
     public AutoDisablingConfig_ provideAutoDisablingConfig() {
         return this.autoDisablingConfig;
+    }
+
+    @Provides @Singleton
+    public AutoDisablingConfigDataAccessor provideAutoDisablingConfigDataAccessor(
+            AutoDisablingConfig_ autoDisablingConfig) {
+        return new AutoDisablingConfigDataAccessorImpl(autoDisablingConfig);
+    }
+
+    @Provides @Singleton
+    public AutoDisablingConfigService provideAutoDisablingConfigService(
+            AutoDisablingConfigDataAccessor autoDisablingConfigDataAccessor) {
+        return new AnnotationGeneratedConfigAutoDisablingConfigService(autoDisablingConfigDataAccessor);
+    }
+
+    @Provides @Singleton
+    public BackupConfig_ provideBackupConfig() {
+        return this.backupConfig;
+    }
+
+    @Provides @Singleton
+    public BackupConfigDataAccessor provideBackupConfigDataAccessor(BackupConfig_ backupConfig) {
+        return new BackupConfigDataAccessorImpl(backupConfig);
+    }
+
+    @Provides @Singleton
+    public BackupConfigService provideBackupConfigService(BackupConfigDataAccessor backupConfigDataAccessor) {
+        return new BackupConfigServiceImpl(backupConfigDataAccessor);
     }
 
     @Provides @Singleton
@@ -136,12 +172,6 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public AutoDisablingConfigService provideAutoDisablingConfigService(
-            AutoDisablingConfigDataAccessor autoDisablingConfigDataAccessor) {
-        return new AnnotationGeneratedConfigAutoDisablingConfigService(autoDisablingConfigDataAccessor);
-    }
-
-    @Provides @Singleton
     public AppLauncher provideAppLauncher(
             AutoDisablingConfigService autoDisablingConfigService,
             PackageManager packageManager,
@@ -160,12 +190,6 @@ public class ApplicationModule {
     @Provides @Singleton
     public DisabledPackageStateDecider provideDisabledPackageStateDecider(TimerManager timerManager) {
         return new TimerTriggeredDisabledPackageStateDecider(timerManager);
-    }
-
-    @Provides @Singleton
-    public AutoDisablingConfigDataAccessor provideAutoDisablingConfigDataAccessor(
-            AutoDisablingConfig_ autoDisablingConfig) {
-        return new AutoDisablingConfigDataAccessorImpl(autoDisablingConfig);
     }
 
     @Provides @Singleton

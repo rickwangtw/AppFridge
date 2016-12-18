@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.io.Closeables;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
@@ -21,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.Comparator;
@@ -56,7 +56,7 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
     }
 
     @Override
-    public void backup() {
+    public void backup(DocumentFile backupDirectory) {
         Map<String, Set<String>> appGroupToPackagesMap = new HashMap<>();
         Set<String> appGroups = appGroupManager.getAllAppGroups();
 
@@ -64,13 +64,30 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
             Set<String> packages = appGroupManager.getPackagesOfAppGroup(appGroup);
             appGroupToPackagesMap.put(appGroup, packages);
         }
-        String appGroupJson = new GsonBuilder().setPrettyPrinting().create().toJson(appGroupToPackagesMap);
+        Type type = new TypeToken<Map<String, Set<String>>>(){}.getType();
+        String appGroupJson = new Gson().toJson(appGroupToPackagesMap, type);
 
-        File backupFile = getBackupFile();
+        if (!backupDirectory.canWrite()) {
+            throw new IllegalStateException("Unable to write in directory: " + backupDirectory.getUri());
+        }
+
+        DocumentFile backupFile = backupDirectory.createFile("application/javascript", getBackupFileName());
+        OutputStream outputStream;
         try {
-            Files.write(appGroupJson, backupFile, defaultCharset);
+            outputStream = contentResolver.openOutputStream(backupFile.getUri());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("File not found: " + backupFile.getUri());
+        }
+
+        try {
+            outputStream.write(appGroupJson.getBytes(defaultCharset));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to write app group json file to " + backupFile.getAbsolutePath(), e);
+            throw new RuntimeException("Failed to write file: " + backupFile.getUri());
+        } finally {
+            try {
+                Closeables.close(outputStream, false);
+            } catch (IOException e) {
+            }
         }
     }
 

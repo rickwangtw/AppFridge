@@ -5,7 +5,7 @@ import android.support.v4.provider.DocumentFile;
 import java.util.List;
 
 public interface AppGroupBackupManager {
-    void backup();
+    void backup(DocumentFile backupDirectory);
     List<BackupIdentifier> getBackupsOrderedUnderDirectory(DocumentFile documentFile);
     void restore(DocumentFile backupDirectory, String backupUniqueId);
 }

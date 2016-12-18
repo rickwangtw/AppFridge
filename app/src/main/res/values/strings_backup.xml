@@ -4,12 +4,10 @@
     <string name="settings_backup_preference_app_group_path">Backup Path</string>
 
     <string name="settings_backup_preference_app_group_backup">Backup Now</string>
-    <string name="settings_backup_preference_app_group_backup_path_description">Backup will be generated in</string>
     <string name="toast_backup_success">Backup success!</string>
     <string name="toast_backup_failure">Backup failure!</string>
 
     <string name="settings_backup_preference_app_group_restore">Restore</string>
-    <string name="settings_backup_preference_app_group_restore_path_description">Restore a backup from</string>
     <string name="settings_backup_preference_app_group_restore_dialog_title">Restoring</string>
     <string name="toast_restore_success">Restore success!</string>
     <string name="toast_restore_failure">Restore failure!</string>

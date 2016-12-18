@@ -126,10 +126,6 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
     }
 
     private void setupBackupAppGroupsNowPreference() {
-        String descriptionPrefix =
-                getString(R.string.settings_backup_preference_app_group_backup_path_description);
-        backupAppGroupsNowPreference.setSummary(
-                descriptionPrefix + " " + Constants.BACKUP_DIRECTORY.getAbsolutePath());
         backupAppGroupsNowPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -178,11 +174,6 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
     }
 
     private void setupRestoreAppGroupsNowPreference() {
-        File backupDirectory = Constants.BACKUP_DIRECTORY;
-        String descriptionPrefix =
-                getString(R.string.settings_backup_preference_app_group_restore_path_description);
-        restoreAppGroupsPreference.setSummary(descriptionPrefix + " " + backupDirectory.getAbsolutePath());
-
         DocumentFile documentFile = DocumentFile.fromTreeUri(getActivity(), backupPathUri);
         List<BackupIdentifier> backupList;
         if (documentFile.canRead() && documentFile.isDirectory()) {

@@ -221,9 +221,10 @@ public class ApplicationModule {
     public AppGroupBackupManager provideAppGroupBackupManager(
                     final AppGroupManager appGroupManager,
                     final AppGroupUpdateEventManager appGroupUpdateEventManager,
+                    final BackupConfigService backupConfigService,
                     final Context context) {
-        return new DownloadDirectoryAppGroupBackupManager(
-                appGroupManager, appGroupUpdateEventManager, context.getContentResolver());
+        return new DownloadDirectoryAppGroupBackupManager(appGroupManager,
+                appGroupUpdateEventManager, context.getContentResolver(), backupConfigService, context);
     }
 
     private static final String widgetConfigSharedPreferencesName = "widgetConfigSharedPreferencesName";

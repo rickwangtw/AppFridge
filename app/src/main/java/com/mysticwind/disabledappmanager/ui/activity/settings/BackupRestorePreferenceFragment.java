@@ -9,8 +9,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
-import android.provider.DocumentsContract;
-import android.support.v4.provider.DocumentFile;
 import android.text.format.DateUtils;
 import android.widget.Toast;
 
@@ -18,8 +16,6 @@ import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.backup.BackupIdentifier;
-import com.mysticwind.disabledappmanager.domain.backup.Constants;
-import com.mysticwind.disabledappmanager.domain.config.BackupConfigService;
 
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.EFragment;
@@ -27,8 +23,6 @@ import org.androidannotations.annotations.PreferenceByKey;
 import org.androidannotations.annotations.PreferenceScreen;
 import org.joda.time.DateTime;
 
-import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +37,6 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
     private static final int BACKUP_PATH_REQUEST_CODE = 0xBA;
 
     private AppGroupBackupManager appGroupBackupManager;
-    private BackupConfigService backupConfigService;
-
-    private Uri backupPathUri;
 
     @PreferenceByKey(R.string.pref_key_backup_appgroups_path)
     Preference backupAppGroupsPathPreference;
@@ -61,7 +52,6 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
 
         appGroupBackupManager = ApplicationHelper.from(this).appGroupBackupManager();
-        backupConfigService = ApplicationHelper.from(this).backupConfigService();
     }
 
     @Override
@@ -71,8 +61,10 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
         }
 
         if (requestCode == BACKUP_PATH_REQUEST_CODE) {
-            backupPathUri = data.getData();
-            backupConfigService.setBackupPath(backupPathUri.toString());
+            Uri backupPathUri = data.getData();
+            appGroupBackupManager.setBackupDirectory(backupPathUri);
+
+            setupRestoreAppGroupsNowPreference();
 
             updateUi();
         }
@@ -88,29 +80,19 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
     }
 
     private void updateUi() {
-        if (backupPathUri != null) {
-            String backupPath = DocumentsContract.getTreeDocumentId(backupPathUri);
-            backupAppGroupsPathPreference.setSummary(backupPath);
+        String humanReadableBackupPath = appGroupBackupManager.getHumanReadableBackupPath();
+        if (humanReadableBackupPath != null) {
+            backupAppGroupsPathPreference.setSummary(humanReadableBackupPath);
             backupAppGroupsNowPreference.setEnabled(true);
             restoreAppGroupsPreference.setEnabled(true);
         } else {
+            backupAppGroupsPathPreference.setSummary("");
             backupAppGroupsNowPreference.setEnabled(false);
             restoreAppGroupsPreference.setEnabled(false);
         }
     }
 
-
     private void setupBackupAppGroupsPathPreference() {
-        // for Android versions below 5.0 without Document Tree API
-        if (Constants.BACKUP_DIRECTORY.canWrite()) {
-            backupAppGroupsPathPreference.setEnabled(false);
-            backupConfigService.setBackupPath(Constants.BACKUP_DIRECTORY.getAbsolutePath());
-        }
-
-        String backupPath = backupConfigService.getBackupPath();
-        backupPathUri = isBackupPathValid(backupPath) ? Uri.parse(backupPath) : null;
-        backupAppGroupsPathPreference.setSummary(backupPath);
-
         backupAppGroupsPathPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -119,10 +101,6 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
                 return true;
             }
         });
-    }
-
-    private boolean isBackupPathValid(String backupPath) {
-        return backupPath != null && backupPath.length() > 0;
     }
 
     private void setupBackupAppGroupsNowPreference() {
@@ -140,8 +118,7 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
                     @Override
                     protected Boolean doInBackground(Void... params) {
                         try {
-                            DocumentFile documentFile = DocumentFile.fromTreeUri(getActivity(), backupPathUri);
-                            appGroupBackupManager.backup(documentFile);
+                            appGroupBackupManager.executeBackup();
                             return true;
                         } catch (Throwable t) {
                             this.throwable = t;
@@ -174,13 +151,7 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
     }
 
     private void setupRestoreAppGroupsNowPreference() {
-        DocumentFile documentFile = DocumentFile.fromTreeUri(getActivity(), backupPathUri);
-        List<BackupIdentifier> backupList;
-        if (documentFile.canRead() && documentFile.isDirectory()) {
-            backupList = appGroupBackupManager.getBackupsOrderedUnderDirectory(documentFile);
-        } else {
-            backupList = Collections.emptyList();
-        }
+        List<BackupIdentifier> backupList = appGroupBackupManager.getOrderedBackups();
 
         CharSequence[] backupDateTimeLabels = new CharSequence[backupList.size()];
         CharSequence[] backupUniqueIds = new CharSequence[backupList.size()];
@@ -216,8 +187,7 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
                     @Override
                     protected Boolean doInBackground(Void... params) {
                         try {
-                            DocumentFile documentFile = DocumentFile.fromTreeUri(getActivity(), backupPathUri);
-                            appGroupBackupManager.restore(documentFile, backupUniqueId);
+                            appGroupBackupManager.restore(backupUniqueId);
                             return true;
                         } catch (Throwable t) {
                             throwable = t;
@@ -251,4 +221,5 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
                 DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME);
         return dateTimeLabel;
     }
+
 }

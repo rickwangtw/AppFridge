@@ -1,11 +1,13 @@
 package com.mysticwind.disabledappmanager.domain.backup;
 
-import android.support.v4.provider.DocumentFile;
+import android.net.Uri;
 
 import java.util.List;
 
 public interface AppGroupBackupManager {
-    void backup(DocumentFile backupDirectory);
-    List<BackupIdentifier> getBackupsOrderedUnderDirectory(DocumentFile documentFile);
-    void restore(DocumentFile backupDirectory, String backupUniqueId);
+    void executeBackup();
+    List<BackupIdentifier> getOrderedBackups();
+    void restore(String backupUniqueId);
+    String getHumanReadableBackupPath();
+    void setBackupDirectory(Uri backupDirectoryUri);
 }

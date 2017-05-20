@@ -106,13 +106,13 @@
     <orderEntry type="jdk" jdkName="Android API 25 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="gson-2.8.0" level="project" />
-    <orderEntry type="library" exported="" name="libsuperuser-1.0.0.201608240809" level="project" />
     <orderEntry type="library" exported="" name="lombok-1.16.6" level="project" />
     <orderEntry type="library" exported="" name="logback-android-core-1.1.1-4" level="project" />
     <orderEntry type="library" exported="" name="support-fragment-25.1.0" level="project" />
     <orderEntry type="library" exported="" name="javax.annotation-10.0-b28" level="project" />
     <orderEntry type="library" exported="" name="android.joda-2.8.2" level="project" />
     <orderEntry type="library" exported="" name="support-core-ui-25.1.0" level="project" />
+    <orderEntry type="library" exported="" name="libsuperuser-1.0.0.201704021214" level="project" />
     <orderEntry type="library" exported="" name="jsr250-api-1.0" level="project" />
     <orderEntry type="library" exported="" name="support-core-utils-25.1.0" level="project" />
     <orderEntry type="library" exported="" name="joda-time-2.8.2-no-tzdb" level="project" />

@@ -267,6 +267,15 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
         backupConfigService.setBackupPath(appFridgeBackupPath.getUri().toString());
     }
 
+    @Override
+    public boolean canUpdateBackupPath() {
+        if (isAndroidLollipopAndAbove()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /*
      * XXX -> XXX/AppFridge/Backup
      * XXX/AppFridge -> XXX/AppFridge/Backup

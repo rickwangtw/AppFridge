@@ -10,4 +10,5 @@ public interface AppGroupBackupManager {
     void restore(String backupUniqueId);
     String getHumanReadableBackupPath();
     void setBackupDirectory(Uri backupDirectoryUri);
+    boolean canUpdateBackupPath();
 }

@@ -80,6 +80,11 @@ public class BackupRestorePreferenceFragment extends PreferenceFragment {
     }
 
     private void updateUi() {
+        if (appGroupBackupManager.canUpdateBackupPath()) {
+            backupAppGroupsPathPreference.setEnabled(true);
+        } else {
+            backupAppGroupsPathPreference.setEnabled(false);
+        }
         String humanReadableBackupPath = appGroupBackupManager.getHumanReadableBackupPath();
         if (humanReadableBackupPath != null) {
             backupAppGroupsPathPreference.setSummary(humanReadableBackupPath);

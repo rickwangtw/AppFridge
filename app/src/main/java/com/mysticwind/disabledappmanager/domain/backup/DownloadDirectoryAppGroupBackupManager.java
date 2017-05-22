@@ -39,8 +39,6 @@ import java.util.regex.Pattern;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static android.support.v4.provider.DocumentFile.fromTreeUri;
-
 @Slf4j
 public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupManager {
     private static final String BACKUP_FILE_FORMAT =
@@ -106,28 +104,34 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
     }
 
     private DocumentFile getWritableBackupDirectoryWithPossibleDefaultValue() {
-        DocumentFile backupDirectoryDocumentFile = getPersistedBackupPathDocumentFile();
+        final DocumentFile backupDirectoryDocumentFile = getPersistedBackupPathDocumentFile();
         if (backupDirectoryDocumentFile != null && backupDirectoryDocumentFile.canWrite()) {
+            if (isAndroidLollipopAndAbove()) {
+                // the persisted backup path will only have the tree but not the document
+                return createLollipopAndAboveAppFridgeBackupPath(backupDirectoryDocumentFile);
+            }
             return backupDirectoryDocumentFile;
         }
-        final boolean isLollipopAndAbove = !Constants.DOWNLOAD_DIRECTORY.canWrite();
-        // we have a persisted backup directory but not writable
-        if (isLollipopAndAbove && backupDirectoryDocumentFile != null) {
-            backupConfigService.setBackupPath(null);
-            return null;
-        // Android versions Lollipop and above which the users get to select the directory
-        } else if (isLollipopAndAbove && backupDirectoryDocumentFile == null) {
-            return null;
+        if (isAndroidLollipopAndAbove()) {
+            if (backupDirectoryDocumentFile == null) {
+                return null;
+            } else {
+                backupConfigService.setBackupPath(null);
+                return null;
+            }
+        // Kitkat and below
+        } else {
+            if (!Constants.LEGACY_DEFAULT_DOWNLOAD_DIRECTORY.canWrite()) {
+                throw new IllegalStateException("Previous Android version with unwritable download directory");
+            }
+            // versions below 5.0 without Document Tree API, we use the constant download directory
+            if (!Constants.BACKUP_DIRECTORY.exists()) {
+                Constants.BACKUP_DIRECTORY.mkdirs();
+            }
+            DocumentFile defaultBackupDirectory = DocumentFile.fromFile(Constants.BACKUP_DIRECTORY);
+            backupConfigService.setBackupPath(defaultBackupDirectory.getUri().toString());
+            return defaultBackupDirectory;
         }
-
-        // versions below 5.0 without Document Tree API, we use the constant download directory
-        if (!Constants.BACKUP_DIRECTORY.exists()) {
-            Constants.BACKUP_DIRECTORY.mkdirs();
-        }
-        backupDirectoryDocumentFile = DocumentFile.fromFile(Constants.BACKUP_DIRECTORY);
-        Uri backupPathUri = backupDirectoryDocumentFile.getUri();
-        backupConfigService.setBackupPath(backupPathUri.toString());
-        return backupDirectoryDocumentFile;
     }
 
     private DocumentFile getPersistedBackupPathDocumentFile() {
@@ -140,12 +144,12 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
     }
 
     private DocumentFile convertUriToDocumentFile(Uri uri) {
-        DocumentFile documentFile = fromTreeUri(context, uri);
-        if (documentFile == null) {
+        if (isAndroidLollipopAndAbove()) {
+            return DocumentFile.fromTreeUri(context, uri);
+        } else {
             File file = new File(uri.getPath());
-            documentFile = DocumentFile.fromFile(file);
+            return DocumentFile.fromFile(file);
         }
-        return documentFile;
     }
 
     private boolean isBackupPathFormatValid(String backupPath) {
@@ -233,21 +237,63 @@ public class DownloadDirectoryAppGroupBackupManager implements AppGroupBackupMan
         if (backupDirectory == null) {
             return null;
         }
-        Uri backupPathUri = backupDirectory.getUri();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return DocumentsContract.getTreeDocumentId(backupPathUri);
+        return humanReadablePath(backupDirectory.getUri());
+    }
+
+    private boolean isAndroidLollipopAndAbove() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
+
+    private String humanReadablePath(Uri uri) {
+        if (isAndroidLollipopAndAbove()) {
+            return DocumentsContract.getDocumentId(uri);
         } else {
-            return backupPathUri.getPath();
+            return uri.getPath();
         }
     }
 
     @Override
     public void setBackupDirectory(Uri backupDirectoryUri) {
-        DocumentFile documentFile = convertUriToDocumentFile(backupDirectoryUri);
-        if (!documentFile.canWrite()) {
-            throw new IllegalStateException(
-                    String.format("Selected a backup directory [%s] without write permissions", backupDirectoryUri));
+        if (!isAndroidLollipopAndAbove()) {
+            throw new IllegalStateException("Setting backup directory is not allowed for Kikat and below");
         }
-        backupConfigService.setBackupPath(backupDirectoryUri.toString());
+
+        DocumentFile backupDirectory = convertUriToDocumentFile(backupDirectoryUri);
+        if (!backupDirectory.canWrite()) {
+            throw new IllegalStateException(
+                    String.format("Selected a backup directory [%s] without write permissions", backupDirectory.getUri()));
+        }
+        final DocumentFile appFridgeBackupPath = createLollipopAndAboveAppFridgeBackupPath(backupDirectory);
+        backupConfigService.setBackupPath(appFridgeBackupPath.getUri().toString());
+    }
+
+    /*
+     * XXX -> XXX/AppFridge/Backup
+     * XXX/AppFridge -> XXX/AppFridge/Backup
+     * XXX/AppFridge/Backup -> XXX/AppFridge/Backup
+     */
+    private DocumentFile createLollipopAndAboveAppFridgeBackupPath(final DocumentFile rootDocumentFile) {
+        final String humanReadablePath = humanReadablePath(rootDocumentFile.getUri());
+        if (humanReadablePath.endsWith(Constants.APPFRIDGE_BACKUP_PATH_NAME)) {
+            return rootDocumentFile;
+        } else if (humanReadablePath.endsWith(Constants.APPFRIDGE_DIRECTORY_NAME)) {
+            return findOrCreateDirectory(rootDocumentFile, Constants.BACKUP_DIRECTORY_NAME);
+        } else {
+            DocumentFile appFridgeDirectory = findOrCreateDirectory(rootDocumentFile, Constants.APPFRIDGE_DIRECTORY_NAME);
+            return findOrCreateDirectory(appFridgeDirectory, Constants.BACKUP_DIRECTORY_NAME);
+        }
+    }
+
+    private DocumentFile findOrCreateDirectory(final DocumentFile parentDocumentFile,
+                                               final String directoryNameToFind) {
+        final DocumentFile foundFile = parentDocumentFile.findFile(directoryNameToFind);
+        if (foundFile == null) {
+            return parentDocumentFile.createDirectory(directoryNameToFind);
+        }
+        if (!foundFile.isDirectory()) {
+            throw new IllegalStateException(
+                    String.format("Existing file [%s] but not directory under [%s]", directoryNameToFind, parentDocumentFile.getUri()));
+        }
+        return foundFile;
     }
 }

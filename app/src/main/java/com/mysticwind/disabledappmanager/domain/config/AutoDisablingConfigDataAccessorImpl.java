@@ -14,16 +14,27 @@ public class AutoDisablingConfigDataAccessorImpl implements AutoDisablingConfigD
 
     @Override
     public void setAutoDisablingState(boolean enable) {
-        config.edit().isAutoDisablingOn().put(enable).apply();
+        config.edit()
+                .isAutoDisablingOn()
+                .put(enable)
+                .apply();
     }
 
     @Override
     public long getAutoDisablingTimeout(long defaultTimeoutInSeconds) {
-        return config.autoDisablingTimeoutInSeconds().getOr(defaultTimeoutInSeconds);
+        String timeoutString = config.autoDisablingTimeoutInSeconds().get();
+        if (timeoutString == null) {
+            return defaultTimeoutInSeconds;
+        } else {
+            return Long.parseLong(timeoutString);
+        }
     }
 
     @Override
     public void setAutoDisablingTimeout(long timeoutInSeconds) {
-        config.edit().autoDisablingTimeoutInSeconds().put(timeoutInSeconds).apply();
+        config.edit()
+                .autoDisablingTimeoutInSeconds()
+                .put(String.valueOf(timeoutInSeconds))
+                .apply();
     }
 }

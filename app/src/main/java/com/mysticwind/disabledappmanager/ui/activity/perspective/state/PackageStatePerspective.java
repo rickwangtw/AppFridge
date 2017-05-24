@@ -1,122 +1,41 @@
 package com.mysticwind.disabledappmanager.ui.activity.perspective.state;
 
-import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.Spinner;
 
 import com.mysticwind.disabledappmanager.R;
+import com.mysticwind.disabledappmanager.databinding.PerspectiveStateActivityBinding;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
-import com.mysticwind.disabledappmanager.domain.PackageManagerDisabledPackageListProvider;
-import com.mysticwind.disabledappmanager.domain.PackageManagerEnabledPackageListProvider;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.PerspectiveBase;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective_;
+import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
+import com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationModelList;
 
 import org.androidannotations.annotations.EActivity;
 
 @EActivity
 public class PackageStatePerspective extends PerspectiveBase {
 
-    private LayoutInflater layoutInflater;
-    private PackageListProvider defaultPackageListProvider;
     private PackageListProvider packageListProvider;
-    private AppSelectedListener appSelectedListener;
-    private AppListAdapter appListAdapter;
-    private int[] appStatusChangingButtonResourceIds = {
-            R.id.toggle_app_state_button,
-            R.id.disable_app_button,
-            R.id.enable_app_button};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_state_activity);
 
-        layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        defaultPackageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
 
-        appSelectedListener = new AppSelectedListener(this, layoutInflater, packageStateController,
-                appStateProvider, appGroupManager, manualStateUpdateEventManager);
+        packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
 
-        Button addToGroupButton = (Button) findViewById(R.id.add_to_group_button);
-        addToGroupButton.setOnClickListener(appSelectedListener);
-
-        Button toggleAppStatusButton = (Button) findViewById(R.id.toggle_app_state_button);
-        toggleAppStatusButton.setOnClickListener(appSelectedListener);
-
-        Button enableAppStatusButton = (Button) findViewById(R.id.enable_app_button);
-        enableAppStatusButton.setOnClickListener(appSelectedListener);
-
-        Button disableAppStatusButton = (Button) findViewById(R.id.disable_app_button);
-        disableAppStatusButton.setOnClickListener(appSelectedListener);
-
-        Spinner appStatusSpinner = (Spinner) findViewById(R.id.app_status_spinner);
-        appStatusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int showingButtonResourceId = R.id.toggle_app_state_button;
-
-                switch (position) {
-                    case 1:
-                        showingButtonResourceId = R.id.disable_app_button;
-                        packageListProvider
-                                = new PackageManagerEnabledPackageListProvider(getPackageManager());
-                        break;
-                    case 2:
-                        showingButtonResourceId = R.id.enable_app_button;
-                        packageListProvider
-                                = new PackageManagerDisabledPackageListProvider(getPackageManager());
-                        break;
-                    default:
-                        packageListProvider = defaultPackageListProvider;
-                        break;
-                }
-                generateListView(showingButtonResourceId);
-                if (searchBarDisplayed) {
-                    appListAdapter.doSearch(searchEditText.getText().toString());
-                } else {
-                    appListAdapter.cancelSearch();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        packageListProvider = defaultPackageListProvider;
-        generateListView(R.id.toggle_app_state_button);
-    }
-
-    private void generateListView(int showingButtonResourceId) {
-        appListAdapter = new AppListAdapter(this,
-                packageListProvider, appStateProvider, appIconProvider,
-                appNameProvider, appLauncher, layoutInflater, appSelectedListener);
-
-        appSelectedListener.deleteObservers();
-        appSelectedListener.addObserver(appListAdapter);
-
-        appAssetUpdateEventManager.registerListener(appListAdapter.getAppAssetUpdateListener());
-        packageStateUpdateEventManager.registerListener(appListAdapter.getPackageStateUpdateListener());
-
-        ListView appListView = (ListView)findViewById(R.id.appListView);
-        appListView.setAdapter(appListAdapter);
-
-        for (int buttonResourceId : appStatusChangingButtonResourceIds) {
-            int visibility = View.GONE;
-            if (buttonResourceId == showingButtonResourceId) {
-                visibility = View.VISIBLE;
-            }
-            findViewById(buttonResourceId).setVisibility(visibility);
-        }
+        PerspectiveStateActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_state_activity);
+        ApplicationModelList list = new ApplicationModelList(packageListProvider,
+                packageAssetService, appAssetUpdateEventManager, packageStateController,
+                appStateProvider, packageStateUpdateEventManager, appGroupManager,
+                DialogHelper.newProgressDialog(PackageStatePerspective.this));
+        binding.setApplications(list);
     }
 
     @Override
@@ -143,11 +62,11 @@ public class PackageStatePerspective extends PerspectiveBase {
 
     @Override
     protected void performSearch(String searchQuery) {
-        appListAdapter.doSearch(searchQuery);
+        // TODO
     }
 
     @Override
     protected void cancelSearch() {
-        appListAdapter.cancelSearch();
+        // TODO
     }
 }

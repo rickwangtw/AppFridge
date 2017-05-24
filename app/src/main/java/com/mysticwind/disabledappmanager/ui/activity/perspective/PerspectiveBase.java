@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.mysticwind.disabledappmanager.R;
+import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
@@ -20,11 +21,11 @@ import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.ui.activity.help.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
-import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 
 public abstract class PerspectiveBase extends AppCompatActivity {
 
@@ -40,6 +41,7 @@ public abstract class PerspectiveBase extends AppCompatActivity {
     protected PackageStateUpdateEventManager packageStateUpdateEventManager;
     protected Drawable searchIconDrawable;
     protected Drawable closeIconDrawable;
+    protected PackageAssetService packageAssetService;
 
     // search
     protected MenuItem searchAction;
@@ -63,6 +65,7 @@ public abstract class PerspectiveBase extends AppCompatActivity {
         this.appGroupManager = ApplicationHelper.from(this).appGroupManager();
         this.appGroupUpdateEventManager = ApplicationHelper.from(this).appGroupUpdateEventManager();
         this.packageStateUpdateEventManager = ApplicationHelper.from(this).packageStateUpdateEventManager();
+        this.packageAssetService = ApplicationHelper.from(this).packageAssetService();
 
         this.searchIconDrawable = getResources().getDrawable(R.drawable.ic_search_white_48dp);
         this.closeIconDrawable = getResources().getDrawable(R.drawable.ic_close_white_48dp);

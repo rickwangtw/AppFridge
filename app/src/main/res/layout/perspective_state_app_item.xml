@@ -1,32 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:id="@+id/appicon"
-        android:layout_width="50dip"
-        android:layout_height="50dip"
-        android:scaleType="centerCrop"
-        android:src="@drawable/stub"/>
+    <data>
+        <import type="android.view.View"/>
+        <import type="android.graphics.Color"/>
+        <variable name="application" type="com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationModel"/>
+    </data>
 
-    <TextView
-        android:id="@+id/packagename"
+    <RelativeLayout
+        android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="50dip"
-        android:layout_weight="1"
-        android:layout_toRightOf="@id/appicon"
-        android:layout_gravity="left|center_vertical"
-        android:textSize="20dip"
-        android:layout_marginLeft="10dip"
-        android:layout_toLeftOf="@+id/checkbox" />
+        android:layout_height="wrap_content"
+        android:background="@{application.enabled ? Color.WHITE : Color.GRAY}"
+        android:visibility="@{application.hidden ? View.GONE : View.VISIBLE}" >
 
-    <CheckBox
-        android:id="@+id/checkbox"
-        android:layout_width="50dip"
-        android:layout_height="50dip"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <ImageView
+            android:id="@+id/appicon"
+            android:src="@{application.applicationIcon}"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:scaleType="centerCrop" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/packagename"
+            android:text="@{application.applicationLabel}"
+            android:layout_width="fill_parent"
+            android:layout_height="50dip"
+            android:layout_weight="1"
+            android:layout_toRightOf="@id/appicon"
+            android:layout_gravity="left|center_vertical"
+            android:textSize="20dip"
+            android:layout_marginLeft="10dip"
+            android:layout_toLeftOf="@+id/checkbox" />
+
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:checked="@={application.selected}"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+</layout>

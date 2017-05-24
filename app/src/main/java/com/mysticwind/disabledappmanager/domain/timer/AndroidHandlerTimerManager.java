@@ -5,6 +5,9 @@ import android.os.Handler;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class AndroidHandlerTimerManager implements TimerManager {
     private static final long SECONDS_TO_MILLISECONDS = 1000;
 
@@ -12,8 +15,10 @@ public class AndroidHandlerTimerManager implements TimerManager {
 
     @Override
     public void schedule(final TimesUpObserver timesUpObserver, final String uniqueRequestId, long secondsToNotify) {
+        // TODO should we reschedule?
         if (isRequestIdRequested(uniqueRequestId)) {
-            throw new RuntimeException("Request: " + uniqueRequestId + " already scheduled!");
+            log.warn("Request: " + uniqueRequestId + " already scheduled!");
+            return;
         }
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

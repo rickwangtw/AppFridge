@@ -1,6 +1,4 @@
 apply plugin: 'com.android.application'
-// Assists in working with annotation processors for Android Studio.
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 25
@@ -38,13 +36,13 @@ dependencies {
 
     // Dagger 2 and Compiler
     compile 'com.google.dagger:dagger:2.0.1'
-    apt "com.google.dagger:dagger-compiler:2.0.1"
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.0.1'
 
     // Needed specifically for annotations in Java 1.6
     compile 'org.glassfish:javax.annotation:10.0-b28'
 
     provided "org.projectlombok:lombok:1.16.6"
-    apt "org.projectlombok:lombok:1.16.6"
+    annotationProcessor "org.projectlombok:lombok:1.16.6"
 
     compile 'com.google.guava:guava:18.0'
 
@@ -52,7 +50,7 @@ dependencies {
     compile 'com.github.tony19:logback-android-classic:1.1.1-4'
     compile 'org.slf4j:slf4j-api:1.7.12'
 
-    apt "org.androidannotations:androidannotations:4.2.0"
+    annotationProcessor "org.androidannotations:androidannotations:4.2.0"
     compile "org.androidannotations:androidannotations-api:4.2.0"
 
     provided 'javax.annotation:jsr250-api:1.0'
@@ -61,11 +59,4 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.0'
 
     compile 'eu.chainfire:libsuperuser:1.0.0.+'
-}
-
-apt {
-    arguments {
-        // android annotations
-        androidManifestFile variant.outputs[0].processResources.manifestFile
-    }
 }

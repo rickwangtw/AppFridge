@@ -94,7 +94,7 @@ public class AppSwitchDetectionService extends AccessibilityService implements D
                     packageStateController,
                     appStateProvider,
                     ImmutableList.of(stateDecision.getPackageName()),
-                    false)
+                    PackageStateUpdateAsyncTask.Action.DISABLE)
                 .withEndingToast(endingToast)
                 .execute();
     }

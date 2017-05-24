@@ -306,7 +306,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                             packageStateController,
                             appStateProvider,
                             Arrays.asList(packageName),
-                            true
+                            PackageStateUpdateAsyncTask.Action.ENABLE
                     ).withEndingToast(toast).execute();
                 } else {
                     String disablingToastMessagePrefix = context.getResources().getString(
@@ -317,7 +317,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                             packageStateController,
                             appStateProvider,
                             Arrays.asList(packageName),
-                            false
+                            PackageStateUpdateAsyncTask.Action.DISABLE
                     ).withEndingToast(toast).execute();
                 }
             }
@@ -367,7 +367,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         log.debug("Enable apps: " + packages);
                         notifyManualStateUpdate(packages, true);
-                        new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, packages, true)
+                        new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, packages, PackageStateUpdateAsyncTask.Action.ENABLE)
                                 .withProgressDialog(progressDialog)
                                 .withEndingToast(Toast.makeText(context,
                                         context.getResources().getString(
@@ -383,7 +383,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter
                         List<String> packages = getPackageListOfAppGroupName(selectedAppGroupName);
                         log.debug("Disable apps: " + packages);
                         notifyManualStateUpdate(packages, false);
-                        new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, packages, false)
+                        new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, packages, PackageStateUpdateAsyncTask.Action.DISABLE)
                                 .withProgressDialog(progressDialog)
                                 .withEndingToast(Toast.makeText(context,
                                         context.getResources().getString(

@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 25
@@ -24,6 +25,11 @@ android {
 
     lintOptions {
         disable 'MissingTranslation'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -59,4 +65,10 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.0'
 
     compile 'eu.chainfire:libsuperuser:1.0.0.+'
+
+    compile 'net.sourceforge.streamsupport:streamsupport:1.5.4'
+    compile 'net.sourceforge.streamsupport:streamsupport-cfuture:1.5.4'
+    compile 'net.sourceforge.streamsupport:streamsupport-atomic:1.5.4'
+    compile 'net.sourceforge.streamsupport:streamsupport-flow:1.5.4'
+    compile 'net.sourceforge.streamsupport:streamsupport-literal:1.5.4'
 }

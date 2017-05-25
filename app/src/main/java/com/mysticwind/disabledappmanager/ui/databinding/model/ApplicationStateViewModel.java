@@ -5,6 +5,7 @@ import android.content.Context;
 import android.databinding.BaseObservable;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.minimize.android.rxrecycleradapter.RxDataSource;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
@@ -36,7 +37,6 @@ import static java8.util.stream.StreamSupport.stream;
 
 @Slf4j
 public class ApplicationStateViewModel extends BaseObservable {
-
 
     // the numbers must be consistent with the order of the strings
     public static class ViewMode {
@@ -204,5 +204,21 @@ public class ApplicationStateViewModel extends BaseObservable {
             default:
                 return true;
         }
+    }
+
+    public void performSearch(String searchQuery) {
+        final String lowCaseSearchQuery = searchQuery.toLowerCase();
+        if (Strings.isNullOrEmpty(searchQuery)) {
+            cancelSearch();
+            return;
+        }
+        rxDataSource.filter(applicationModel ->
+                applicationModel.getPackageName().toLowerCase().contains(lowCaseSearchQuery) ||
+                        applicationModel.getApplicationLabel().toLowerCase().contains(lowCaseSearchQuery)
+        ).updateAdapter();
+    }
+
+    public void cancelSearch() {
+        reloadAdapter();
     }
 }

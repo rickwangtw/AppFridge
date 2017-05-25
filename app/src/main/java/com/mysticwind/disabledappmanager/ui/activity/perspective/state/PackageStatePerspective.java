@@ -30,14 +30,14 @@ import lombok.extern.slf4j.Slf4j;
 @EActivity
 public class PackageStatePerspective extends PerspectiveBase {
 
-    private PackageListProvider packageListProvider;
+    private ApplicationStateViewModel applicationStateViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_state_activity);
 
-        packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
+        PackageListProvider packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
 
         PerspectiveStateActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_state_activity);
         binding.appListView.setLayoutManager(new LinearLayoutManager(this));
@@ -51,7 +51,7 @@ public class PackageStatePerspective extends PerspectiveBase {
                     itemBinding.setVariable(BR.application, applicationModel);
                     itemBinding.executePendingBindings();
                 });
-        ApplicationStateViewModel applicationStateViewModel = new ApplicationStateViewModel(
+        applicationStateViewModel = new ApplicationStateViewModel(
                 PackageStatePerspective.this, dataSource, packageListProvider,
                 packageAssetService, appAssetUpdateEventManager, packageStateController,
                 appStateProvider, packageStateUpdateEventManager, appGroupManager,
@@ -83,11 +83,17 @@ public class PackageStatePerspective extends PerspectiveBase {
 
     @Override
     protected void performSearch(String searchQuery) {
-        // TODO
+        if (applicationStateViewModel == null) {
+            return;
+        }
+        applicationStateViewModel.performSearch(searchQuery);
     }
 
     @Override
     protected void cancelSearch() {
-        // TODO
+        if (applicationStateViewModel == null) {
+            return;
+        }
+        applicationStateViewModel.cancelSearch();
     }
 }

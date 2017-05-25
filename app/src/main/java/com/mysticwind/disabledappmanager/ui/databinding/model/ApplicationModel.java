@@ -20,7 +20,6 @@ public class ApplicationModel extends BaseObservable {
     private Drawable applicationIcon;
     private boolean isEnabled;
     private boolean selected = false;
-    private boolean hidden = false;
     private PackageAssets packageAssets;
 
     public String getPackageName() {
@@ -45,10 +44,6 @@ public class ApplicationModel extends BaseObservable {
 
     public boolean isEnabled() {
         return this.isEnabled;
-    }
-
-    public boolean isHidden() {
-        return this.hidden;
     }
 
     public boolean isSelected() {
@@ -81,13 +76,6 @@ public class ApplicationModel extends BaseObservable {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
-
-        change();
-    }
-
-    public void setHidden(boolean isHidden) {
-        this.hidden = isHidden;
-        this.selected = false;
 
         change();
     }

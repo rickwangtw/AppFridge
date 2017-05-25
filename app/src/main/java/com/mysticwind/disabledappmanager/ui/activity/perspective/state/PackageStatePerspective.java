@@ -3,20 +3,30 @@ package com.mysticwind.disabledappmanager.ui.activity.perspective.state;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.minimize.android.rxrecycleradapter.RxDataSource;
+import com.mysticwind.disabledappmanager.BR;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveStateActivityBinding;
+import com.mysticwind.disabledappmanager.databinding.PerspectiveStateAppItemBinding;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.PerspectiveBase;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective_;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
-import com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationModelList;
+import com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationModel;
+import com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationStateViewModel;
 
 import org.androidannotations.annotations.EActivity;
 
+import java.util.Collections;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @EActivity
 public class PackageStatePerspective extends PerspectiveBase {
 
@@ -31,11 +41,22 @@ public class PackageStatePerspective extends PerspectiveBase {
         packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
 
         PerspectiveStateActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_state_activity);
-        ApplicationModelList list = new ApplicationModelList(packageListProvider,
+        binding.appListView.setLayoutManager(new LinearLayoutManager(this));
+
+        RxDataSource<ApplicationModel> dataSource = new RxDataSource<>(Collections.emptyList());
+        dataSource
+                .<PerspectiveStateAppItemBinding>bindRecyclerView(binding.appListView, R.layout.perspective_state_app_item)
+                .subscribe(viewHolder -> {
+                    PerspectiveStateAppItemBinding itemBinding = viewHolder.getViewDataBinding();
+                    ApplicationModel applicationModel = viewHolder.getItem();
+                    itemBinding.setVariable(BR.application, applicationModel);
+                    itemBinding.executePendingBindings();
+                });
+        ApplicationStateViewModel applicationStateViewModel = new ApplicationStateViewModel(dataSource, packageListProvider,
                 packageAssetService, appAssetUpdateEventManager, packageStateController,
                 appStateProvider, packageStateUpdateEventManager, appGroupManager,
                 DialogHelper.newProgressDialog(PackageStatePerspective.this));
-        binding.setApplications(list);
+        binding.setViewModel(applicationStateViewModel);
     }
 
     @Override

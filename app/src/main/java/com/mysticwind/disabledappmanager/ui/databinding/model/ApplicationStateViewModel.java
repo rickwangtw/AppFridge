@@ -2,9 +2,9 @@ package com.mysticwind.disabledappmanager.ui.databinding.model;
 
 import android.app.Dialog;
 import android.databinding.BaseObservable;
-import android.databinding.ObservableArrayList;
 
 import com.google.common.base.Preconditions;
+import com.minimize.android.rxrecycleradapter.RxDataSource;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
@@ -26,12 +26,15 @@ import java.util.Set;
 
 import java8.util.Optional;
 import java8.util.stream.Collectors;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import static java8.util.stream.StreamSupport.stream;
 
 @Slf4j
-public class ApplicationModelList extends BaseObservable implements AppAssetUpdateListener {
+public class ApplicationStateViewModel extends BaseObservable {
+
 
     // the numbers must be consistent with the order of the strings
     public static class ViewMode {
@@ -40,7 +43,6 @@ public class ApplicationModelList extends BaseObservable implements AppAssetUpda
         public static final int DISABLED = 2;
     }
 
-    private final ObservableArrayList<ApplicationModel> applicationModelList = new ObservableArrayList<>();
     private final PackageListProvider packageListProvider;
     private final PackageAssetService packageAssetService;
     private final PackageStateController packageStateController;
@@ -55,33 +57,38 @@ public class ApplicationModelList extends BaseObservable implements AppAssetUpda
             findApplicationModel(event.getAppGroupName())
                     .ifPresent(applicationModel -> {
                         applicationModel.setEnabled(PackageState.ENABLE.equals(event.getPackageState()));
+                        reloadAdapter();
+                    });
+        }
+    };
+    // weak reference will be released
+    private final AppAssetUpdateListener appAssetupUpdateListener = new AppAssetUpdateListener() {
+        @Override
+        public void update(AppAssetUpdate event) {
+            String packageName = event.getPackageName();
 
-                        switch (viewMode) {
-                            case ViewMode.ENABLED:
-                                applicationModel.setHidden(!applicationModel.isEnabled());
-                                break;
-                            case ViewMode.DISABLED:
-                                applicationModel.setHidden(applicationModel.isEnabled());
-                                break;
-                            case ViewMode.ALL:
-                            default:
-                                applicationModel.setHidden(false);
-                                break;
-                        }
+            findApplicationModel(packageName)
+                    .ifPresent(applicationModel -> {
+                        PackageAssets packageAsset = packageAssetService.getPackageAssets(applicationModel.getPackageName());
+                        applicationModel.setPackageAssets(packageAsset);
                     });
         }
     };
 
     private int viewMode = ViewMode.ALL;
 
-    public ApplicationModelList(final PackageListProvider packageListProvider,
-                                final PackageAssetService packageAssetService,
-                                final AppAssetUpdateEventManager appAssetUpdateEventManager,
-                                final PackageStateController packageStateController,
-                                final AppStateProvider appStateProvider,
-                                final PackageStateUpdateEventManager packageStateUpdateEventManager,
-                                final AppGroupManager appGroupManager,
-                                final Dialog progressDialog) {
+    @Setter @Getter
+    private RxDataSource<ApplicationModel> rxDataSource;
+
+    public ApplicationStateViewModel(RxDataSource<ApplicationModel> dataSource, final PackageListProvider packageListProvider,
+                                     final PackageAssetService packageAssetService,
+                                     final AppAssetUpdateEventManager appAssetUpdateEventManager,
+                                     final PackageStateController packageStateController,
+                                     final AppStateProvider appStateProvider,
+                                     final PackageStateUpdateEventManager packageStateUpdateEventManager,
+                                     final AppGroupManager appGroupManager,
+                                     final Dialog progressDialog) {
+        this.rxDataSource = Preconditions.checkNotNull(dataSource);
         this.packageListProvider = Preconditions.checkNotNull(packageListProvider);
         this.packageAssetService = Preconditions.checkNotNull(packageAssetService);
         this.packageStateController = Preconditions.checkNotNull(packageStateController);
@@ -90,28 +97,10 @@ public class ApplicationModelList extends BaseObservable implements AppAssetUpda
         this.appGroupManager = Preconditions.checkNotNull(appGroupManager);
         this.progressDialog = Preconditions.checkNotNull(progressDialog);
 
-        appAssetUpdateEventManager.registerListener(this);
+        appAssetUpdateEventManager.registerListener(appAssetupUpdateListener);
         packageStateUpdateEventManager.registerListener(packageStateUpdateListener);
 
-        List<AppInfo> appInfoList = packageListProvider.getOrderedPackages();
-        for (AppInfo app : appInfoList) {
-            // this is to allocate a request to get package assets that we will obtain from AppAssetUpdateEventManager
-            PackageAssets packageAsset = packageAssetService.getPackageAssets(app.getPackageName());
-            applicationModelList.add(ApplicationModel.builder()
-                    .packageName(app.getPackageName())
-                    // the package asset is only available when provided from AppAssetUpdateEventManager
-                    // this is to prioritize UI requests for package assets
-                    .applicationAssetSupplier(() -> packageAssetService.getPackageAssets(app.getPackageName()))
-                    .applicationLabel(packageAsset.getAppName())
-                    .applicationIcon(packageAsset.getIconDrawable())
-                    .isEnabled(app.isEnabled())
-                    .build());
-        }
-    }
-
-    // Lombok this getter will fail the data binding
-    public ObservableArrayList<ApplicationModel> getApplicationModelList() {
-        return this.applicationModelList;
+        reloadAdapter();
     }
 
     public int getViewMode() {
@@ -121,41 +110,17 @@ public class ApplicationModelList extends BaseObservable implements AppAssetUpda
     public void setViewMode(int viewMode) {
         this.viewMode = viewMode;
 
-        for (ApplicationModel applicationModel : applicationModelList) {
-            switch (viewMode) {
-                case ViewMode.ENABLED:
-                    applicationModel.setHidden(!applicationModel.isEnabled());
-                    break;
-                case ViewMode.DISABLED:
-                    applicationModel.setHidden(applicationModel.isEnabled());
-                    break;
-                case ViewMode.ALL:
-                default:
-                    applicationModel.setHidden(false);
-                    break;
-            }
-        }
-        notifyChange();
-    }
-
-    @Override
-    public void update(AppAssetUpdate event) {
-        String packageName = event.getPackageName();
-
-        findApplicationModel(packageName)
-                .ifPresent(applicationModel -> updatePackageAsset(applicationModel));
+        reloadAdapter();
     }
 
     private Optional<ApplicationModel> findApplicationModel(String packageName) {
-        return stream(applicationModelList)
+        return stream(getApplicationModels())
                 .filter(applicationModel -> packageName.equals(applicationModel.getPackageName()))
                 .findFirst();
     }
 
-    private void updatePackageAsset(ApplicationModel applicationModel) {
-        PackageAssets packageAsset = packageAssetService.getPackageAssets(applicationModel.getPackageName());
-
-        applicationModel.setPackageAssets(packageAsset);
+    private List<ApplicationModel> getApplicationModels() {
+        return (List<ApplicationModel>) rxDataSource.getRxAdapter().getDataSet();
     }
 
     public void toggleSelectedApplications() {
@@ -185,7 +150,7 @@ public class ApplicationModelList extends BaseObservable implements AppAssetUpda
     }
 
     private Set<ApplicationModel> getSelectedApplications() {
-        return stream(applicationModelList)
+        return stream(getApplicationModels())
                 .filter(applicationModel -> applicationModel.isSelected())
                 .collect(Collectors.toSet());
     }
@@ -195,5 +160,37 @@ public class ApplicationModelList extends BaseObservable implements AppAssetUpda
                 .forEach(applicationModel -> applicationModel.setSelected(false));
     }
 
+    private void reloadAdapter() {
+        List<ApplicationModel> applicationModels = stream(packageListProvider.getOrderedPackages())
+                .filter(appInfo -> shouldIncludePackageInAdapter(appInfo, viewMode))
+                .map(appInfo -> {
+                        // this is to allocate a request to get package assets that we will obtain from AppAssetUpdateEventManager
+                        PackageAssets packageAsset = packageAssetService.getPackageAssets(appInfo.getPackageName());
+                        return ApplicationModel.builder()
+                                .packageName(appInfo.getPackageName())
+                                // the package asset is only available when provided from AppAssetUpdateEventManager
+                                // this is to prioritize UI requests for package assets
+                                .applicationAssetSupplier(() -> packageAssetService.getPackageAssets(appInfo.getPackageName()))
+                                .applicationLabel(packageAsset.getAppName())
+                                .applicationIcon(packageAsset.getIconDrawable())
+                                .isEnabled(appInfo.isEnabled())
+                                .build();
+                })
+                .collect(Collectors.toList());
+        rxDataSource
+                .updateDataSet(applicationModels)
+                .updateAdapter();
+    }
 
+    private boolean shouldIncludePackageInAdapter(AppInfo appInfo, int viewMode) {
+        switch (viewMode) {
+            case ViewMode.ENABLED:
+                return appInfo.isEnabled();
+            case ViewMode.DISABLED:
+                return !appInfo.isEnabled();
+            case ViewMode.ALL:
+            default:
+                return true;
+        }
+    }
 }

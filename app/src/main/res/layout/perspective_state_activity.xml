@@ -5,7 +5,7 @@
 
     <data>
         <import type="android.view.View"/>
-        <variable name="applications" type="com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationModelList"/>
+        <variable name="viewModel" type="com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationStateViewModel"/>
     </data>
 
     <RelativeLayout
@@ -18,7 +18,7 @@
         <Spinner
             android:id="@+id/app_status_spinner"
             android:spinnerMode="dropdown"
-            android:selectedItemPosition="@={applications.viewMode}"
+            android:selectedItemPosition="@={viewModel.viewMode}"
             android:entries="@array/app_status_selection_array"
             android:layout_width="wrap_content"
             android:layout_height="50dip"
@@ -38,8 +38,8 @@
         <Button
             android:id="@+id/toggle_app_state_button"
             android:text="@string/toggle_app_status_button"
-            android:onClick="@{() -> applications.toggleSelectedApplications()}"
-            android:visibility="@{applications.viewMode == 0 ? View.VISIBLE : View.GONE}"
+            android:onClick="@{() -> viewModel.toggleSelectedApplications()}"
+            android:visibility="@{viewModel.viewMode == 0 ? View.VISIBLE : View.GONE}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -49,8 +49,8 @@
         <Button
             android:id="@+id/enable_app_button"
             android:text="@string/enable_app_status_button"
-            android:onClick="@{() -> applications.enableSelectedApplications()}"
-            android:visibility="@{applications.viewMode == 2 ? View.VISIBLE : View.GONE}"
+            android:onClick="@{() -> viewModel.enableSelectedApplications()}"
+            android:visibility="@{viewModel.viewMode == 2 ? View.VISIBLE : View.GONE}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -60,8 +60,8 @@
         <Button
             android:id="@+id/disable_app_button"
             android:text="@string/disable_app_status_button"
-            android:onClick="@{() -> applications.disableSelectedApplications()}"
-            android:visibility="@{applications.viewMode == 1 ? View.VISIBLE : View.GONE}"
+            android:onClick="@{() -> viewModel.disableSelectedApplications()}"
+            android:visibility="@{viewModel.viewMode == 1 ? View.VISIBLE : View.GONE}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -79,7 +79,6 @@
             android:layout_alignParentBottom="true"
             android:layout_below="@+id/app_status_spinner"
             android:descendantFocusability="blocksDescendants"
-            bind:applications="@{applications}"
             />
 
     </RelativeLayout>

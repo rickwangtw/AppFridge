@@ -76,4 +76,6 @@ dependencies {
     compile 'net.sourceforge.streamsupport:streamsupport-atomic:1.5.4'
     compile 'net.sourceforge.streamsupport:streamsupport-flow:1.5.4'
     compile 'net.sourceforge.streamsupport:streamsupport-literal:1.5.4'
+
+    compile 'com.minimize.android:rxrecycler-adapter:1.2.2'
 }

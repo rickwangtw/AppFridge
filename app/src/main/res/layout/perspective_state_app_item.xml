@@ -13,8 +13,7 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@{application.enabled ? Color.WHITE : Color.GRAY}"
-        android:visibility="@{application.hidden ? View.GONE : View.VISIBLE}" >
+        android:background="@{application.enabled ? Color.WHITE : Color.GRAY}" >
 
         <ImageView
             android:id="@+id/appicon"

@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
 
+import java8.util.function.Consumer;
 import java8.util.function.Supplier;
 import lombok.Builder;
 
@@ -14,6 +15,7 @@ public class ApplicationModel extends BaseObservable {
 
     // if package assets are absent, we use this supplier to get it
     private final Supplier<PackageAssets> applicationAssetSupplier;
+    private final Consumer<String> applicationLauncher;
 
     private String packageName;
     private String applicationLabel;
@@ -91,5 +93,9 @@ public class ApplicationModel extends BaseObservable {
 
     private void change() {
         notifyChange();
+    }
+
+    public void launchApplication() {
+        applicationLauncher.accept(packageName);
     }
 }

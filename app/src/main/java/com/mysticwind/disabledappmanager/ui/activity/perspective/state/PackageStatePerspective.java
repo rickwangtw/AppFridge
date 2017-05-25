@@ -37,7 +37,6 @@ public class PackageStatePerspective extends PerspectiveBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_state_activity);
 
-
         packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
 
         PerspectiveStateActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_state_activity);
@@ -52,10 +51,11 @@ public class PackageStatePerspective extends PerspectiveBase {
                     itemBinding.setVariable(BR.application, applicationModel);
                     itemBinding.executePendingBindings();
                 });
-        ApplicationStateViewModel applicationStateViewModel = new ApplicationStateViewModel(dataSource, packageListProvider,
+        ApplicationStateViewModel applicationStateViewModel = new ApplicationStateViewModel(
+                PackageStatePerspective.this, dataSource, packageListProvider,
                 packageAssetService, appAssetUpdateEventManager, packageStateController,
                 appStateProvider, packageStateUpdateEventManager, appGroupManager,
-                DialogHelper.newProgressDialog(PackageStatePerspective.this));
+                DialogHelper.newProgressDialog(PackageStatePerspective.this), appLauncher);
         binding.setViewModel(applicationStateViewModel);
     }
 

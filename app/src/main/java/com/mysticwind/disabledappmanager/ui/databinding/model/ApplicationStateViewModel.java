@@ -1,11 +1,13 @@
 package com.mysticwind.disabledappmanager.ui.databinding.model;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.databinding.BaseObservable;
 
 import com.google.common.base.Preconditions;
 import com.minimize.android.rxrecycleradapter.RxDataSource;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
+import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
@@ -43,6 +45,7 @@ public class ApplicationStateViewModel extends BaseObservable {
         public static final int DISABLED = 2;
     }
 
+    private final Context context;
     private final PackageListProvider packageListProvider;
     private final PackageAssetService packageAssetService;
     private final PackageStateController packageStateController;
@@ -50,6 +53,7 @@ public class ApplicationStateViewModel extends BaseObservable {
     private final PackageStateUpdateEventManager packageStateUpdateEventManager;
     private final AppGroupManager appGroupManager;
     private final Dialog progressDialog;
+    private final AppLauncher appLauncher;
     // weak reference will be released
     private final PackageStateUpdateListener packageStateUpdateListener = new PackageStateUpdateListener() {
         @Override
@@ -80,14 +84,18 @@ public class ApplicationStateViewModel extends BaseObservable {
     @Setter @Getter
     private RxDataSource<ApplicationModel> rxDataSource;
 
-    public ApplicationStateViewModel(RxDataSource<ApplicationModel> dataSource, final PackageListProvider packageListProvider,
+    public ApplicationStateViewModel(final Context context,
+                                     final RxDataSource<ApplicationModel> dataSource,
+                                     final PackageListProvider packageListProvider,
                                      final PackageAssetService packageAssetService,
                                      final AppAssetUpdateEventManager appAssetUpdateEventManager,
                                      final PackageStateController packageStateController,
                                      final AppStateProvider appStateProvider,
                                      final PackageStateUpdateEventManager packageStateUpdateEventManager,
                                      final AppGroupManager appGroupManager,
-                                     final Dialog progressDialog) {
+                                     final Dialog progressDialog,
+                                     final AppLauncher appLauncher) {
+        this.context = Preconditions.checkNotNull(context);
         this.rxDataSource = Preconditions.checkNotNull(dataSource);
         this.packageListProvider = Preconditions.checkNotNull(packageListProvider);
         this.packageAssetService = Preconditions.checkNotNull(packageAssetService);
@@ -96,6 +104,7 @@ public class ApplicationStateViewModel extends BaseObservable {
         this.packageStateUpdateEventManager = Preconditions.checkNotNull(packageStateUpdateEventManager);
         this.appGroupManager = Preconditions.checkNotNull(appGroupManager);
         this.progressDialog = Preconditions.checkNotNull(progressDialog);
+        this.appLauncher = Preconditions.checkNotNull(appLauncher);
 
         appAssetUpdateEventManager.registerListener(appAssetupUpdateListener);
         packageStateUpdateEventManager.registerListener(packageStateUpdateListener);
@@ -174,6 +183,9 @@ public class ApplicationStateViewModel extends BaseObservable {
                                 .applicationLabel(packageAsset.getAppName())
                                 .applicationIcon(packageAsset.getIconDrawable())
                                 .isEnabled(appInfo.isEnabled())
+                                .applicationLauncher(
+                                        packageName ->
+                                                appLauncher.launch(context, packageName))
                                 .build();
                 })
                 .collect(Collectors.toList());

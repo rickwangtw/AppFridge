@@ -4,12 +4,12 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
 import com.google.common.base.Preconditions;
-import com.minimize.android.rxrecycleradapter.RxDataSource;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 
 import java.util.List;
 import java.util.Set;
 
+import java8.util.function.Supplier;
 import java8.util.stream.Collectors;
 
 import static java8.util.stream.StreamSupport.stream;
@@ -20,7 +20,8 @@ import static java8.util.stream.StreamSupport.stream;
 public class AddAppGroupViewModel extends BaseObservable {
 
     private final AppGroupManager appGroupManager;
-    private final RxDataSource<ApplicationModel> dataSource;
+    private final Supplier<Set<String>> selectedPackageNamesSupplier;
+    private final Runnable clearSelectedPackagesRunnable;
 
     private List<String> appGroups;
 
@@ -29,9 +30,11 @@ public class AddAppGroupViewModel extends BaseObservable {
     private int selectedAppGroupPosition;
 
     public AddAppGroupViewModel(final AppGroupManager appGroupManager,
-                                final RxDataSource<ApplicationModel> dataSource) {
+                                final Supplier<Set<String>> selectedPackageNamesSupplier,
+                                final Runnable clearSelectedPackagesRunnable) {
         this.appGroupManager = Preconditions.checkNotNull(appGroupManager);
-        this.dataSource = Preconditions.checkNotNull(dataSource);
+        this.selectedPackageNamesSupplier = Preconditions.checkNotNull(selectedPackageNamesSupplier);
+        this.clearSelectedPackagesRunnable = Preconditions.checkNotNull(clearSelectedPackagesRunnable);
 
         reloadAppGroups();
 
@@ -103,21 +106,13 @@ public class AddAppGroupViewModel extends BaseObservable {
      * Once this method is called, we will also update the dialog states.
      */
     public void addPackageNamesToAppGroup() {
-        Set<ApplicationModel> applicationModels = stream((List<ApplicationModel>)dataSource.getRxAdapter().getDataSet())
-                .filter(applicationModel -> applicationModel.isSelected())
-                .collect(Collectors.toSet());
-
-        Set<String> packageNames = stream(applicationModels)
-                .map(applicationModel -> applicationModel.getPackageName())
-                .collect(Collectors.toSet());
+        Set<String> packageNames = selectedPackageNamesSupplier.get();
 
         String selectedAppGroup = newAppGroupSelected ? newAppGroupName : appGroups.get(selectedAppGroupPosition);
 
         appGroupManager.addPackagesToAppGroup(packageNames, selectedAppGroup);
 
-        applicationModels.forEach(
-                applicationModel ->
-                        applicationModel.setSelected(false));
+        clearSelectedPackagesRunnable.run();
 
         // reset
         setNewAppGroupName("");

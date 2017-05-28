@@ -63,7 +63,9 @@ public class PackageStatePerspective extends PerspectiveBase {
                 DialogHelper.newProgressDialog(PackageStatePerspective.this), appLauncher);
         binding.setViewModel(applicationStateViewModel);
 
-        AddAppGroupViewModel addAppGroupViewModel = new AddAppGroupViewModel(appGroupManager, dataSource);
+        AddAppGroupViewModel addAppGroupViewModel = new AddAppGroupViewModel(appGroupManager,
+                applicationStateViewModel.getSelectedPackageNamesSupplier(),
+                applicationStateViewModel.getClearSelectedPackagesRunnable());
         PerspectiveStateAppGroupDialogBinding appGroupDialogBinding = DataBindingUtil
                 .inflate(LayoutInflater.from(PackageStatePerspective.this),
                         R.layout.perspective_state_app_group_dialog, null, false);

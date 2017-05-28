@@ -6,6 +6,7 @@ import android.databinding.BaseObservable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.minimize.android.rxrecycleradapter.RxDataSource;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
@@ -16,19 +17,20 @@ import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
-import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdate;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateListener;
 import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import java8.util.Optional;
+import java8.util.function.Predicate;
+import java8.util.function.Supplier;
 import java8.util.stream.Collectors;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +46,11 @@ public class ApplicationStateViewModel extends BaseObservable {
         public static final int DISABLED = 2;
     }
 
+    // in search mode, the selection status will be discarded when reloading the adapter
+    private final Set<String> cachedSelectedPackageNames = new HashSet<>();
+
     private final Context context;
+    private final RxDataSource<ApplicationModel> rxDataSource;
     private final PackageListProvider packageListProvider;
     private final PackageAssetService packageAssetService;
     private final PackageStateController packageStateController;
@@ -77,9 +83,7 @@ public class ApplicationStateViewModel extends BaseObservable {
     };
 
     private int viewMode = ViewMode.ALL;
-
-    @Setter @Getter
-    private RxDataSource<ApplicationModel> rxDataSource;
+    private List<ApplicationModel> cachedApplicationModels = Lists.newArrayList();
 
     @Setter
     private Dialog addToAppGroupDialog;
@@ -117,17 +121,18 @@ public class ApplicationStateViewModel extends BaseObservable {
     public void setViewMode(int viewMode) {
         this.viewMode = viewMode;
 
+        clearSelectedApplications();
         reloadAdapter();
     }
 
     private Optional<ApplicationModel> findApplicationModel(String packageName) {
-        return stream(getApplicationModels())
+        return stream(getCachedApplicationModels())
                 .filter(applicationModel -> packageName.equals(applicationModel.getPackageName()))
                 .findFirst();
     }
 
-    private List<ApplicationModel> getApplicationModels() {
-        return (List<ApplicationModel>) rxDataSource.getRxAdapter().getDataSet();
+    private List<ApplicationModel> getCachedApplicationModels() {
+        return cachedApplicationModels;
     }
 
     public void toggleSelectedApplications() {
@@ -156,40 +161,84 @@ public class ApplicationStateViewModel extends BaseObservable {
         clearSelectedApplications();
     }
 
-    private Set<ApplicationModel> getSelectedApplications() {
-        return stream(getApplicationModels())
-                .filter(applicationModel -> applicationModel.isSelected())
+    public Supplier<Set<String>> getSelectedPackageNamesSupplier() {
+        return () ->
+                stream(getSelectedApplications())
+                        .map(appInfo -> appInfo.getPackageName())
+                        .collect(Collectors.toSet());
+    }
+
+    public Runnable getClearSelectedPackagesRunnable() {
+        return () -> clearSelectedApplications();
+    }
+
+
+    public Set<ApplicationModel> getSelectedApplications() {
+        return stream(getCachedApplicationModels())
+                .filter(applicationModel ->
+                        applicationModel.isSelected() ||
+                                cachedSelectedPackageNames.contains(applicationModel.getPackageName())
+                )
                 .collect(Collectors.toSet());
     }
 
     private void clearSelectedApplications() {
+        cachedSelectedPackageNames.clear();
         getSelectedApplications()
                 .forEach(applicationModel -> applicationModel.setSelected(false));
     }
 
     private void reloadAdapter() {
-        List<ApplicationModel> applicationModels = stream(packageListProvider.getOrderedPackages())
-                .filter(appInfo -> shouldIncludePackageInAdapter(appInfo, viewMode))
+        updateDataSet(applicationModel -> true, true);
+    }
+
+    private void updateDataSet(final Predicate<ApplicationModel> applicationModelPredicate,
+                               final boolean fullReload) {
+        cacheSelectedPackages();
+
+        if (fullReload) {
+            updateApplicationModelCache();
+        }
+
+        List<ApplicationModel> filteredApplicationModelList = stream(getCachedApplicationModels())
+                .filter(applicationModel -> shouldIncludePackageInAdapter(applicationModel, viewMode))
+                .filter(applicationModel -> applicationModelPredicate.test(applicationModel))
+                .collect(Collectors.toList());
+
+        rxDataSource
+                .updateDataSet(filteredApplicationModelList)
+                .updateAdapter();
+    }
+
+    private void cacheSelectedPackages() {
+        stream(getSelectedApplications())
+                .map(applicationModel -> applicationModel.getPackageName())
+                .forEach(
+                        packageName ->
+                                cachedSelectedPackageNames.add(packageName));
+    }
+
+
+    private void updateApplicationModelCache() {
+        cachedApplicationModels = stream(packageListProvider.getOrderedPackages())
                 .map(appInfo -> {
-                        // this is to allocate a request to get package assets that we will obtain from AppAssetUpdateEventManager
-                        PackageAssets packageAsset = packageAssetService.getPackageAssets(appInfo.getPackageName());
-                        return ApplicationModel.builder()
-                                .packageName(appInfo.getPackageName())
-                                // the package asset is only available when provided from AppAssetUpdateEventManager
-                                // this is to prioritize UI requests for package assets
-                                .applicationAssetSupplier(() -> packageAssetService.getPackageAssets(appInfo.getPackageName()))
-                                .applicationLabel(packageAsset.getAppName())
-                                .applicationIcon(packageAsset.getIconDrawable())
-                                .isEnabled(appInfo.isEnabled())
-                                .applicationLauncher(
-                                        packageName ->
-                                                appLauncher.launch(context, packageName))
-                                .build();
+                    // this is to allocate a request to get package assets that we will obtain from AppAssetUpdateEventManager
+                    PackageAssets packageAsset = packageAssetService.getPackageAssets(appInfo.getPackageName());
+                    return ApplicationModel.builder()
+                            .packageName(appInfo.getPackageName())
+                            // the package asset is only available when provided from AppAssetUpdateEventManager
+                            // this is to prioritize UI requests for package assets
+                            .applicationAssetSupplier(() -> packageAssetService.getPackageAssets(appInfo.getPackageName()))
+                            .applicationLabel(packageAsset.getAppName())
+                            .applicationIcon(packageAsset.getIconDrawable())
+                            .isEnabled(appInfo.isEnabled())
+                            .selected(cachedSelectedPackageNames.contains(appInfo.getPackageName()))
+                            .applicationLauncher(
+                                    packageName ->
+                                            appLauncher.launch(context, packageName))
+                            .build();
                 })
                 .collect(Collectors.toList());
-        rxDataSource
-                .updateDataSet(applicationModels)
-                .updateAdapter();
     }
 
     public void launchAddToAppGroupDialog() {
@@ -203,12 +252,12 @@ public class ApplicationStateViewModel extends BaseObservable {
         addToAppGroupDialog.show();
     }
 
-    private boolean shouldIncludePackageInAdapter(AppInfo appInfo, int viewMode) {
+    private boolean shouldIncludePackageInAdapter(ApplicationModel applicationModel, int viewMode) {
         switch (viewMode) {
             case ViewMode.ENABLED:
-                return appInfo.isEnabled();
+                return applicationModel.isEnabled();
             case ViewMode.DISABLED:
-                return !appInfo.isEnabled();
+                return !applicationModel.isEnabled();
             case ViewMode.ALL:
             default:
                 return true;
@@ -221,10 +270,12 @@ public class ApplicationStateViewModel extends BaseObservable {
             cancelSearch();
             return;
         }
-        rxDataSource.filter(applicationModel ->
-                applicationModel.getPackageName().toLowerCase().contains(lowCaseSearchQuery) ||
-                        applicationModel.getApplicationLabel().toLowerCase().contains(lowCaseSearchQuery)
-        ).updateAdapter();
+
+        updateDataSet(
+                applicationModel ->
+                        applicationModel.getPackageName().toLowerCase().contains(lowCaseSearchQuery) ||
+                                applicationModel.getApplicationLabel().toLowerCase().contains(lowCaseSearchQuery),
+                false);
     }
 
     public void cancelSearch() {

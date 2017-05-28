@@ -53,6 +53,7 @@
                 <EditText
                     android:id="@+id/app_group_name"
                     android:text="@={addAppGroupViewModel.newAppGroupName}"
+                    android:inputType="text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>

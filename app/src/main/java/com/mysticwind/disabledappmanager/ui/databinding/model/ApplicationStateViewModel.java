@@ -7,7 +7,6 @@ import android.databinding.BaseObservable;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.minimize.android.rxrecycleradapter.RxDataSource;
-import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
@@ -50,8 +49,6 @@ public class ApplicationStateViewModel extends BaseObservable {
     private final PackageAssetService packageAssetService;
     private final PackageStateController packageStateController;
     private final AppStateProvider appStateProvider;
-    private final PackageStateUpdateEventManager packageStateUpdateEventManager;
-    private final AppGroupManager appGroupManager;
     private final Dialog progressDialog;
     private final AppLauncher appLauncher;
     // weak reference will be released
@@ -95,7 +92,6 @@ public class ApplicationStateViewModel extends BaseObservable {
                                      final PackageStateController packageStateController,
                                      final AppStateProvider appStateProvider,
                                      final PackageStateUpdateEventManager packageStateUpdateEventManager,
-                                     final AppGroupManager appGroupManager,
                                      final Dialog progressDialog,
                                      final AppLauncher appLauncher) {
         this.context = Preconditions.checkNotNull(context);
@@ -104,8 +100,7 @@ public class ApplicationStateViewModel extends BaseObservable {
         this.packageAssetService = Preconditions.checkNotNull(packageAssetService);
         this.packageStateController = Preconditions.checkNotNull(packageStateController);
         this.appStateProvider = Preconditions.checkNotNull(appStateProvider);
-        this.packageStateUpdateEventManager = Preconditions.checkNotNull(packageStateUpdateEventManager);
-        this.appGroupManager = Preconditions.checkNotNull(appGroupManager);
+        Preconditions.checkNotNull(packageStateUpdateEventManager);
         this.progressDialog = Preconditions.checkNotNull(progressDialog);
         this.appLauncher = Preconditions.checkNotNull(appLauncher);
 

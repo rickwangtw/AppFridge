@@ -29,6 +29,7 @@
         <Button
             android:id="@+id/add_to_group_button"
             android:text="@string/add_to_group_button"
+            android:onClick="@{() -> viewModel.launchAddToAppGroupDialog()}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"

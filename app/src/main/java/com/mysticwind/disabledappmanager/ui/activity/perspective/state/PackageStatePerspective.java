@@ -1,9 +1,12 @@
 package com.mysticwind.disabledappmanager.ui.activity.perspective.state;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -11,12 +14,14 @@ import com.minimize.android.rxrecycleradapter.RxDataSource;
 import com.mysticwind.disabledappmanager.BR;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveStateActivityBinding;
+import com.mysticwind.disabledappmanager.databinding.PerspectiveStateAppGroupDialogBinding;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveStateAppItemBinding;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.PerspectiveBase;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective_;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
+import com.mysticwind.disabledappmanager.ui.databinding.model.AddAppGroupViewModel;
 import com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationModel;
 import com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationStateViewModel;
 
@@ -57,6 +62,24 @@ public class PackageStatePerspective extends PerspectiveBase {
                 appStateProvider, packageStateUpdateEventManager, appGroupManager,
                 DialogHelper.newProgressDialog(PackageStatePerspective.this), appLauncher);
         binding.setViewModel(applicationStateViewModel);
+
+        AddAppGroupViewModel addAppGroupViewModel = new AddAppGroupViewModel(appGroupManager, dataSource);
+        PerspectiveStateAppGroupDialogBinding appGroupDialogBinding = DataBindingUtil
+                .inflate(LayoutInflater.from(PackageStatePerspective.this),
+                        R.layout.perspective_state_app_group_dialog, null, false);
+        appGroupDialogBinding.setAddAppGroupViewModel(addAppGroupViewModel);
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setTitle(R.string.app_group_dialog_title);
+        dialogBuilder.setPositiveButton(R.string.app_group_dialog_positive_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                addAppGroupViewModel.addPackageNamesToAppGroup();
+            }
+        });
+        dialogBuilder.setNegativeButton(R.string.app_group_dialog_negative_button, null);
+        dialogBuilder.setView(appGroupDialogBinding.getRoot());
+        applicationStateViewModel.setAddToAppGroupDialog(dialogBuilder.create());
     }
 
     @Override

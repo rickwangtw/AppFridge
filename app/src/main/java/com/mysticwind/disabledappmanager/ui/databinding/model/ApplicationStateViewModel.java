@@ -84,6 +84,9 @@ public class ApplicationStateViewModel extends BaseObservable {
     @Setter @Getter
     private RxDataSource<ApplicationModel> rxDataSource;
 
+    @Setter
+    private Dialog addToAppGroupDialog;
+
     public ApplicationStateViewModel(final Context context,
                                      final RxDataSource<ApplicationModel> dataSource,
                                      final PackageListProvider packageListProvider,
@@ -192,6 +195,17 @@ public class ApplicationStateViewModel extends BaseObservable {
         rxDataSource
                 .updateDataSet(applicationModels)
                 .updateAdapter();
+    }
+
+    public void launchAddToAppGroupDialog() {
+        if (getSelectedApplications().isEmpty()) {
+            return;
+        }
+        if (addToAppGroupDialog == null) {
+            return;
+        }
+
+        addToAppGroupDialog.show();
     }
 
     private boolean shouldIncludePackageInAdapter(AppInfo appInfo, int viewMode) {

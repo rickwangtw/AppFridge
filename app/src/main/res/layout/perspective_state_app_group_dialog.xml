@@ -1,43 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <RadioGroup
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+    <data>
+        <variable name="addAppGroupViewModel" type="com.mysticwind.disabledappmanager.ui.databinding.model.AddAppGroupViewModel"/>
+    </data>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
-            <RadioButton
-                android:id="@+id/app_group_spinner_radio_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-            <Spinner
-                android:id="@+id/app_group_spinner"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal" />
-        </LinearLayout>
+        <RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
-            <RadioButton
-                android:id="@+id/new_app_group_radio_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <EditText
-                android:id="@+id/app_group_name"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-    </RadioGroup>
-</LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+                <RadioButton
+                    android:id="@+id/app_group_spinner_radio_button"
+                    android:checked="@{!addAppGroupViewModel.newAppGroupSelected}"
+                    android:onClick="@{(view) -> addAppGroupViewModel.onUseCreatedAppGroupsSelected()}"
+                    android:clickable="@{addAppGroupViewModel.hasAppGroups()}"
+                    android:enabled="@{addAppGroupViewModel.hasAppGroups()}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Spinner
+                    android:id="@+id/app_group_spinner"
+                    android:clickable="@{addAppGroupViewModel.hasAppGroups()}"
+                    android:entries="@{addAppGroupViewModel.appGroups}"
+                    android:selectedItemPosition="@={addAppGroupViewModel.selectedAppGroupPosition}"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+                <RadioButton
+                    android:id="@+id/new_app_group_radio_button"
+                    android:checked="@{addAppGroupViewModel.newAppGroupSelected}"
+                    android:onClick="@{(view) -> addAppGroupViewModel.onNewAppGroupSelected()}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/app_group_name"
+                    android:text="@={addAppGroupViewModel.newAppGroupName}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </RadioGroup>
+    </LinearLayout>
+
+</layout>

@@ -6,44 +6,61 @@
         <variable name="appGroup" type="com.mysticwind.disabledappmanager.ui.databinding.model.AppGroupViewModel"/>
     </data>
 
-    <RelativeLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center" >
+    <com.daimajia.swipe.SwipeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <!-- Bottom View Start-->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/bottom_wrapper"
+            android:layout_width="140dp"
+            android:weightSum="1"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/app_group_name"
-            android:text="@{appGroup.appGroupName}"
-            android:textSize="20dip"
-            android:textStyle="bold"
-            android:paddingLeft="50dip"
-            android:layout_width="fill_parent"
-            android:layout_height="50dip" />
+            <ImageView
+                android:id="@+id/add_to_group_button"
+                android:src="@drawable/ic_add_circle_black_24dp"
+                android:background="#4CD964"
+                android:onClick="@{(view) -> appGroup.showAddPackagesToAppGroupDialog()}"
+                android:layout_gravity="center"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:layout_width="70dp"
+                android:layout_height="match_parent" />
 
-        <ImageButton
-            android:id="@+id/add_to_group_button"
-            android:src="@drawable/ic_add_circle_black_24dp"
-            android:onClick="@{(view) -> appGroup.showAddPackagesToAppGroupDialog()}"
-            android:visibility="@{appGroup.showAppGroupConfigButtons ? View.VISIBLE : View.GONE}"
-            android:focusable="false"
-            android:layout_toLeftOf="@+id/trashButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true" />
+            <ImageView
+                android:id="@+id/trashButton"
+                android:src="@drawable/ic_delete_black_24dp"
+                android:background="#FF0000"
+                android:onClick="@{(view) -> appGroup.removeAppGroup()}"
+                android:layout_gravity="center"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:layout_width="70dp"
+                android:layout_height="match_parent" />
 
-        <ImageButton
-            android:id="@+id/trashButton"
-            android:src="@drawable/ic_delete_black_24dp"
-            android:onClick="@{(view) -> appGroup.removeAppGroup()}"
-            android:visibility="@{appGroup.showAppGroupConfigButtons ? View.VISIBLE : View.GONE}"
-            android:focusable="false"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+        </LinearLayout>
+        <!-- Bottom View End-->
 
-    </RelativeLayout>
+        <!-- Surface View Start -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!--What you want to show in SurfaceView-->
+
+            <TextView
+                android:id="@+id/app_group_name"
+                android:text="@{appGroup.appGroupName}"
+                android:gravity="left|center"
+                android:textSize="20dip"
+                android:textStyle="bold"
+                android:paddingLeft="50dip"
+                android:layout_width="fill_parent"
+                android:layout_height="50dip" />
+
+        </LinearLayout>
+        <!-- Surface View End -->
+
+    </com.daimajia.swipe.SwipeLayout>
 
 </layout>

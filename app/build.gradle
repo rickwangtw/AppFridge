@@ -78,4 +78,5 @@ dependencies {
     compile 'net.sourceforge.streamsupport:streamsupport-literal:1.5.4'
 
     compile 'com.minimize.android:rxrecycler-adapter:1.2.2'
+    compile 'com.daimajia.swipelayout:library:1.2.0@aar'
 }

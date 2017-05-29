@@ -6,54 +6,72 @@
         <variable name="application" type="com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationModel"/>
     </data>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:onClick="@{() -> application.launchApplication()}" >
+    <com.daimajia.swipe.SwipeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/appicon"
-            android:src="@{application.applicationIcon}"
-            android:layout_width="50dip"
-            android:layout_height="50dip"
-            android:scaleType="centerCrop" />
+        <!-- Bottom View Start-->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/bottom_wrapper"
+            android:layout_width="70dp"
+            android:weightSum="1"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/packagename"
-            android:text="@{application.applicationLabel}"
-            android:layout_width="wrap_content"
-            android:layout_height="50dip"
-            android:layout_weight="1"
-            android:layout_toRightOf="@id/appicon"
-            android:layout_gravity="left|center_vertical"
-            android:textSize="20dip"
-            android:layout_marginLeft="10dip"
-            android:layout_toLeftOf="@+id/checkbox" />
+            <ImageView
+                android:id="@+id/trashButton"
+                android:src="@drawable/ic_delete_black_24dp"
+                android:background="#FF0000"
+                android:onClick="@{(view) -> application.removeFromAppGroup(appGroupName)}"
+                android:layout_gravity="center"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:layout_width="70dp"
+                android:layout_height="match_parent" />
 
-        <Switch
-            android:id="@+id/appStateSwitch"
-            android:checked="@{application.enabled}"
-            android:onClick="@{(view) -> application.changeAppStateChangeViewClicked(view)}"
-            android:focusable="false"
-            android:layout_width="wrap_content"
+        </LinearLayout>
+        <!-- Bottom View End-->
+
+        <!-- Surface View Start -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignBottom="@+id/packagename"
-            android:layout_alignParentBottom="true"
-            android:layout_toLeftOf="@+id/trashButton" />
+            android:onClick="@{() -> application.launchApplication()}" >
 
-        <ImageButton
-            android:id="@+id/trashButton"
-            android:src="@drawable/ic_delete_black_24dp"
-            android:onClick="@{(view) -> application.removeFromAppGroup(appGroupName)}"
-            android:focusable="false"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignBottom="@+id/packagename"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true" />
+            <!--What you want to show in SurfaceView-->
 
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/appicon"
+                android:src="@{application.applicationIcon}"
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/packagename"
+                android:text="@{application.applicationLabel}"
+                android:layout_width="fill_parent"
+                android:layout_height="50dip"
+                android:gravity="left|center"
+                android:textSize="20dip"
+                android:layout_marginLeft="10dip"
+                android:layout_toLeftOf="@+id/checkbox" />
+
+            <Switch
+                android:id="@+id/appStateSwitch"
+                android:checked="@{application.enabled}"
+                android:onClick="@{(view) -> application.changeAppStateChangeViewClicked(view)}"
+                android:focusable="false"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignBottom="@+id/packagename"
+                android:layout_alignParentBottom="true"
+                android:layout_toLeftOf="@+id/trashButton" />
+
+        </LinearLayout>
+        <!-- Surface View End -->
+
+    </com.daimajia.swipe.SwipeLayout>
 
 </layout>

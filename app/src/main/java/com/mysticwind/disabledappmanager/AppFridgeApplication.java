@@ -11,6 +11,7 @@ import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
+import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
@@ -65,6 +66,11 @@ public class AppFridgeApplication extends Application implements ApplicationComp
     @Override
     public void inject(BackupConfig_ backupConfig) {
         throw new RuntimeException("Unsupported operation");
+    }
+
+    @Override
+    public PackageListProvider packageListProvider() {
+        return component.packageListProvider();
     }
 
     @Override

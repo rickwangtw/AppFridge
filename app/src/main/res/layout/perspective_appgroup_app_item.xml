@@ -1,44 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ImageView
-        android:id="@+id/appicon"
-        android:layout_width="50dip"
-        android:layout_height="50dip"
-        android:scaleType="centerCrop"
-        android:src="@drawable/stub"/>
+    <data>
+        <variable name="appGroupName" type="java.lang.String"/>
+        <variable name="application" type="com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationModel"/>
+    </data>
 
-    <TextView
-        android:id="@+id/packagename"
-        android:layout_width="wrap_content"
-        android:layout_height="50dip"
-        android:layout_weight="1"
-        android:layout_toRightOf="@id/appicon"
-        android:layout_gravity="left|center_vertical"
-        android:textSize="20dip"
-        android:layout_marginLeft="10dip"
-        android:layout_toLeftOf="@+id/checkbox" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:onClick="@{() -> application.launchApplication()}" >
 
-    <Switch
-        android:id="@+id/appStateSwitch"
-        android:focusable="false"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignBottom="@+id/packagename"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/trashButton" />
+        <ImageView
+            android:id="@+id/appicon"
+            android:src="@{application.applicationIcon}"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:scaleType="centerCrop" />
 
-    <ImageButton
-        android:id="@+id/trashButton"
-        android:src="@drawable/ic_delete_black_24dp"
-        android:focusable="false"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignBottom="@+id/packagename"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true" />
+        <TextView
+            android:id="@+id/packagename"
+            android:text="@{application.applicationLabel}"
+            android:layout_width="wrap_content"
+            android:layout_height="50dip"
+            android:layout_weight="1"
+            android:layout_toRightOf="@id/appicon"
+            android:layout_gravity="left|center_vertical"
+            android:textSize="20dip"
+            android:layout_marginLeft="10dip"
+            android:layout_toLeftOf="@+id/checkbox" />
 
-</LinearLayout>
+        <Switch
+            android:id="@+id/appStateSwitch"
+            android:checked="@{application.enabled}"
+            android:onClick="@{(view) -> application.changeAppStateChangeViewClicked(view)}"
+            android:focusable="false"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/packagename"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@+id/trashButton" />
+
+        <ImageButton
+            android:id="@+id/trashButton"
+            android:src="@drawable/ic_delete_black_24dp"
+            android:onClick="@{(view) -> application.removeFromAppGroup(appGroupName)}"
+            android:focusable="false"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/packagename"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true" />
+
+    </LinearLayout>
+
+</layout>

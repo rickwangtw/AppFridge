@@ -61,9 +61,6 @@ import de.greenrobot.event.EventBus;
 
 @Module
 public class ApplicationModule {
-    private static class PackageListProviderNames {
-        static final String ALL_PACKAGE_NAME = "allPackageListProvider";
-    }
 
     private final Context context;
     private final AutoDisablingConfig_ autoDisablingConfig;
@@ -197,7 +194,7 @@ public class ApplicationModule {
         return new EventBusManualStateUpdateEventManager(new EventBus());
     }
 
-    @Provides @Singleton @Named(PackageListProviderNames.ALL_PACKAGE_NAME)
+    @Provides @Singleton
     public PackageListProvider providePackageListProvider(PackageManager packageManager) {
         return new PackageManagerAllPackageListProvider(packageManager);
     }
@@ -206,7 +203,6 @@ public class ApplicationModule {
     public AppGroupManager provideAppGroupManager(
             Context context,
             AppGroupUpdateEventManager appGroupUpdateEventManager,
-            @Named(PackageListProviderNames.ALL_PACKAGE_NAME)
             PackageListProvider packageListProvider) {
         return new AppGroupManagerImpl(
                 new AppGroupDAO(context), appGroupUpdateEventManager, packageListProvider);

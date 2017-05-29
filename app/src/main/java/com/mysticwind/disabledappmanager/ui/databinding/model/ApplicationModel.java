@@ -2,6 +2,7 @@ package com.mysticwind.disabledappmanager.ui.databinding.model;
 
 import android.databinding.BaseObservable;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
 
@@ -97,5 +98,13 @@ public class ApplicationModel extends BaseObservable {
 
     public void launchApplication() {
         applicationLauncher.accept(packageName);
+    }
+
+    public void changeAppStateChangeViewClicked(View view) {
+        // TODO
+    }
+
+    public void removeFromAppGroup(String appGroupName) {
+        // TODO
     }
 }

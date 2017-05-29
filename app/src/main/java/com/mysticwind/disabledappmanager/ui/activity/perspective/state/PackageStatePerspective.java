@@ -16,8 +16,6 @@ import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveStateActivityBinding;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveStateAppGroupDialogBinding;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveStateAppItemBinding;
-import com.mysticwind.disabledappmanager.domain.PackageListProvider;
-import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.PerspectiveBase;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective_;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
@@ -41,8 +39,6 @@ public class PackageStatePerspective extends PerspectiveBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perspective_state_activity);
-
-        PackageListProvider packageListProvider = new PackageManagerAllPackageListProvider(getPackageManager());
 
         PerspectiveStateActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_state_activity);
         binding.appListView.setLayoutManager(new LinearLayoutManager(this));

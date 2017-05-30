@@ -9,19 +9,22 @@
     <com.daimajia.swipe.SwipeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <!-- Bottom View Start-->
         <LinearLayout
             android:orientation="horizontal"
+            android:background="@drawable/gray"
             android:id="@+id/bottom_wrapper"
             android:layout_width="140dp"
             android:weightSum="1"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent" >
 
             <ImageView
                 android:id="@+id/add_to_group_button"
                 android:src="@drawable/ic_add_circle_black_24dp"
-                android:background="#4CD964"
+                android:visibility="@{appGroup.virtualGroup ? View.GONE : View.VISIBLE}"
                 android:onClick="@{(view) -> appGroup.showAddPackagesToAppGroupDialog()}"
+                android:background="@drawable/green"
                 android:layout_gravity="center"
                 android:paddingLeft="25dp"
                 android:paddingRight="25dp"
@@ -31,8 +34,9 @@
             <ImageView
                 android:id="@+id/trashButton"
                 android:src="@drawable/ic_delete_black_24dp"
-                android:background="#FF0000"
+                android:visibility="@{appGroup.virtualGroup ? View.GONE : View.VISIBLE}"
                 android:onClick="@{(view) -> appGroup.removeAppGroup()}"
+                android:background="@drawable/red"
                 android:layout_gravity="center"
                 android:paddingLeft="25dp"
                 android:paddingRight="25dp"

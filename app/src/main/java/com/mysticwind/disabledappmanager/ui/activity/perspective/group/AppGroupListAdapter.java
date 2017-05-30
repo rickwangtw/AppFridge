@@ -126,16 +126,18 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter {
         }
         PerspectiveAppgroupGroupItemBinding groupBinding = DataBindingUtil.bind(convertView);
         String appGroupName = getAppGroup(groupPosition);
-        final boolean isVirtualAppGroup;
-        if (allAppGroupName.equals(appGroupName)) {
-            isVirtualAppGroup = true;
-        } else {
-            isVirtualAppGroup = false;
-        }
-        AppGroupViewModel appGroupViewModel = new AppGroupViewModel(appGroupName, isVirtualAppGroup);
+        AppGroupViewModel appGroupViewModel = new AppGroupViewModel(appGroupName, isVirtualAppGroup(appGroupName));
         groupBinding.setAppGroup(appGroupViewModel);
         groupBinding.executePendingBindings();
         return convertView;
+    }
+
+    private boolean isVirtualAppGroup(final String appGroupName) {
+        if (allAppGroupName.equals(appGroupName)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -151,6 +153,7 @@ public class AppGroupListAdapter extends BaseExpandableListAdapter {
 
         final String packageName = getPackageNameOfGroupPositionChildPosition(groupPosition, childPosition);
         appBinding.setApplication(getApplicationModel(packageName));
+        appBinding.setIsWithinVirtualAppGroup(isVirtualAppGroup(appGroup));
         appBinding.executePendingBindings();
         return convertView;
     }

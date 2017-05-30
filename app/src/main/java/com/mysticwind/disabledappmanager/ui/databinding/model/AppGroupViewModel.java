@@ -20,6 +20,10 @@ public class AppGroupViewModel extends BaseObservable {
         return this.appGroupName;
     }
 
+    public boolean isVirtualGroup() {
+        return this.isVirtualGroup;
+    }
+
     public void showGroupActionDialog() {
         if (isVirtualGroup) {
             return;

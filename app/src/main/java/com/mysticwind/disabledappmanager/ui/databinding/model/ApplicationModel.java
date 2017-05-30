@@ -56,43 +56,39 @@ public class ApplicationModel extends BaseObservable {
     public void setPackageName(String packageName) {
         this.packageName = packageName;
 
-        change();
+        notifyChange();
     }
 
     public void setApplicationLabel(String applicationLabel) {
         this.applicationLabel = applicationLabel;
 
-        change();
+        notifyChange();
     }
 
     public void setApplicationIcon(Drawable applicationIcon) {
         this.applicationIcon = applicationIcon;
 
-        change();
+        notifyChange();
     }
 
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
 
-        change();
+        notifyChange();
     }
 
     public void setSelected(boolean selected) {
         this.selected = selected;
 
-        change();
+        notifyChange();
     }
 
-    public void setPackageAssets(PackageAssets packageAssets) {
+    public void setPackageAssets(final PackageAssets packageAssets) {
         this.packageAssets = packageAssets;
 
         this.applicationLabel = packageAssets.getAppName();
         this.applicationIcon = packageAssets.getIconDrawable();
 
-        change();
-    }
-
-    private void change() {
         notifyChange();
     }
 

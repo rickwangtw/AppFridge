@@ -3,6 +3,7 @@ package com.mysticwind.disabledappmanager.ui.databinding.model;
 import android.databinding.BaseObservable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.Switch;
 
 import com.google.common.base.Objects;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
@@ -19,6 +20,7 @@ public class ApplicationModel extends BaseObservable {
     // if package assets are absent, we use this supplier to get it
     private final Supplier<PackageAssets> applicationAssetSupplier;
     private final Consumer<String> applicationLauncher;
+    private final BiConsumer<String, Boolean> packageStatusChangeConsumer;
     private final BiConsumer<String, String> appGroupPackageRemovingConsumer;
 
     private String packageName;
@@ -100,7 +102,13 @@ public class ApplicationModel extends BaseObservable {
     }
 
     public void changeAppStateChangeViewClicked(View view) {
-        // TODO
+        Switch switchView = (Switch) view;
+        if (switchView.isChecked() == isEnabled) {
+            return;
+        }
+        if (packageStatusChangeConsumer != null) {
+            packageStatusChangeConsumer.accept(packageName, switchView.isChecked());
+        }
     }
 
     public void removeFromAppGroup(String appGroupName) {

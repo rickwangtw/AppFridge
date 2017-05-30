@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -22,14 +23,19 @@ import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
+import com.mysticwind.disabledappmanager.domain.state.PackageState;
+import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdate;
+import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateListener;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.PerspectiveBase;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspective_;
 import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
+import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
 import com.mysticwind.disabledappmanager.ui.databinding.model.AppGroupViewModel;
 import com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationModel;
 
 import org.androidannotations.annotations.EActivity;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
@@ -55,6 +61,7 @@ public class AppGroupPerspective extends PerspectiveBase {
     private AppAssetUpdateListener appAssetUpdateListener;
     private AppGroupUpdateListener appGroupUpdateListener;
     private MultimapExpandableListAdapter multimapExpandableListAdapter;
+    private PackageStateUpdateListener packageStateUpdateListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -133,6 +140,19 @@ public class AppGroupPerspective extends PerspectiveBase {
             }
         };
         appGroupUpdateEventManager.registerListener(appGroupUpdateListener);
+
+        packageStateUpdateListener = new PackageStateUpdateListener() {
+            @Override
+            public void update(PackageStateUpdate event) {
+                final String packageName = event.getAppGroupName();
+                final boolean isEnabled = appStateProvider.isPackageEnabled(packageName);
+                ApplicationModel applicationModel = packageNameToApplicationModelMap.get(packageName);
+                if (applicationModel != null) {
+                    applicationModel.setEnabled(isEnabled);
+                }
+            }
+        };
+        packageStateUpdateEventManager.registerListener(packageStateUpdateListener);
     }
 
     private Multimap<AppGroupViewModel, ApplicationModel> buildApplicationGroupToApplicationModelMultimap() {
@@ -168,6 +188,26 @@ public class AppGroupPerspective extends PerspectiveBase {
         return ApplicationModel.builder()
                 .packageName(packageName)
                 .applicationAssetSupplier(() -> packageAssetService.getPackageAssets(packageName))
+                .packageStatusChangeConsumer((packageToChangeState, newState) -> {
+                    final Toast toast;
+                    final PackageStateUpdateAsyncTask.Action action = newState ?
+                            PackageStateUpdateAsyncTask.Action.ENABLE : PackageStateUpdateAsyncTask.Action.DISABLE;
+                    if (newState) {
+                        String enablingToastMessagePrefix = getResources().getString(R.string.toast_enabled_packages_msg_prefix);
+                        toast = Toast.makeText(this, enablingToastMessagePrefix + " " + packageName, Toast.LENGTH_SHORT);
+                    } else {
+                        String disablingToastMessagePrefix = getResources().getString(R.string.toast_disabled_packages_msg_prefix);
+                        toast = Toast.makeText(this, disablingToastMessagePrefix + " " + packageName, Toast.LENGTH_SHORT);
+                    }
+
+                    manualStateUpdateEventManager.publishUpdate(packageName, newState ? PackageState.ENABLE : PackageState.DISABLE);
+                    new PackageStateUpdateAsyncTask(
+                            packageStateController,
+                            appStateProvider,
+                            Arrays.asList(packageName),
+                            action
+                    ).withEndingToast(toast).execute();
+                })
                 .appGroupPackageRemovingConsumer(
                         (appGroupName, packageNameToRemove) ->
                                 DialogHelper.newConfirmDeletePackageFromAppGroupDialog(this,

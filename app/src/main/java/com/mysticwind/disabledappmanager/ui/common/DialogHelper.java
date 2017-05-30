@@ -56,6 +56,7 @@ public class DialogHelper {
                 new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
                 String appGroupName = appGroupNameEditText.getText().toString();
                 newPackageListForAddingToGroupDialog(context, appGroupName, packageListProvider,
                         packageAssetService, appGroupManager).show();

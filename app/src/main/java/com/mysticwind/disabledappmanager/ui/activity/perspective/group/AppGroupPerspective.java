@@ -9,11 +9,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.common.collect.TreeMultimap;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupActivityBinding;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupAppItemBinding;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupGroupItemBinding;
+import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupOperation;
+import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdate;
+import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateListener;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
@@ -26,7 +30,8 @@ import com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationModel;
 
 import org.androidannotations.annotations.EActivity;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,10 +44,17 @@ import static java8.util.stream.StreamSupport.stream;
 @EActivity
 public class AppGroupPerspective extends PerspectiveBase {
 
+    private static final Comparator<AppGroupViewModel> APP_GROUP_VIEW_MODEL_COMPARATOR =
+            (appGroupViewModel1, appGroupViewModel2) -> appGroupViewModel1.getAppGroupName().compareTo(appGroupViewModel2.getAppGroupName());
+    private static final Comparator<ApplicationModel> APPLICATION_MODEL_COMPARATOR =
+            (applicationModel1, applicationModel2) -> applicationModel1.getApplicationLabel().compareTo(applicationModel2.getApplicationLabel());
+
     private String allAppGroupName;
     private Map<String, ApplicationModel> packageNameToApplicationModelMap;
     // prevent reference release as the event managers are handling it using weak reference
     private AppAssetUpdateListener appAssetUpdateListener;
+    private AppGroupUpdateListener appGroupUpdateListener;
+    private MultimapExpandableListAdapter multimapExpandableListAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,11 +65,11 @@ public class AppGroupPerspective extends PerspectiveBase {
 
         PerspectiveAppgroupActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_appgroup_activity);
 
-        final TreeMultimap<AppGroupViewModel, ApplicationModel> appGroupToApplicationModelMultimap =
+        final Multimap<AppGroupViewModel, ApplicationModel> appGroupToApplicationModelMultimap =
                 buildApplicationGroupToApplicationModelMultimap();
 
-        final TreeMultimapExpandableListAdapter.ViewGenerator<AppGroupViewModel, ApplicationModel> databindingViewGenerator =
-                new TreeMultimapExpandableListAdapter.ViewGenerator<AppGroupViewModel, ApplicationModel>() {
+        final MultimapExpandableListAdapter.ViewGenerator<AppGroupViewModel, ApplicationModel> viewGenerator =
+                new MultimapExpandableListAdapter.ViewGenerator<AppGroupViewModel, ApplicationModel>() {
                     @Override
                     public View populateGroupView(AppGroupViewModel appGroupViewModel, View groupView, ViewGroup parent) {
                         if (groupView == null) {
@@ -83,19 +95,10 @@ public class AppGroupPerspective extends PerspectiveBase {
                         return childView;
                     }
                 };
-        TreeMultimapExpandableListAdapter<AppGroupViewModel, ApplicationModel> adapter =
-                new TreeMultimapExpandableListAdapter<>(
-                        appGroupToApplicationModelMultimap, databindingViewGenerator);
-        binding.appGroupListView.setAdapter(adapter);
-    }
-
-    private TreeMultimap<AppGroupViewModel, ApplicationModel> buildApplicationGroupToApplicationModelMultimap() {
-        packageNameToApplicationModelMap = stream(packageListProvider.getOrderedPackages())
-                .map(appInfo -> getApplicationModel(appInfo))
-                .collect(
-                        Collectors.toMap(
-                                applicationModel -> applicationModel.getPackageName(),
-                                applicationModel -> applicationModel));
+        this.multimapExpandableListAdapter =
+                new MultimapExpandableListAdapter<>(appGroupToApplicationModelMultimap,
+                        APP_GROUP_VIEW_MODEL_COMPARATOR, APPLICATION_MODEL_COMPARATOR, viewGenerator);
+        binding.appGroupListView.setAdapter(this.multimapExpandableListAdapter);
 
         appAssetUpdateListener = new AppAssetUpdateListener() {
             @Override
@@ -111,18 +114,44 @@ public class AppGroupPerspective extends PerspectiveBase {
 
         appAssetUpdateEventManager.registerListener(appAssetUpdateListener);
 
-        TreeMultimap<AppGroupViewModel, ApplicationModel> appGroupToApplicationModelMultiMap = TreeMultimap.create(
-                (appGroupViewModel1, appGroupViewModel2) -> appGroupViewModel1.getAppGroupName().compareTo(appGroupViewModel2.getAppGroupName()),
-                (applicationModel1, applicationModel2) -> applicationModel1.getApplicationLabel().compareTo(applicationModel2.getApplicationLabel())
-        );
+
+        appGroupUpdateListener = new AppGroupUpdateListener() {
+            @Override
+            public void update(AppGroupUpdate event) {
+                if (multimapExpandableListAdapter == null) {
+                    return;
+                }
+                final String appGroupName = event.getAppGroupName();
+                final AppGroupViewModel appGroupViewModel = new AppGroupViewModel(appGroupName, isVirtualAppGroup(appGroupName));
+                if (AppGroupOperation.DELETE == event.getOperation()) {
+                    multimapExpandableListAdapter.removeGroup(appGroupViewModel);
+                } else {
+                    Multimap<AppGroupViewModel, ApplicationModel> updatedMultimap = buildApplicationGroupToApplicationModelMultimap();
+                    Collection<ApplicationModel> applicationModels = updatedMultimap.get(appGroupViewModel);
+                    multimapExpandableListAdapter.updateGroup(appGroupViewModel, applicationModels);
+                }
+            }
+        };
+        appGroupUpdateEventManager.registerListener(appGroupUpdateListener);
+    }
+
+    private Multimap<AppGroupViewModel, ApplicationModel> buildApplicationGroupToApplicationModelMultimap() {
+        packageNameToApplicationModelMap = stream(packageListProvider.getOrderedPackages())
+                .map(appInfo -> getApplicationModel(appInfo))
+                .collect(
+                        Collectors.toMap(
+                                applicationModel -> applicationModel.getPackageName(),
+                                applicationModel -> applicationModel));
+
+        Multimap<AppGroupViewModel, ApplicationModel> appGroupToApplicationModelMultiMap = ArrayListMultimap.create();
         stream(appGroupManager.getAllAppGroups())
                 .map(appGroupName -> new AppGroupViewModel(appGroupName, isVirtualAppGroup(appGroupName)))
                 .forEach(appGroupViewModel -> {
                     Set<String> packageNames = appGroupManager.getPackagesOfAppGroup(appGroupViewModel.getAppGroupName());
-                    List<ApplicationModel> applicationModelList = stream(packageNameToApplicationModelMap.entrySet())
+                    Set<ApplicationModel> applicationModelList = stream(packageNameToApplicationModelMap.entrySet())
                             .filter(entry -> packageNames.contains(entry.getKey()))
                             .map(entry -> entry.getValue())
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toSet());
 
                     appGroupToApplicationModelMultiMap.putAll(appGroupViewModel, applicationModelList);
                 });
@@ -135,10 +164,12 @@ public class AppGroupPerspective extends PerspectiveBase {
     private ApplicationModel getApplicationModel(final AppInfo appInfo) {
         final String packageName = appInfo.getPackageName();
         final boolean isEnabled = appInfo.isEnabled();
-
+        final PackageAssets packageAssets = packageAssetService.getPackageAssets(packageName);
         return ApplicationModel.builder()
                 .packageName(packageName)
                 .applicationAssetSupplier(() -> packageAssetService.getPackageAssets(packageName))
+                .applicationLabel(packageAssets.getAppName())
+                .applicationIcon(packageAssets.getIconDrawable())
                 .isEnabled(isEnabled)
                 .applicationLauncher(
                         name -> appLauncher.launch(this, name))

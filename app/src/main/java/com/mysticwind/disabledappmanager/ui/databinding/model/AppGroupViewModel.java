@@ -2,6 +2,7 @@ package com.mysticwind.disabledappmanager.ui.databinding.model;
 
 import android.databinding.BaseObservable;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
 public class AppGroupViewModel extends BaseObservable {
@@ -53,5 +54,18 @@ public class AppGroupViewModel extends BaseObservable {
         this.showAppGroupConfigButtons = showAppGroupConfigButtons;
 
         notifyChange();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppGroupViewModel that = (AppGroupViewModel) o;
+        return Objects.equal(appGroupName, that.appGroupName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(appGroupName);
     }
 }

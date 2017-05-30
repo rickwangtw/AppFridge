@@ -4,6 +4,7 @@ import android.databinding.BaseObservable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import com.google.common.base.Objects;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
 
 import java8.util.function.Consumer;
@@ -102,5 +103,18 @@ public class ApplicationModel extends BaseObservable {
 
     public void removeFromAppGroup(String appGroupName) {
         // TODO
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ApplicationModel that = (ApplicationModel) o;
+        return Objects.equal(packageName, that.packageName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(packageName);
     }
 }

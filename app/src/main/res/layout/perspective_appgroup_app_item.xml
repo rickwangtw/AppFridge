@@ -22,13 +22,13 @@
             android:onClick="@{() -> application.launchApplication()}" >
 
             <ImageView
-                android:src="@{application.applicationIcon}"
+                android:src="@{application.getApplicationIcon()}"
                 android:layout_width="50dip"
                 android:layout_height="50dip"
                 android:scaleType="centerCrop" />
 
             <TextView
-                android:text="@{application.applicationLabel}"
+                android:text="@{application.getApplicationLabel()}"
                 android:layout_width="fill_parent"
                 android:layout_height="50dip"
                 android:gravity="left|center"
@@ -87,14 +87,14 @@
 
                 <ImageView
                     android:id="@+id/appicon"
-                    android:src="@{application.applicationIcon}"
+                    android:src="@{application.getApplicationIcon()}"
                     android:layout_width="50dip"
                     android:layout_height="50dip"
                     android:scaleType="centerCrop" />
 
                 <TextView
                     android:id="@+id/packagename"
-                    android:text="@{application.applicationLabel}"
+                    android:text="@{application.getApplicationLabel()}"
                     android:layout_width="fill_parent"
                     android:layout_height="50dip"
                     android:gravity="left|center"

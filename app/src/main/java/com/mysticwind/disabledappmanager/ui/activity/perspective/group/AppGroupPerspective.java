@@ -170,7 +170,8 @@ public class AppGroupPerspective extends PerspectiveBase {
                 .applicationAssetSupplier(() -> packageAssetService.getPackageAssets(packageName))
                 .appGroupPackageRemovingConsumer(
                         (appGroupName, packageNameToRemove) ->
-                                appGroupManager.deletePackageFromAppGroup(packageNameToRemove, appGroupName))
+                                DialogHelper.newConfirmDeletePackageFromAppGroupDialog(this,
+                                        packageNameToRemove, appGroupName, appGroupManager).show())
                 .applicationLabel(packageAssets.getAppName())
                 .applicationIcon(packageAssets.getIconDrawable())
                 .isEnabled(isEnabled)

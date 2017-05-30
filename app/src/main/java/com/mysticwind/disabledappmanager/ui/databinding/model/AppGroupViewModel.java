@@ -14,6 +14,7 @@ public class AppGroupViewModel extends BaseObservable {
     private final boolean isVirtualGroup;
 
     private Consumer<String> appGroupDeletingConsumer;
+    private Consumer<String> appGroupPackageAddingConsumer;
     private boolean showAppGroupConfigButtons = false;
 
     public String getAppGroupName() {
@@ -35,7 +36,9 @@ public class AppGroupViewModel extends BaseObservable {
         if (isVirtualGroup) {
             return;
         }
-        // TODO
+        if (appGroupPackageAddingConsumer != null) {
+            appGroupPackageAddingConsumer.accept(appGroupName);
+        }
     }
 
     public void removeAppGroup() {

@@ -21,9 +21,9 @@ import android.widget.Toast;
 
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
-import com.mysticwind.disabledappmanager.domain.AppIconProvider;
-import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
+import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
+import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 
 import java.util.ArrayList;
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 public class DialogHelper {
+
     public static Dialog newProgressDialog(Context context) {
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setTitle(R.string.progress_dialog_title_update_app_status);
@@ -41,9 +42,9 @@ public class DialogHelper {
     }
 
     public static Dialog newNewAppGroupDialog(final Context context,
-                  final PackageListProvider packageListProvider,
-                  final AppIconProvider appIconProvider, final AppNameProvider appNameProvider,
-                  final AppGroupManager appGroupManager) {
+                                              final PackageListProvider packageListProvider,
+                                              final PackageAssetService packageAssetService,
+                                              final AppGroupManager appGroupManager) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.new_app_group_dialog_title);
 
@@ -57,7 +58,7 @@ public class DialogHelper {
             public void onClick(DialogInterface dialog, int which) {
                 String appGroupName = appGroupNameEditText.getText().toString();
                 newPackageListForAddingToGroupDialog(context, appGroupName, packageListProvider,
-                        appIconProvider, appNameProvider, appGroupManager).show();
+                        packageAssetService, appGroupManager).show();
             }
         });
         builder.setNegativeButton(R.string.new_app_group_dialog_negative_button, null);
@@ -111,9 +112,10 @@ public class DialogHelper {
     }
 
     public static Dialog newPackageListForAddingToGroupDialog(final Context context,
-              final String appGroupName, PackageListProvider packageListProvider,
-              AppIconProvider appIconProvider, AppNameProvider appNameProvider,
-              final AppGroupManager appGroupManager) {
+                                                              final String appGroupName,
+                                                              final PackageListProvider packageListProvider,
+                                                              final PackageAssetService packageAssetService,
+                                                              final AppGroupManager appGroupManager) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         List<AppInfo> allPackages = packageListProvider.getOrderedPackages();
         Set<String> packagesInAppGroup = appGroupManager.getPackagesOfAppGroup(appGroupName);
@@ -127,7 +129,7 @@ public class DialogHelper {
         }
         final Set<String> selectedPackages = new HashSet<>();
         alertDialogBuilder.setAdapter(
-                new AppListAdapter(context, appIconProvider, appNameProvider, packagesNotInAppGroup,
+                new AppListAdapter(context, packageAssetService, packagesNotInAppGroup,
                         new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -166,16 +168,15 @@ public class DialogHelper {
     }
 
     private static class AppListAdapter extends ArrayAdapter<AppInfo> {
-        private final AppIconProvider appIconProvider;
-        private final AppNameProvider appNameProvider;
+        private final PackageAssetService packageAssetService;
         private CompoundButton.OnCheckedChangeListener onCheckedChangeListener;
 
-        public AppListAdapter(Context context, AppIconProvider appIconProvider,
-                              AppNameProvider appNameProvider, Collection<AppInfo> packageList,
-                              CompoundButton.OnCheckedChangeListener onCheckedChangeListener) {
+        public AppListAdapter(final Context context,
+                              final PackageAssetService packageAssetService,
+                              final Collection<AppInfo> packageList,
+                              final CompoundButton.OnCheckedChangeListener onCheckedChangeListener) {
             super(context, 0, new ArrayList<AppInfo>(packageList));
-            this.appIconProvider = appIconProvider;
-            this.appNameProvider = appNameProvider;
+            this.packageAssetService = packageAssetService;
             this.onCheckedChangeListener = onCheckedChangeListener;
         }
 
@@ -189,9 +190,10 @@ public class DialogHelper {
                         .inflate(R.layout.perspective_state_app_item, parent, false);
             }
             ImageView icon = (ImageView) convertView.findViewById(R.id.appicon);
-            icon.setImageDrawable(appIconProvider.getAppIcon(packageInfo.getPackageName()));
+            final PackageAssets packageAssets = packageAssetService.getPackageAssets(packageInfo.getPackageName());
+            icon.setImageDrawable(packageAssets.getIconDrawable());
             TextView textView = (TextView) convertView.findViewById(R.id.packagename);
-            textView.setText(appNameProvider.getAppName(packageInfo.getPackageName()));
+            textView.setText(packageAssets.getAppName());
             CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
             checkBox.setTag(packageInfo.getPackageName());
             /* prevent unexpected behavior when setting the status  */

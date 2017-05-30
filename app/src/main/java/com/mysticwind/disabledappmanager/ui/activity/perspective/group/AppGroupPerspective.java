@@ -191,6 +191,11 @@ public class AppGroupPerspective extends PerspectiveBase {
         return AppGroupViewModel.builder()
                 .appGroupName(appGroupName)
                 .isVirtualGroup(isVirtualAppGroup(appGroupName))
+                .appGroupPackageAddingConsumer(
+                        appGroup ->
+                                DialogHelper.newPackageListForAddingToGroupDialog(this, appGroupName,
+                                        packageListProvider, packageAssetService, appGroupManager).show()
+                )
                 .appGroupDeletingConsumer(
                         appGroup ->
                                 DialogHelper.newConfirmDeleteAppGroupDialog(this, appGroupName, appGroupManager).show()
@@ -262,8 +267,7 @@ public class AppGroupPerspective extends PerspectiveBase {
                 startActivity(new Intent(this, PackageStatePerspective_.class));
                 return true;
             case R.id.action_new_app_group:
-                DialogHelper.newNewAppGroupDialog(this, packageListProvider, appIconProvider,
-                        appNameProvider, appGroupManager).show();
+                DialogHelper.newNewAppGroupDialog(this, packageListProvider, packageAssetService, appGroupManager).show();
                 return true;
         }
 

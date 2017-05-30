@@ -13,7 +13,7 @@
         <!-- Bottom View Start-->
         <LinearLayout
             android:orientation="horizontal"
-            android:background="@drawable/gray"
+            android:background="@drawable/app_group_background"
             android:id="@+id/bottom_wrapper"
             android:layout_width="280dp"
             android:weightSum="1"

@@ -15,9 +15,31 @@
             android:orientation="horizontal"
             android:background="@drawable/gray"
             android:id="@+id/bottom_wrapper"
-            android:layout_width="140dp"
+            android:layout_width="280dp"
             android:weightSum="1"
             android:layout_height="match_parent" >
+
+            <ImageView
+                android:src="@drawable/ic_ac_unit_black_24dp"
+                android:onClick="@{(view) -> appGroup.freezePackagesOfAppGroup()}"
+                android:visibility="@{appGroup.virtualGroup ? View.GONE : View.VISIBLE}"
+                android:background="@drawable/blue"
+                android:layout_gravity="center"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:layout_width="70dp"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:src="@drawable/ic_brightness_low_black_24dp"
+                android:onClick="@{(view) -> appGroup.unfreezePackagesOfAppGroup()}"
+                android:visibility="@{appGroup.virtualGroup ? View.GONE : View.VISIBLE}"
+                android:background="@drawable/yellow"
+                android:layout_gravity="center"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:layout_width="70dp"
+                android:layout_height="match_parent" />
 
             <ImageView
                 android:id="@+id/add_to_group_button"

@@ -12,10 +12,10 @@ public class AppGroupViewModel extends BaseObservable {
 
     private final String appGroupName;
     private final boolean isVirtualGroup;
-
+    private Consumer<String> appGroupPackageFreezingConsumer;
+    private Consumer<String> appGroupPackageUnfreezingConsumer;
     private Consumer<String> appGroupDeletingConsumer;
     private Consumer<String> appGroupPackageAddingConsumer;
-    private boolean showAppGroupConfigButtons = false;
 
     public String getAppGroupName() {
         return this.appGroupName;
@@ -23,13 +23,6 @@ public class AppGroupViewModel extends BaseObservable {
 
     public boolean isVirtualGroup() {
         return this.isVirtualGroup;
-    }
-
-    public void showGroupActionDialog() {
-        if (isVirtualGroup) {
-            return;
-        }
-        // TODO
     }
 
     public void showAddPackagesToAppGroupDialog() {
@@ -50,14 +43,22 @@ public class AppGroupViewModel extends BaseObservable {
         }
     }
 
-    public boolean isShowAppGroupConfigButtons() {
-        return this.showAppGroupConfigButtons;
+    public void freezePackagesOfAppGroup() {
+        if (isVirtualGroup) {
+            return;
+        }
+        if (appGroupPackageFreezingConsumer != null) {
+            appGroupPackageFreezingConsumer.accept(appGroupName);
+        }
     }
 
-    public void setShowAppGroupConfigButtons(boolean showAppGroupConfigButtons) {
-        this.showAppGroupConfigButtons = showAppGroupConfigButtons;
-
-        notifyChange();
+    public void unfreezePackagesOfAppGroup() {
+        if (isVirtualGroup) {
+            return;
+        }
+        if (appGroupPackageUnfreezingConsumer != null) {
+            appGroupPackageUnfreezingConsumer.accept(appGroupName);
+        }
     }
 
     @Override

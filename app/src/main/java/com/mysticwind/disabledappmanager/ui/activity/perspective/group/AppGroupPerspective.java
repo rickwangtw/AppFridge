@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupActivityBinding;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupAppItemBinding;
@@ -191,6 +192,30 @@ public class AppGroupPerspective extends PerspectiveBase {
         return AppGroupViewModel.builder()
                 .appGroupName(appGroupName)
                 .isVirtualGroup(isVirtualAppGroup(appGroupName))
+                .appGroupPackageFreezingConsumer(appGroup -> {
+                    Set<String> packages = appGroupManager.getPackagesOfAppGroup(appGroup);
+                    log.debug("Disable apps: " + packages);
+                    notifyManualStateUpdate(packages, false);
+                    new PackageStateUpdateAsyncTask(packageStateController, appStateProvider,
+                            packages, PackageStateUpdateAsyncTask.Action.DISABLE)
+                            .withProgressDialog(DialogHelper.newProgressDialog(AppGroupPerspective.this))
+                            .withEndingToast(Toast.makeText(AppGroupPerspective.this,
+                                    getResources().getString(R.string.toast_disabled_packages_msg_prefix) + " " + packages,
+                                    Toast.LENGTH_SHORT))
+                            .execute();
+                })
+                .appGroupPackageUnfreezingConsumer(appGroup -> {
+                    Set<String> packages = appGroupManager.getPackagesOfAppGroup(appGroup);
+                    log.debug("Enable apps: " + packages);
+                    notifyManualStateUpdate(packages, true);
+                    new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, packages,
+                            PackageStateUpdateAsyncTask.Action.ENABLE)
+                            .withProgressDialog(DialogHelper.newProgressDialog(AppGroupPerspective.this))
+                            .withEndingToast(Toast.makeText(AppGroupPerspective.this,
+                                    getResources().getString(R.string.toast_enabled_packages_msg_prefix) + " " + packages,
+                                    Toast.LENGTH_SHORT))
+                            .execute();
+                })
                 .appGroupPackageAddingConsumer(
                         appGroup ->
                                 DialogHelper.newPackageListForAddingToGroupDialog(this, appGroupName,
@@ -201,6 +226,19 @@ public class AppGroupPerspective extends PerspectiveBase {
                                 DialogHelper.newConfirmDeleteAppGroupDialog(this, appGroupName, appGroupManager).show()
                 )
                 .build();
+    }
+
+    private void notifyManualStateUpdate(final String packageName,
+                                         final boolean enable) {
+        notifyManualStateUpdate(Sets.newHashSet(packageName), enable);
+    }
+
+    private void notifyManualStateUpdate(final Collection<String> packageNames,
+                                         final boolean enable) {
+        PackageState packageState = enable ? PackageState.ENABLE : PackageState.DISABLE;
+        for (String packageName : Sets.newHashSet(packageNames)) {
+            manualStateUpdateEventManager.publishUpdate(packageName, packageState);
+        }
     }
 
     private ApplicationModel getApplicationModel(final AppInfo appInfo) {
@@ -222,7 +260,7 @@ public class AppGroupPerspective extends PerspectiveBase {
                         toast = Toast.makeText(this, disablingToastMessagePrefix + " " + packageName, Toast.LENGTH_SHORT);
                     }
 
-                    manualStateUpdateEventManager.publishUpdate(packageName, newState ? PackageState.ENABLE : PackageState.DISABLE);
+                    notifyManualStateUpdate(packageName, newState);
                     new PackageStateUpdateAsyncTask(
                             packageStateController,
                             appStateProvider,

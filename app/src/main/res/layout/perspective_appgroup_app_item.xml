@@ -47,6 +47,8 @@
                 android:focusable="false"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
                 android:layout_alignParentRight="true" />
 
         </RelativeLayout>
@@ -114,6 +116,8 @@
                     android:focusable="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
                     android:layout_alignParentRight="true" />
 
             </RelativeLayout>

@@ -7,6 +7,7 @@ import android.view.View;
 import com.google.common.base.Objects;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
 
+import java8.util.function.BiConsumer;
 import java8.util.function.Consumer;
 import java8.util.function.Supplier;
 import lombok.Builder;
@@ -18,6 +19,7 @@ public class ApplicationModel extends BaseObservable {
     // if package assets are absent, we use this supplier to get it
     private final Supplier<PackageAssets> applicationAssetSupplier;
     private final Consumer<String> applicationLauncher;
+    private final BiConsumer<String, String> appGroupPackageRemovingConsumer;
 
     private String packageName;
     private String applicationLabel;
@@ -102,7 +104,9 @@ public class ApplicationModel extends BaseObservable {
     }
 
     public void removeFromAppGroup(String appGroupName) {
-        // TODO
+        if (appGroupPackageRemovingConsumer != null) {
+            appGroupPackageRemovingConsumer.accept(appGroupName, packageName);
+        }
     }
 
     @Override

@@ -129,7 +129,7 @@ public class AppGroupPerspective extends PerspectiveBase {
                     return;
                 }
                 final String appGroupName = event.getAppGroupName();
-                final AppGroupViewModel appGroupViewModel = new AppGroupViewModel(appGroupName, isVirtualAppGroup(appGroupName));
+                final AppGroupViewModel appGroupViewModel = getAppGroupViewModel(appGroupName);
                 if (AppGroupOperation.DELETE == event.getOperation()) {
                     multimapExpandableListAdapter.removeGroup(appGroupViewModel);
                 } else {
@@ -165,7 +165,7 @@ public class AppGroupPerspective extends PerspectiveBase {
 
         Multimap<AppGroupViewModel, ApplicationModel> appGroupToApplicationModelMultiMap = ArrayListMultimap.create();
         stream(appGroupManager.getAllAppGroups())
-                .map(appGroupName -> new AppGroupViewModel(appGroupName, isVirtualAppGroup(appGroupName)))
+                .map(appGroupName -> getAppGroupViewModel(appGroupName))
                 .forEach(appGroupViewModel -> {
                     Set<String> packageNames = appGroupManager.getPackagesOfAppGroup(appGroupViewModel.getAppGroupName());
                     Set<ApplicationModel> applicationModelList = stream(packageNameToApplicationModelMap.entrySet())
@@ -176,9 +176,26 @@ public class AppGroupPerspective extends PerspectiveBase {
                     appGroupToApplicationModelMultiMap.putAll(appGroupViewModel, applicationModelList);
                 });
         // add the virtual app group - all
-        appGroupToApplicationModelMultiMap.putAll(new AppGroupViewModel(allAppGroupName, true),
-                packageNameToApplicationModelMap.values());
+        appGroupToApplicationModelMultiMap.putAll(getVirtualAllAppGroupViewModel(), packageNameToApplicationModelMap.values());
         return appGroupToApplicationModelMultiMap;
+    }
+
+    private AppGroupViewModel getVirtualAllAppGroupViewModel() {
+        return AppGroupViewModel.builder()
+                .appGroupName(allAppGroupName)
+                .isVirtualGroup(true)
+                .build();
+    }
+
+    private AppGroupViewModel getAppGroupViewModel(final String appGroupName) {
+        return AppGroupViewModel.builder()
+                .appGroupName(appGroupName)
+                .isVirtualGroup(isVirtualAppGroup(appGroupName))
+                .appGroupDeletingConsumer(
+                        appGroup ->
+                                DialogHelper.newConfirmDeleteAppGroupDialog(this, appGroupName, appGroupManager).show()
+                )
+                .build();
     }
 
     private ApplicationModel getApplicationModel(final AppInfo appInfo) {

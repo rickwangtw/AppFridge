@@ -3,19 +3,18 @@ package com.mysticwind.disabledappmanager.ui.databinding.model;
 import android.databinding.BaseObservable;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 
+import java8.util.function.Consumer;
+import lombok.Builder;
+
+@Builder
 public class AppGroupViewModel extends BaseObservable {
 
     private final String appGroupName;
     private final boolean isVirtualGroup;
 
+    private Consumer<String> appGroupDeletingConsumer;
     private boolean showAppGroupConfigButtons = false;
-
-    public AppGroupViewModel(final String appGroupName, final boolean isVirtualGroup) {
-        this.appGroupName = Preconditions.checkNotNull(appGroupName);
-        this.isVirtualGroup = isVirtualGroup;
-    }
 
     public String getAppGroupName() {
         return this.appGroupName;
@@ -43,7 +42,9 @@ public class AppGroupViewModel extends BaseObservable {
         if (isVirtualGroup) {
             return;
         }
-        // TODO
+        if (appGroupDeletingConsumer != null) {
+            appGroupDeletingConsumer.accept(appGroupName);
+        }
     }
 
     public boolean isShowAppGroupConfigButtons() {

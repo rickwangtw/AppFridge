@@ -14,39 +14,42 @@
         android:layout_height="match_parent">
 
         <!-- virtual app groups without swipe capability -->
-        <LinearLayout
-            android:orientation="horizontal"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="@{isWithinVirtualAppGroup ? View.VISIBLE : View.GONE}"
             android:onClick="@{() -> application.launchApplication()}" >
 
             <ImageView
+                android:id="@+id/app_icon_noswipe"
                 android:src="@{application.getApplicationIcon()}"
                 android:layout_width="50dip"
                 android:layout_height="50dip"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                android:layout_alignParentLeft="true" />
 
             <TextView
+                android:id="@+id/app_label_noswipe"
                 android:text="@{application.getApplicationLabel()}"
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
+                android:ellipsize="end"
                 android:layout_height="50dip"
                 android:gravity="left|center"
                 android:textSize="20dip"
                 android:layout_marginLeft="10dip"
-                android:layout_toLeftOf="@+id/checkbox" />
+                android:layout_toRightOf="@+id/app_icon_noswipe"
+                android:layout_toLeftOf="@+id/switch_noswipe" />
 
             <Switch
+                android:id="@+id/switch_noswipe"
                 android:checked="@{application.enabled}"
                 android:onClick="@{(view) -> application.changeAppStateChangeViewClicked(view)}"
                 android:focusable="false"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_alignBottom="@+id/packagename"
-                android:layout_alignParentBottom="true"
-                android:layout_toLeftOf="@+id/trashButton" />
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <!-- real app groups with swipe capability -->
         <com.daimajia.swipe.SwipeLayout
@@ -77,43 +80,43 @@
             <!-- Bottom View End-->
 
             <!-- Surface View Start -->
-            <LinearLayout
+            <RelativeLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:onClick="@{() -> application.launchApplication()}" >
 
                 <!--What you want to show in SurfaceView-->
-
                 <ImageView
-                    android:id="@+id/appicon"
+                    android:id="@+id/app_icon_swipe"
                     android:src="@{application.getApplicationIcon()}"
                     android:layout_width="50dip"
                     android:layout_height="50dip"
-                    android:scaleType="centerCrop" />
+                    android:scaleType="centerCrop"
+                    android:layout_alignParentLeft="true" />
 
                 <TextView
-                    android:id="@+id/packagename"
+                    android:id="@+id/app_label_swipe"
                     android:text="@{application.getApplicationLabel()}"
-                    android:layout_width="fill_parent"
+                    android:layout_width="wrap_content"
+                    android:ellipsize="end"
                     android:layout_height="50dip"
                     android:gravity="left|center"
                     android:textSize="20dip"
                     android:layout_marginLeft="10dip"
-                    android:layout_toLeftOf="@+id/checkbox" />
+                    android:layout_toRightOf="@+id/app_icon_swipe"
+                    android:layout_toLeftOf="@+id/switch_swipe" />
 
                 <Switch
-                    android:id="@+id/appStateSwitch"
+                    android:id="@+id/switch_swipe"
                     android:checked="@{application.enabled}"
                     android:onClick="@{(view) -> application.changeAppStateChangeViewClicked(view)}"
                     android:focusable="false"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignBottom="@+id/packagename"
-                    android:layout_alignParentBottom="true"
-                    android:layout_toLeftOf="@+id/trashButton" />
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true" />
 
-            </LinearLayout>
+            </RelativeLayout>
             <!-- Surface View End -->
 
         </com.daimajia.swipe.SwipeLayout>

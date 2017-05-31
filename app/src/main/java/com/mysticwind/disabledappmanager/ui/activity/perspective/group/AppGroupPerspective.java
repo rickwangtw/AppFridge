@@ -35,6 +35,7 @@ import com.mysticwind.disabledappmanager.ui.common.DialogHelper;
 import com.mysticwind.disabledappmanager.ui.common.PackageStateUpdateAsyncTask;
 import com.mysticwind.disabledappmanager.ui.databinding.model.AppGroupViewModel;
 import com.mysticwind.disabledappmanager.ui.databinding.model.ApplicationModel;
+import com.mysticwind.library.widget.listview.expandable.adapter.MultimapExpandableListAdapter;
 
 import org.androidannotations.annotations.EActivity;
 

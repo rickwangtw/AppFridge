@@ -1,4 +1,4 @@
-package com.mysticwind.disabledappmanager.ui.activity.perspective.group;
+package com.mysticwind.library.widget.listview.expandable.adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.mysticwind.disabledappmanager.ui.activity.perspective.FilterableFields;
+import com.mysticwind.library.search.model.FilterableFields;
 
 import java.util.Collection;
 import java.util.Collections;

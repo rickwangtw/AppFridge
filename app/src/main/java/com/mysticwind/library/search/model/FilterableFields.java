@@ -1,4 +1,4 @@
-package com.mysticwind.disabledappmanager.ui.activity.perspective;
+package com.mysticwind.library.search.model;
 
 import java.util.List;
 

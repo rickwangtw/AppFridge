@@ -4,7 +4,7 @@ import android.databinding.BaseObservable;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
-import com.mysticwind.disabledappmanager.ui.activity.perspective.FilterableFields;
+import com.mysticwind.library.search.model.FilterableFields;
 
 import java.util.List;
 

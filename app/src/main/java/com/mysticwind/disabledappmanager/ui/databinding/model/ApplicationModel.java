@@ -6,7 +6,11 @@ import android.view.View;
 import android.widget.Switch;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
+import com.mysticwind.disabledappmanager.ui.activity.perspective.FilterableFields;
+
+import java.util.List;
 
 import java8.util.function.BiConsumer;
 import java8.util.function.Consumer;
@@ -15,7 +19,7 @@ import lombok.Builder;
 
 // Set and get methods needs to declared explicitly for Data binding to work.
 @Builder
-public class ApplicationModel extends BaseObservable {
+public class ApplicationModel extends BaseObservable implements FilterableFields {
 
     // if package assets are absent, we use this supplier to get it
     private final Supplier<PackageAssets> applicationAssetSupplier;
@@ -128,5 +132,13 @@ public class ApplicationModel extends BaseObservable {
     @Override
     public int hashCode() {
         return Objects.hashCode(packageName);
+    }
+
+    @Override
+    public List<String> getSearchableStringsOrderedByPriority() {
+        return ImmutableList.of(
+                applicationLabel,
+                packageName
+        );
     }
 }

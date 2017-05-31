@@ -3,12 +3,16 @@ package com.mysticwind.disabledappmanager.ui.databinding.model;
 import android.databinding.BaseObservable;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
+import com.mysticwind.disabledappmanager.ui.activity.perspective.FilterableFields;
+
+import java.util.List;
 
 import java8.util.function.Consumer;
 import lombok.Builder;
 
 @Builder
-public class AppGroupViewModel extends BaseObservable {
+public class AppGroupViewModel extends BaseObservable implements FilterableFields {
 
     private final String appGroupName;
     private final boolean isVirtualGroup;
@@ -72,5 +76,12 @@ public class AppGroupViewModel extends BaseObservable {
     @Override
     public int hashCode() {
         return Objects.hashCode(appGroupName);
+    }
+
+    @Override
+    public List<String> getSearchableStringsOrderedByPriority() {
+        return ImmutableList.of(
+                appGroupName
+        );
     }
 }

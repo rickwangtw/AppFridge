@@ -8,8 +8,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 import android.widget.Toast;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -51,18 +53,28 @@ import static java8.util.stream.StreamSupport.stream;
 @EActivity
 public class AppGroupPerspective extends PerspectiveBase {
 
-    private static final Comparator<AppGroupViewModel> APP_GROUP_VIEW_MODEL_COMPARATOR =
-            (appGroupViewModel1, appGroupViewModel2) -> appGroupViewModel1.getAppGroupName().compareTo(appGroupViewModel2.getAppGroupName());
     private static final Comparator<ApplicationModel> APPLICATION_MODEL_COMPARATOR =
             (applicationModel1, applicationModel2) -> applicationModel1.getApplicationLabel().compareTo(applicationModel2.getApplicationLabel());
 
-    private String allAppGroupName;
+    private String allAppGroupName = "";
     private Map<String, ApplicationModel> packageNameToApplicationModelMap;
     // prevent reference release as the event managers are handling it using weak reference
     private AppAssetUpdateListener appAssetUpdateListener;
     private AppGroupUpdateListener appGroupUpdateListener;
+    private ExpandableListView expandableListView;
     private MultimapExpandableListAdapter multimapExpandableListAdapter;
     private PackageStateUpdateListener packageStateUpdateListener;
+    private boolean enteredSearchMode = false;
+
+    private final Comparator<AppGroupViewModel> appGroupViewModelComparator =
+            (appGroupViewModel1, appGroupViewModel2) -> {
+                if (allAppGroupName.equals(appGroupViewModel1.getAppGroupName())) {
+                    return 1;
+                } else if (allAppGroupName.equals(appGroupViewModel2.getAppGroupName())) {
+                    return -1;
+                }
+                return appGroupViewModel1.getAppGroupName().compareTo(appGroupViewModel2.getAppGroupName());
+            };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,6 +84,7 @@ public class AppGroupPerspective extends PerspectiveBase {
         final LayoutInflater layoutInflator = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
         PerspectiveAppgroupActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_appgroup_activity);
+        expandableListView = binding.appGroupListView;
 
         final Multimap<AppGroupViewModel, ApplicationModel> appGroupToApplicationModelMultimap =
                 buildApplicationGroupToApplicationModelMultimap();
@@ -105,7 +118,7 @@ public class AppGroupPerspective extends PerspectiveBase {
                 };
         this.multimapExpandableListAdapter =
                 new MultimapExpandableListAdapter<>(appGroupToApplicationModelMultimap,
-                        APP_GROUP_VIEW_MODEL_COMPARATOR, APPLICATION_MODEL_COMPARATOR, viewGenerator);
+                        appGroupViewModelComparator, APPLICATION_MODEL_COMPARATOR, viewGenerator);
         binding.appGroupListView.setAdapter(this.multimapExpandableListAdapter);
 
         appAssetUpdateListener = new AppAssetUpdateListener() {
@@ -312,13 +325,42 @@ public class AppGroupPerspective extends PerspectiveBase {
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     protected void performSearch(String searchQuery) {
-        // TODO
+        if (Strings.isNullOrEmpty(searchQuery)) {
+            cancelSearch();
+            return;
+        }
+        enteredSearchMode = true;
+        multimapExpandableListAdapter.getFilter().filter(searchQuery);
+        expandAllGroups();
+    }
+
+    private void expandAllGroups() {
+        if (expandableListView == null) {
+            return;
+        }
+        for (int groupIndex = 0 ; groupIndex <multimapExpandableListAdapter.getGroupCount() ; ++groupIndex) {
+            expandableListView.expandGroup(groupIndex);
+        }
     }
 
     @Override
     protected void cancelSearch() {
-        // TODO
+        if (enteredSearchMode) {
+            multimapExpandableListAdapter.getFilter().filter(null);
+            collapseAllGroups();
+        }
+        enteredSearchMode = false;
+    }
+
+    private void collapseAllGroups() {
+        if (expandableListView == null) {
+            return;
+        }
+        for (int groupIndex = 0 ; groupIndex <multimapExpandableListAdapter.getGroupCount() ; ++groupIndex) {
+            expandableListView.collapseGroup(groupIndex);
+        }
     }
 }

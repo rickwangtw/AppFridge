@@ -8,9 +8,7 @@ import android.graphics.drawable.Drawable;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
-import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
-import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.AutoDisablingAppLauncher;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
@@ -24,6 +22,7 @@ import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager
 import com.mysticwind.disabledappmanager.domain.asset.DatabaseCachedPackageAssetServiceDecorator;
 import com.mysticwind.disabledappmanager.domain.asset.DefaultValuePackageAssetServiceDecorator;
 import com.mysticwind.disabledappmanager.domain.asset.EventBusAppAssetUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.asset.IconScalingPackageAssetServiceDecorator;
 import com.mysticwind.disabledappmanager.domain.asset.MemCachedPackageAssetServiceDecorator;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.asset.PackageManagerPackageAssetService;
@@ -128,23 +127,14 @@ public class ApplicationModule {
         return new DefaultValuePackageAssetServiceDecorator(
                 new MemCachedPackageAssetServiceDecorator(
                         new DatabaseCachedPackageAssetServiceDecorator(
-                                new PackageManagerPackageAssetService(
-                                        packageManager,
-                                        appAssetUpdateEventManager
+                                new IconScalingPackageAssetServiceDecorator(
+                                        new PackageManagerPackageAssetService(packageManager),
+                                        context,
+                                        50f
                                 ),
                                 new CachedPackageAssetsDAO(context)
                         )
                 ), defaultIcon);
-    }
-
-    @Provides @Singleton
-    public AppIconProvider provideAppIconProvider(PackageAssetService packageAssetService) {
-        return packageAssetService;
-    }
-
-    @Provides @Singleton
-    public AppNameProvider provideAppNameProvider(PackageAssetService packageAssetService) {
-        return packageAssetService;
     }
 
     @Provides @Singleton

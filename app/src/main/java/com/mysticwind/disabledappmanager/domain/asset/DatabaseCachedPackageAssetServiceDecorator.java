@@ -1,16 +1,20 @@
 package com.mysticwind.disabledappmanager.domain.asset;
 
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 
+import com.google.common.base.Preconditions;
 import com.mysticwind.disabledappmanager.domain.asset.dao.CachedPackageAssetsDAO;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import lombok.extern.slf4j.Slf4j;
+
+import static java8.util.stream.StreamSupport.stream;
+
+@Slf4j
 public class DatabaseCachedPackageAssetServiceDecorator implements PackageAssetService {
     private final static ExecutorService THREAD_POOL_EXECUTOR = Executors.newSingleThreadExecutor();
 
@@ -18,27 +22,17 @@ public class DatabaseCachedPackageAssetServiceDecorator implements PackageAssetS
     private final CachedPackageAssetsDAO cachedPackageAssetsDAO;
     private final Map<String, PackageAssets> packageNameToPackageAssetsMap = new ConcurrentHashMap<>();
 
-    public DatabaseCachedPackageAssetServiceDecorator(
-            PackageAssetService packageAssetService, CachedPackageAssetsDAO cachedPackageAssetsDAO) {
-        this.packageAssetService = packageAssetService;
-        this.cachedPackageAssetsDAO = cachedPackageAssetsDAO;
-
-        new DatabaseEntriesLoaderAsyncTask(cachedPackageAssetsDAO, packageNameToPackageAssetsMap)
-                .executeOnExecutor(THREAD_POOL_EXECUTOR);
-    }
-
-    @Override
-    public Drawable getAppIcon(String packageName) {
-        return getPackageAssets(packageName).getIconDrawable();
-    }
-
-    @Override
-    public String getAppName(String packageName) {
-        return getPackageAssets(packageName).getAppName();
+    public DatabaseCachedPackageAssetServiceDecorator(final PackageAssetService packageAssetService,
+                                                      final CachedPackageAssetsDAO cachedPackageAssetsDAO) {
+        this.packageAssetService = Preconditions.checkNotNull(packageAssetService);
+        this.cachedPackageAssetsDAO = Preconditions.checkNotNull(cachedPackageAssetsDAO);
     }
 
     @Override
     public PackageAssets getPackageAssets(String packageName) {
+        if (packageNameToPackageAssetsMap.isEmpty()) {
+            loadCache();
+        }
         PackageAssets packageAssets = packageNameToPackageAssetsMap.get(packageName);
         if (packageAssets != null) {
             return packageAssets;
@@ -46,6 +40,12 @@ public class DatabaseCachedPackageAssetServiceDecorator implements PackageAssetS
         packageAssets = packageAssetService.getPackageAssets(packageName);
         updateCacheAndDatabaseEntry(packageName, packageAssets);
         return packageAssets;
+    }
+
+    private void loadCache() {
+        stream(cachedPackageAssetsDAO.getAllPackageAssets()).forEach(packageAssets ->
+                packageNameToPackageAssetsMap.put(packageAssets.getPackageName(), packageAssets)
+        );
     }
 
     private void updateCacheAndDatabaseEntry(String packageName, PackageAssets packageAssets) {
@@ -56,27 +56,6 @@ public class DatabaseCachedPackageAssetServiceDecorator implements PackageAssetS
         packageNameToPackageAssetsMap.put(packageName, packageAssets);
         new DatabaseEntryUpdateAsyncTask(cachedPackageAssetsDAO, packageAssets)
                 .executeOnExecutor(THREAD_POOL_EXECUTOR);
-    }
-
-    private static class DatabaseEntriesLoaderAsyncTask extends AsyncTask<Void, Void, Void> {
-        private final CachedPackageAssetsDAO dataAccessor;
-        private final Map<String, PackageAssets> packageNameToPackageAssetsMap;
-
-        public DatabaseEntriesLoaderAsyncTask(
-                CachedPackageAssetsDAO dataAccessor,
-                Map<String, PackageAssets> packageNameToPackageAssetsMap) {
-            this.dataAccessor = dataAccessor;
-            this.packageNameToPackageAssetsMap = packageNameToPackageAssetsMap;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            List<PackageAssets> packageAssetsList = dataAccessor.getAllPackageAssets();
-            for (PackageAssets packageAssets : packageAssetsList) {
-                packageNameToPackageAssetsMap.put(packageAssets.getPackageName(), packageAssets);
-            }
-            return null;
-        }
     }
 
     private static class DatabaseEntryUpdateAsyncTask extends AsyncTask<Void, Void, Void> {

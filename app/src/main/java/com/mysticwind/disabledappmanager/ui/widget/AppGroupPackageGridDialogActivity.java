@@ -20,6 +20,7 @@ import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
 import com.mysticwind.disabledappmanager.domain.asset.AssetType;
+import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -164,10 +165,11 @@ public class AppGroupPackageGridDialogActivity extends AppCompatActivity impleme
         List<PackageItem> packageItemList = new LinkedList<>();
 
         for (String packageName : packages) {
+            final PackageAssets packageAssets = packageAssetService.getPackageAssets(packageName);
             packageItemList.add(new PackageItem(
                     packageName,
-                    packageAssetService.getAppName(packageName),
-                    packageAssetService.getAppIcon(packageName)));
+                    packageAssets.getAppName(),
+                    packageAssets.getIconDrawable()));
         }
         Collections.sort(packageItemList, new Comparator<PackageItem>() {
             @Override
@@ -203,10 +205,12 @@ public class AppGroupPackageGridDialogActivity extends AppCompatActivity impleme
     }
 
     private void updateIcon(String packageName, ImageView iconImageView) {
-        iconImageView.setImageDrawable(packageAssetService.getAppIcon(packageName));
+        final PackageAssets packageAssets = packageAssetService.getPackageAssets(packageName);
+        iconImageView.setImageDrawable(packageAssets.getIconDrawable());
     }
 
     private void updateAppName(String packageName, TextView appNameTextView) {
-        appNameTextView.setText(packageAssetService.getAppName(packageName));
+        final PackageAssets packageAssets = packageAssetService.getPackageAssets(packageName);
+        appNameTextView.setText(packageAssets.getAppName());
     }
 }

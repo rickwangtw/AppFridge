@@ -3,9 +3,7 @@ package com.mysticwind.disabledappmanager.config;
 import android.content.Context;
 
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
-import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
-import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
@@ -35,8 +33,6 @@ public interface ApplicationComponent {
     PackageListProvider packageListProvider();
     PackageAssetService packageAssetService();
     AppAssetUpdateEventManager appAssetUpdateEventManager();
-    AppIconProvider appIconProvider();
-    AppNameProvider appNameProvider();
     AppStateProvider appStateProvider();
     PackageStateUpdateEventManager packageStateUpdateEventManager();
     PackageStateController packageStateController();

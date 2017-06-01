@@ -14,9 +14,7 @@ import android.widget.EditText;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
-import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
-import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
@@ -31,8 +29,6 @@ import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
 public abstract class PerspectiveBase extends AppCompatActivity {
 
     protected PackageListProvider packageListProvider;
-    protected AppIconProvider appIconProvider;
-    protected AppNameProvider appNameProvider;
     protected AppAssetUpdateEventManager appAssetUpdateEventManager;
     protected PackageStateController packageStateController;
     protected AppStateProvider appStateProvider;
@@ -58,8 +54,6 @@ public abstract class PerspectiveBase extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         this.packageListProvider = ApplicationHelper.from(this).packageListProvider();
-        this.appIconProvider = ApplicationHelper.from(this).appIconProvider();
-        this.appNameProvider = ApplicationHelper.from(this).appNameProvider();
         this.appAssetUpdateEventManager = ApplicationHelper.from(this).appAssetUpdateEventManager();
         this.packageStateController = ApplicationHelper.from(this).packageStateController();
         this.appStateProvider = ApplicationHelper.from(this).appStateProvider();

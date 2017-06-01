@@ -7,9 +7,7 @@ import com.mysticwind.disabledappmanager.config.ApplicationComponent;
 import com.mysticwind.disabledappmanager.config.ApplicationModule;
 import com.mysticwind.disabledappmanager.config.DaggerApplicationComponent;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
-import com.mysticwind.disabledappmanager.domain.AppIconProvider;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
-import com.mysticwind.disabledappmanager.domain.AppNameProvider;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
@@ -81,16 +79,6 @@ public class AppFridgeApplication extends Application implements ApplicationComp
     @Override
     public AppAssetUpdateEventManager appAssetUpdateEventManager() {
         return component.appAssetUpdateEventManager();
-    }
-
-    @Override
-    public AppIconProvider appIconProvider() {
-        return component.appIconProvider();
-    }
-
-    @Override
-    public AppNameProvider appNameProvider() {
-        return component.appNameProvider();
     }
 
     @Override

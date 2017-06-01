@@ -38,7 +38,6 @@ public class PackageStatePerspective extends PerspectiveBase {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.perspective_state_activity);
 
         PerspectiveStateActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_state_activity);
         binding.appListView.setLayoutManager(new LinearLayoutManager(this));

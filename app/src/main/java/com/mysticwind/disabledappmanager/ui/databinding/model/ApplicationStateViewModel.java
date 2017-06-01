@@ -184,7 +184,7 @@ public class ApplicationStateViewModel extends BaseObservable {
 
     private void clearSelectedApplications() {
         cachedSelectedPackageNames.clear();
-        getSelectedApplications()
+        stream(getSelectedApplications())
                 .forEach(applicationModel -> applicationModel.setSelected(false));
     }
 

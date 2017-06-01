@@ -1,8 +1,10 @@
 package com.mysticwind.disabledappmanager.ui.activity.perspective.state;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,7 +41,37 @@ public class PackageStatePerspective extends PerspectiveBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PerspectiveStateActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_state_activity);
+        new AsyncTask<Void, Void, Void>() {
+
+            private Dialog dialog;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+                dialog = DialogHelper.newLoadingDialog(PackageStatePerspective.this);
+                dialog.show();
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                // loading application assets takes the most time
+                preloadPackageAssets();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                setupView();
+                dialog.dismiss();
+            }
+        }.execute();
+    }
+
+    private void setupView() {
+        final PerspectiveStateActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_state_activity);
+
         binding.appListView.setLayoutManager(new LinearLayoutManager(this));
 
         RxDataSource<ApplicationModel> dataSource = new RxDataSource<>(Collections.emptyList());

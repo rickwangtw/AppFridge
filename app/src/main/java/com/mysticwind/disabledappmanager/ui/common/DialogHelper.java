@@ -6,11 +6,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.provider.Settings;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -33,6 +36,19 @@ import java.util.List;
 import java.util.Set;
 
 public class DialogHelper {
+
+    public static Dialog newLoadingDialog(final Context context) {
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        try {
+            progressDialog.show();
+        } catch (WindowManager.BadTokenException e) {
+        }
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        progressDialog.setContentView(R.layout.loading_dialog);
+        return progressDialog;
+    }
 
     public static Dialog newProgressDialog(Context context) {
         ProgressDialog progressDialog = new ProgressDialog(context);

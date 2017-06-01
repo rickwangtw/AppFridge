@@ -26,6 +26,8 @@ import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventMan
 import com.mysticwind.disabledappmanager.ui.activity.help.HelpActivity;
 import com.mysticwind.disabledappmanager.ui.activity.settings.SettingsActivity_;
 
+import static java8.util.stream.StreamSupport.stream;
+
 public abstract class PerspectiveBase extends AppCompatActivity {
 
     protected PackageListProvider packageListProvider;
@@ -66,6 +68,14 @@ public abstract class PerspectiveBase extends AppCompatActivity {
 
         this.searchIconDrawable = getResources().getDrawable(R.drawable.ic_search_white_48dp);
         this.closeIconDrawable = getResources().getDrawable(R.drawable.ic_close_white_48dp);
+    }
+
+    protected void preloadPackageAssets() {
+        stream(packageListProvider.getPackages())
+                .forEach(
+                        appInfo ->
+                                packageAssetService.getPackageAssets(appInfo.getPackageName())
+                );
     }
 
     @Override

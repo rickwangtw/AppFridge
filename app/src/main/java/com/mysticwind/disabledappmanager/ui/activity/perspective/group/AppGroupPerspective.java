@@ -1,7 +1,9 @@
 package com.mysticwind.disabledappmanager.ui.activity.perspective.group;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -81,6 +83,35 @@ public class AppGroupPerspective extends PerspectiveBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        new AsyncTask<Void, Void, Void>() {
+
+            private Dialog dialog;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+                dialog = DialogHelper.newLoadingDialog(AppGroupPerspective.this);
+                dialog.show();
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                // loading application assets takes the most time
+                preloadPackageAssets();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                setupView();
+                dialog.dismiss();
+            }
+        }.execute();
+    }
+
+    private void setupView() {
         this.allAppGroupName = getResources().getString(R.string.generated_app_group_name_all);
         final LayoutInflater layoutInflator = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 

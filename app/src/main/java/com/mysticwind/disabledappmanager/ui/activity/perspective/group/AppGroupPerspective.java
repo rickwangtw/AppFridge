@@ -202,7 +202,7 @@ public class AppGroupPerspective extends PerspectiveBase {
     }
 
     private Multimap<AppGroupViewModel, ApplicationModel> buildApplicationGroupToApplicationModelMultimap() {
-        packageNameToApplicationModelMap = stream(packageListProvider.getOrderedPackages())
+        packageNameToApplicationModelMap = stream(packageListProvider.getPackages())
                 .map(appInfo -> getApplicationModel(appInfo))
                 .collect(
                         Collectors.toMap(
@@ -292,7 +292,6 @@ public class AppGroupPerspective extends PerspectiveBase {
         final PackageAssets packageAssets = packageAssetService.getPackageAssets(packageName);
         return ApplicationModel.builder()
                 .packageName(packageName)
-                .applicationAssetSupplier(() -> packageAssetService.getPackageAssets(packageName))
                 .packageStatusChangeConsumer((packageToChangeState, newState) -> {
                     final Toast toast;
                     final PackageStateUpdateAsyncTask.Action action = newState ?

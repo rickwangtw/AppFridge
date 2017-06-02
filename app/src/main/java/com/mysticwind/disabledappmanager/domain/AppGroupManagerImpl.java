@@ -1,6 +1,7 @@
 package com.mysticwind.disabledappmanager.domain;
 
 import com.google.common.collect.Sets;
+import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupOperation;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;

@@ -14,15 +14,12 @@ import java.util.List;
 
 import java8.util.function.BiConsumer;
 import java8.util.function.Consumer;
-import java8.util.function.Supplier;
 import lombok.Builder;
 
 // Set and get methods needs to declared explicitly for Data binding to work.
 @Builder
 public class ApplicationModel extends BaseObservable implements FilterableFields {
 
-    // if package assets are absent, we use this supplier to get it
-    private final Supplier<PackageAssets> applicationAssetSupplier;
     private final Consumer<String> applicationLauncher;
     private final BiConsumer<String, Boolean> packageStatusChangeConsumer;
     private final BiConsumer<String, String> appGroupPackageRemovingConsumer;
@@ -39,18 +36,10 @@ public class ApplicationModel extends BaseObservable implements FilterableFields
     }
 
     public Drawable getApplicationIcon() {
-        if (packageAssets == null) {
-            packageAssets = applicationAssetSupplier.get();
-            setPackageAssets(packageAssets);
-        }
         return this.applicationIcon;
     }
 
     public String getApplicationLabel() {
-        if (packageAssets == null) {
-            packageAssets = applicationAssetSupplier.get();
-            setPackageAssets(packageAssets);
-        }
         return this.applicationLabel;
     }
 
@@ -68,18 +57,6 @@ public class ApplicationModel extends BaseObservable implements FilterableFields
         notifyChange();
     }
 
-    public void setApplicationLabel(String applicationLabel) {
-        this.applicationLabel = applicationLabel;
-
-        notifyChange();
-    }
-
-    public void setApplicationIcon(Drawable applicationIcon) {
-        this.applicationIcon = applicationIcon;
-
-        notifyChange();
-    }
-
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
 
@@ -92,11 +69,9 @@ public class ApplicationModel extends BaseObservable implements FilterableFields
         notifyChange();
     }
 
-    public void setPackageAssets(final PackageAssets packageAssets) {
-        this.packageAssets = packageAssets;
-
-        this.applicationLabel = packageAssets.getAppName();
-        this.applicationIcon = packageAssets.getIconDrawable();
+    public void setPackageAssets(PackageAssets packageAsset) {
+        this.applicationLabel = packageAsset.getAppName();
+        this.applicationIcon = packageAsset.getIconDrawable();
 
         notifyChange();
     }

@@ -10,8 +10,9 @@ import com.google.common.collect.Lists;
 import com.minimize.android.rxrecycleradapter.RxDataSource;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
-import com.mysticwind.disabledappmanager.domain.PackageListProvider;
+import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.app.model.ApplicationOrderingMethod;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
@@ -203,6 +204,9 @@ public class ApplicationStateViewModel extends BaseObservable {
         List<ApplicationModel> filteredApplicationModelList = stream(getCachedApplicationModels())
                 .filter(applicationModel -> shouldIncludePackageInAdapter(applicationModel, viewMode))
                 .filter(applicationModel -> applicationModelPredicate.test(applicationModel))
+                .sorted(
+                        (applicationModel1, applicationModel2) ->
+                                applicationModel1.getApplicationLabel().compareTo(applicationModel2.getApplicationLabel()))
                 .collect(Collectors.toList());
 
         rxDataSource
@@ -220,15 +224,11 @@ public class ApplicationStateViewModel extends BaseObservable {
 
 
     private void updateApplicationModelCache() {
-        cachedApplicationModels = stream(packageListProvider.getOrderedPackages())
+        cachedApplicationModels = stream(packageListProvider.getOrderedPackages(ApplicationOrderingMethod.APPLICATION_LABEL))
                 .map(appInfo -> {
-                    // this is to allocate a request to get package assets that we will obtain from AppAssetUpdateEventManager
                     PackageAssets packageAsset = packageAssetService.getPackageAssets(appInfo.getPackageName());
                     return ApplicationModel.builder()
                             .packageName(appInfo.getPackageName())
-                            // the package asset is only available when provided from AppAssetUpdateEventManager
-                            // this is to prioritize UI requests for package assets
-                            .applicationAssetSupplier(() -> packageAssetService.getPackageAssets(appInfo.getPackageName()))
                             .applicationLabel(packageAsset.getAppName())
                             .applicationIcon(packageAsset.getIconDrawable())
                             .isEnabled(appInfo.isEnabled())

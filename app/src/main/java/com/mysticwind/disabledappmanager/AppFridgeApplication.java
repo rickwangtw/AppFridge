@@ -9,7 +9,7 @@ import com.mysticwind.disabledappmanager.config.DaggerApplicationComponent;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
-import com.mysticwind.disabledappmanager.domain.PackageListProvider;
+import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;

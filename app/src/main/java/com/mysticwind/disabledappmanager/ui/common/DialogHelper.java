@@ -24,7 +24,8 @@ import android.widget.Toast;
 
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
-import com.mysticwind.disabledappmanager.domain.PackageListProvider;
+import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
+import com.mysticwind.disabledappmanager.domain.app.model.ApplicationOrderingMethod;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
@@ -134,7 +135,7 @@ public class DialogHelper {
                                                               final PackageAssetService packageAssetService,
                                                               final AppGroupManager appGroupManager) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        List<AppInfo> allPackages = packageListProvider.getOrderedPackages();
+        final List<AppInfo> allPackages = packageListProvider.getOrderedPackages(ApplicationOrderingMethod.APPLICATION_LABEL);
         Set<String> packagesInAppGroup = appGroupManager.getPackagesOfAppGroup(appGroupName);
         final List<AppInfo> packagesNotInAppGroup = new ArrayList<>(
                 allPackages.size() - packagesInAppGroup.size());

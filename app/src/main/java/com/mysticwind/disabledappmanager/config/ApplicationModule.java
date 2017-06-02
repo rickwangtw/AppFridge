@@ -11,8 +11,8 @@ import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.AutoDisablingAppLauncher;
-import com.mysticwind.disabledappmanager.domain.PackageListProvider;
-import com.mysticwind.disabledappmanager.domain.PackageManagerAllPackageListProvider;
+import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
+import com.mysticwind.disabledappmanager.domain.app.impl.PackageManagerPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
@@ -185,8 +185,9 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public PackageListProvider providePackageListProvider(PackageManager packageManager) {
-        return new PackageManagerAllPackageListProvider(packageManager);
+    public PackageListProvider providePackageListProvider(final PackageManager packageManager,
+                                                          final PackageAssetService packageAssetService) {
+        return new PackageManagerPackageListProvider(packageManager, packageAssetService);
     }
 
     @Provides @Singleton

@@ -15,12 +15,14 @@ import android.widget.Toast;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupActivityBinding;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupAppItemBinding;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupGroupItemBinding;
+import com.mysticwind.disabledappmanager.domain.app.model.ApplicationFilter;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupOperation;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdate;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateListener;
@@ -47,6 +49,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 
+import java8.util.Optional;
 import java8.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,7 +63,7 @@ public class AppGroupPerspective extends PerspectiveBase {
             (applicationModel1, applicationModel2) -> applicationModel1.getApplicationLabel().compareTo(applicationModel2.getApplicationLabel());
 
     private String allAppGroupName = "";
-    private Map<String, ApplicationModel> packageNameToApplicationModelMap;
+    private Map<String, ApplicationModel> packageNameToApplicationModelMap = Maps.newConcurrentMap();
     // prevent reference release as the event managers are handling it using weak reference
     private AppAssetUpdateListener appAssetUpdateListener;
     private AppGroupUpdateListener appGroupUpdateListener;
@@ -202,28 +205,37 @@ public class AppGroupPerspective extends PerspectiveBase {
     }
 
     private Multimap<AppGroupViewModel, ApplicationModel> buildApplicationGroupToApplicationModelMultimap() {
-        packageNameToApplicationModelMap = stream(packageListProvider.getPackages())
-                .map(appInfo -> getApplicationModel(appInfo))
-                .collect(
-                        Collectors.toMap(
-                                applicationModel -> applicationModel.getPackageName(),
-                                applicationModel -> applicationModel));
-
         Multimap<AppGroupViewModel, ApplicationModel> appGroupToApplicationModelMultiMap = ArrayListMultimap.create();
         stream(appGroupManager.getAllAppGroups())
                 .map(appGroupName -> getAppGroupViewModel(appGroupName))
                 .forEach(appGroupViewModel -> {
                     Set<String> packageNames = appGroupManager.getPackagesOfAppGroup(appGroupViewModel.getAppGroupName());
-                    Set<ApplicationModel> applicationModelList = stream(packageNameToApplicationModelMap.entrySet())
-                            .filter(entry -> packageNames.contains(entry.getKey()))
-                            .map(entry -> entry.getValue())
-                            .collect(Collectors.toSet());
-
-                    appGroupToApplicationModelMultiMap.putAll(appGroupViewModel, applicationModelList);
+                    Set<ApplicationModel> applicationModels = getOrCreateApplicationModels(packageNames);
+                    appGroupToApplicationModelMultiMap.putAll(appGroupViewModel, applicationModels);
                 });
         // add the virtual app group - all
-        appGroupToApplicationModelMultiMap.putAll(getVirtualAllAppGroupViewModel(), packageNameToApplicationModelMap.values());
+        Set<ApplicationModel> allApplicationModels = stream(packageListProvider.getPackages(ApplicationFilter.DEFAULT))
+                .map(appInfo -> getOrCreateApplicationModel(appInfo.getPackageName()))
+                .collect(Collectors.toSet());
+        appGroupToApplicationModelMultiMap.putAll(getVirtualAllAppGroupViewModel(), allApplicationModels);
         return appGroupToApplicationModelMultiMap;
+    }
+
+
+    private ApplicationModel getOrCreateApplicationModel(String packageName) {
+        Set<ApplicationModel> applicationModels = getOrCreateApplicationModels(Sets.newHashSet(packageName));
+        if (applicationModels.isEmpty()) {
+            return null;
+        }
+        return applicationModels.iterator().next();
+    }
+
+    private Set<ApplicationModel> getOrCreateApplicationModels(Set<String> packageNames) {
+        return stream(packageNames)
+                .map(packageName ->
+                        packageNameToApplicationModelMap.computeIfAbsent(packageName,
+                                absentPackage -> getApplicationModel(absentPackage)))
+                .collect(Collectors.toSet());
     }
 
     private AppGroupViewModel getVirtualAllAppGroupViewModel() {
@@ -284,6 +296,14 @@ public class AppGroupPerspective extends PerspectiveBase {
         for (String packageName : Sets.newHashSet(packageNames)) {
             manualStateUpdateEventManager.publishUpdate(packageName, packageState);
         }
+    }
+
+    private ApplicationModel getApplicationModel(final String packageName) {
+        Optional<AppInfo> optionalAppInfo = packageListProvider.getPackage(packageName);
+        if (!optionalAppInfo.isPresent()) {
+            return null;
+        }
+        return getApplicationModel(optionalAppInfo.get());
     }
 
     private ApplicationModel getApplicationModel(final AppInfo appInfo) {

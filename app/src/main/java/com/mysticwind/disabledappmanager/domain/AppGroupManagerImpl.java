@@ -2,14 +2,17 @@ package com.mysticwind.disabledappmanager.domain;
 
 import com.google.common.collect.Sets;
 import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
+import com.mysticwind.disabledappmanager.domain.app.model.ApplicationFilter;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupOperation;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
-import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 import com.mysticwind.disabledappmanager.domain.storage.AppGroupDAO;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
+
+import java8.util.stream.Collectors;
+
+import static java8.util.stream.StreamSupport.stream;
 
 public class AppGroupManagerImpl implements AppGroupManager {
 
@@ -36,10 +39,12 @@ public class AppGroupManagerImpl implements AppGroupManager {
     }
 
     private Set<String> filterOutUninstalledPackageNames(Set<String> packageNames) {
-        Set<String> installedPackageNameSet = new HashSet<>();
-        for (AppInfo appInfo : packageListProvider.getPackages()) {
-            installedPackageNameSet.add(appInfo.getPackageName());
-        }
+        Set<String> installedPackageNameSet =
+                stream(packageListProvider.getPackages(ApplicationFilter.builder()
+                        .includeSystemApp(true)
+                        .build()))
+                        .map(appInfo -> appInfo.getPackageName())
+                        .collect(Collectors.toSet());
 
         return Sets.intersection(packageNames, installedPackageNameSet);
     }

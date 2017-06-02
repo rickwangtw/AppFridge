@@ -7,7 +7,11 @@ import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 import java.util.List;
 import java.util.Set;
 
+import java8.util.Optional;
+
 public interface PackageListProvider {
+    Optional<AppInfo> getPackage(String packageName);
+
     Set<AppInfo> getPackages();
     Set<AppInfo> getPackages(ApplicationFilter applicationFilter);
 

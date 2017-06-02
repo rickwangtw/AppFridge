@@ -4,15 +4,16 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
 import com.google.common.base.Preconditions;
+import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.app.model.ApplicationFilter;
 import com.mysticwind.disabledappmanager.domain.app.model.ApplicationOrderingMethod;
-import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 
 import java.util.List;
 import java.util.Set;
 
+import java8.util.Optional;
 import java8.util.stream.Collectors;
 import lombok.Value;
 
@@ -30,8 +31,20 @@ public class PackageManagerPackageListProvider implements PackageListProvider {
     }
 
     @Override
+    public Optional<AppInfo> getPackage(final String packageName) {
+        Preconditions.checkNotNull(packageName);
+
+        try {
+            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+            return Optional.of(convert(applicationInfo));
+        } catch (PackageManager.NameNotFoundException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Set<AppInfo> getPackages() {
-        return getPackages(new ApplicationFilter());
+        return getPackages(ApplicationFilter.DEFAULT);
     }
 
     @Override
@@ -63,7 +76,7 @@ public class PackageManagerPackageListProvider implements PackageListProvider {
 
     @Override
     public List<AppInfo> getOrderedPackages(final ApplicationOrderingMethod orderingMethod) {
-        return getOrderedPackages(new ApplicationFilter(), orderingMethod);
+        return getOrderedPackages(ApplicationFilter.DEFAULT, orderingMethod);
     }
 
     @Override

@@ -2,6 +2,7 @@
     <string name="title_activity_settings">Settings</string>
 
     <string name="pref_header_general">General</string>
+    <string name="pref_header_autofreeze">Auto Freeze</string>
     <string name="pref_header_backup">Backup and Restore</string>
 
     <string name="pref_key_enable_app_launch_autodisable">isAutoDisablingOn</string>
@@ -33,5 +34,10 @@
     <string name="pref_key_backup_appgroups_path">backupAppGroupsPath</string>
     <string name="pref_key_backup_appgroups_now">backupAppGroupsNow</string>
     <string name="pref_key_restore_appgroups_now">restoreAppGroupsNow</string>
+
+    <string name="settings_preference_viewoptions">View Options</string>
+    <string name="pref_key_viewoptions_show_system">showSystemApps</string>
+    <string name="pref_title_viewoptions_show_system">Show System Apps</string>
+    <string name="pref_description_viewoptions_show_system">This will display system apps as well. This can be dangerous if you freeze system apps that are critical to Android. Use at your own risk!</string>
 
 </resources>

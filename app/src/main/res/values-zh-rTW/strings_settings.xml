@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_activity_settings">設定</string>
-    <string name="pref_header_backup">備份與還原</string>
 
     <string name="pref_header_general">綜合</string>
+    <string name="pref_header_autofreeze">自動冷凍</string>
+    <string name="pref_header_backup">備份與還原</string>
 
     <string name="pref_title_app_launch_autodisable">啟動自動冷凍 App</string>
     <string name="pref_description_app_launch_autodisable">App 在冷凍狀態下啟動，可以透過此設定自動冷凍。</string>
@@ -19,4 +20,9 @@
         <item>4 分鐘</item>
         <item>5 分鐘</item>
     </string-array>
+
+    <string name="settings_preference_viewoptions">視覺選項</string>
+    <string name="pref_title_viewoptions_show_system">顯示系統程式</string>
+    <string name="pref_description_viewoptions_show_system">這會顯示系統程式。如果將 Android 重要的程式冷凍，系統可能會表現得不正常。請警慎使用！</string>
+
 </resources>

@@ -5,6 +5,10 @@
         android:title="@string/pref_header_general" />
 
     <header
+        android:fragment="com.mysticwind.disabledappmanager.ui.activity.settings.AutoFreezePreferenceFragment_"
+        android:title="@string/pref_header_autofreeze" />
+
+    <header
         android:fragment="com.mysticwind.disabledappmanager.ui.activity.settings.BackupRestorePreferenceFragment_"
         android:title="@string/pref_header_backup" />
 

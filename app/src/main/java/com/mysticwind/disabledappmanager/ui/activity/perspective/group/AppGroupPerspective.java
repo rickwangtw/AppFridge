@@ -22,7 +22,6 @@ import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupActivityBinding;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupAppItemBinding;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupGroupItemBinding;
-import com.mysticwind.disabledappmanager.domain.app.model.ApplicationFilter;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupOperation;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdate;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateListener;
@@ -86,6 +85,8 @@ public class AppGroupPerspective extends PerspectiveBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        this.allAppGroupName = getResources().getString(R.string.generated_app_group_name_all);
+
         new AsyncTask<Void, Void, Void>() {
 
             private Dialog dialog;
@@ -114,8 +115,18 @@ public class AppGroupPerspective extends PerspectiveBase {
         }.execute();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (multimapExpandableListAdapter == null) {
+            return;
+        }
+        Multimap<AppGroupViewModel, ApplicationModel> updatedMultimap = buildApplicationGroupToApplicationModelMultimap();
+        multimapExpandableListAdapter.updateDataSet(updatedMultimap);
+    }
+
     private void setupView() {
-        this.allAppGroupName = getResources().getString(R.string.generated_app_group_name_all);
         final LayoutInflater layoutInflator = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
         PerspectiveAppgroupActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_appgroup_activity);
@@ -214,7 +225,7 @@ public class AppGroupPerspective extends PerspectiveBase {
                     appGroupToApplicationModelMultiMap.putAll(appGroupViewModel, applicationModels);
                 });
         // add the virtual app group - all
-        Set<ApplicationModel> allApplicationModels = stream(packageListProvider.getPackages(ApplicationFilter.DEFAULT))
+        Set<ApplicationModel> allApplicationModels = stream(packageListProvider.getPackages(applicationFilter()))
                 .map(appInfo -> getOrCreateApplicationModel(appInfo.getPackageName()))
                 .collect(Collectors.toSet());
         appGroupToApplicationModelMultiMap.putAll(getVirtualAllAppGroupViewModel(), allApplicationModels);

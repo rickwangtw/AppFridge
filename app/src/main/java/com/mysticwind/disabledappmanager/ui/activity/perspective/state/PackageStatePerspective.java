@@ -76,14 +76,11 @@ public class PackageStatePerspective extends PerspectiveBase {
         if (applicationStateViewModel == null) {
             return;
         }
-        final boolean showSystemApps = viewOptionConfigDataAccessor.showSystemApps();
         applicationStateViewModel.updateShowSystemApps(showSystemApps);
     }
 
     private void setupView() {
         final PerspectiveStateActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_state_activity);
-
-        final boolean showSystemApps = viewOptionConfigDataAccessor.showSystemApps();
 
         binding.appListView.setLayoutManager(new LinearLayoutManager(this));
 

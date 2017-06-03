@@ -52,13 +52,17 @@ public class MultimapExpandableListAdapter<T, K> extends BaseExpandableListAdapt
                                          final ViewGenerator<T, K> viewGenerator) {
         this.groupComparator = Preconditions.checkNotNull(groupComparator);
         this.childComparator = Preconditions.checkNotNull(childComparator);
+        updateKeysAndValues(multimap);
+        this.viewGenerator = Preconditions.checkNotNull(viewGenerator);
+    }
+
+    private void updateKeysAndValues(final Multimap<T, K> multimap) {
         updateKeyList(multimap.keys());
 
         for (T key : multimap.keySet()) {
             Collection<K> set = multimap.get(key);
             updateValueList(key, set);
         }
-        this.viewGenerator = Preconditions.checkNotNull(viewGenerator);
     }
 
     private void updateKeyList(Collection<T> keyCollection) {
@@ -252,5 +256,11 @@ public class MultimapExpandableListAdapter<T, K> extends BaseExpandableListAdapt
                 notifyDataSetChanged();
             }
         };
+    }
+
+    public void updateDataSet(Multimap<T, K> updatedMultimap) {
+        updateKeysAndValues(updatedMultimap);
+
+        notifyDataSetChanged();
     }
 }

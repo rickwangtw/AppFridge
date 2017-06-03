@@ -18,6 +18,7 @@ import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.app.model.ApplicationFilter;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
@@ -49,6 +50,7 @@ public abstract class PerspectiveBase extends AppCompatActivity {
     protected MenuItem searchAction;
     protected boolean searchBarDisplayed = false;
     protected EditText searchEditText;
+    protected boolean showSystemApps = false;
 
     protected abstract void performSearch(String searchQuery);
     protected abstract void cancelSearch();
@@ -71,14 +73,29 @@ public abstract class PerspectiveBase extends AppCompatActivity {
 
         this.searchIconDrawable = getResources().getDrawable(R.drawable.ic_search_white_48dp);
         this.closeIconDrawable = getResources().getDrawable(R.drawable.ic_close_white_48dp);
+
+        this.showSystemApps = viewOptionConfigDataAccessor.showSystemApps();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        this.showSystemApps = viewOptionConfigDataAccessor.showSystemApps();
     }
 
     protected void preloadPackageAssets() {
-        stream(packageListProvider.getPackages())
+        stream(packageListProvider.getPackages(applicationFilter()))
                 .forEach(
                         appInfo ->
                                 packageAssetService.getPackageAssets(appInfo.getPackageName())
                 );
+    }
+
+    protected ApplicationFilter applicationFilter() {
+        return ApplicationFilter.builder()
+                .includeSystemApp(this.showSystemApps)
+                .build();
     }
 
     @Override

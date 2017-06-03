@@ -19,6 +19,7 @@ import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
+import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdate;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
@@ -57,6 +58,7 @@ public class ApplicationStateViewModel extends BaseObservable {
     private final PackageAssetService packageAssetService;
     private final PackageStateController packageStateController;
     private final AppStateProvider appStateProvider;
+    private final ManualStateUpdateEventManager manualStateUpdateEventManager;
     private final Dialog progressDialog;
     private final AppLauncher appLauncher;
     // weak reference will be released
@@ -99,6 +101,7 @@ public class ApplicationStateViewModel extends BaseObservable {
                                      final PackageStateController packageStateController,
                                      final AppStateProvider appStateProvider,
                                      final PackageStateUpdateEventManager packageStateUpdateEventManager,
+                                     final ManualStateUpdateEventManager manualStateUpdateEventManager,
                                      final Dialog progressDialog,
                                      final AppLauncher appLauncher,
                                      final boolean showSystemApps) {
@@ -109,6 +112,7 @@ public class ApplicationStateViewModel extends BaseObservable {
         this.packageStateController = Preconditions.checkNotNull(packageStateController);
         this.appStateProvider = Preconditions.checkNotNull(appStateProvider);
         Preconditions.checkNotNull(packageStateUpdateEventManager);
+        this.manualStateUpdateEventManager = Preconditions.checkNotNull(manualStateUpdateEventManager);
         this.progressDialog = Preconditions.checkNotNull(progressDialog);
         this.appLauncher = Preconditions.checkNotNull(appLauncher);
         this.showSystemApps = showSystemApps;
@@ -161,6 +165,7 @@ public class ApplicationStateViewModel extends BaseObservable {
         new PackageStateUpdateAsyncTask(packageStateController,
                 appStateProvider, packageNames, action)
                 .withProgressDialog(progressDialog)
+                .withManualStateUpdateSent(manualStateUpdateEventManager)
                 .execute();
 
         clearSelectedApplications();

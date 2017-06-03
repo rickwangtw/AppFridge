@@ -29,7 +29,6 @@ import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
 import com.mysticwind.disabledappmanager.domain.model.AppInfo;
-import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdate;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateListener;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.PerspectiveBase;
@@ -263,25 +262,25 @@ public class AppGroupPerspective extends PerspectiveBase {
                 .appGroupPackageFreezingConsumer(appGroup -> {
                     Set<String> packages = appGroupManager.getPackagesOfAppGroup(appGroup);
                     log.debug("Disable apps: " + packages);
-                    notifyManualStateUpdate(packages, false);
                     new PackageStateUpdateAsyncTask(packageStateController, appStateProvider,
                             packages, PackageStateUpdateAsyncTask.Action.DISABLE)
                             .withProgressDialog(DialogHelper.newProgressDialog(AppGroupPerspective.this))
                             .withEndingToast(Toast.makeText(AppGroupPerspective.this,
                                     getResources().getString(R.string.toast_disabled_packages_msg_prefix) + " " + packages,
                                     Toast.LENGTH_SHORT))
+                            .withManualStateUpdateSent(manualStateUpdateEventManager)
                             .execute();
                 })
                 .appGroupPackageUnfreezingConsumer(appGroup -> {
                     Set<String> packages = appGroupManager.getPackagesOfAppGroup(appGroup);
                     log.debug("Enable apps: " + packages);
-                    notifyManualStateUpdate(packages, true);
                     new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, packages,
                             PackageStateUpdateAsyncTask.Action.ENABLE)
                             .withProgressDialog(DialogHelper.newProgressDialog(AppGroupPerspective.this))
                             .withEndingToast(Toast.makeText(AppGroupPerspective.this,
                                     getResources().getString(R.string.toast_enabled_packages_msg_prefix) + " " + packages,
                                     Toast.LENGTH_SHORT))
+                            .withManualStateUpdateSent(manualStateUpdateEventManager)
                             .execute();
                 })
                 .appGroupPackageAddingConsumer(
@@ -294,19 +293,6 @@ public class AppGroupPerspective extends PerspectiveBase {
                                 DialogHelper.newConfirmDeleteAppGroupDialog(this, appGroupName, appGroupManager).show()
                 )
                 .build();
-    }
-
-    private void notifyManualStateUpdate(final String packageName,
-                                         final boolean enable) {
-        notifyManualStateUpdate(Sets.newHashSet(packageName), enable);
-    }
-
-    private void notifyManualStateUpdate(final Collection<String> packageNames,
-                                         final boolean enable) {
-        PackageState packageState = enable ? PackageState.ENABLE : PackageState.DISABLE;
-        for (String packageName : Sets.newHashSet(packageNames)) {
-            manualStateUpdateEventManager.publishUpdate(packageName, packageState);
-        }
     }
 
     private ApplicationModel getApplicationModel(final String packageName) {
@@ -335,13 +321,10 @@ public class AppGroupPerspective extends PerspectiveBase {
                         toast = Toast.makeText(this, disablingToastMessagePrefix + " " + packageName, Toast.LENGTH_SHORT);
                     }
 
-                    notifyManualStateUpdate(packageName, newState);
-                    new PackageStateUpdateAsyncTask(
-                            packageStateController,
-                            appStateProvider,
-                            Arrays.asList(packageName),
-                            action
-                    ).withEndingToast(toast).execute();
+                    new PackageStateUpdateAsyncTask(packageStateController, appStateProvider, Arrays.asList(packageName), action)
+                            .withEndingToast(toast)
+                            .withManualStateUpdateSent(manualStateUpdateEventManager)
+                            .execute();
                 })
                 .appGroupPackageRemovingConsumer(
                         (appGroupName, packageNameToRemove) ->

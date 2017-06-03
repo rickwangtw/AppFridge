@@ -96,7 +96,7 @@ public class PackageStatePerspective extends PerspectiveBase {
         applicationStateViewModel = new ApplicationStateViewModel(
                 PackageStatePerspective.this, dataSource, packageListProvider,
                 packageAssetService, appAssetUpdateEventManager, packageStateController,
-                appStateProvider, packageStateUpdateEventManager,
+                appStateProvider, packageStateUpdateEventManager, manualStateUpdateEventManager,
                 DialogHelper.newProgressDialog(PackageStatePerspective.this), appLauncher,
                 showSystemApps);
         binding.setViewModel(applicationStateViewModel);

@@ -7,6 +7,8 @@ import android.widget.Toast;
 import com.google.common.collect.Sets;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.state.PackageState;
 
 import java.util.Collection;
 import java.util.Set;
@@ -26,6 +28,7 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collectio
 
     private Dialog progressDialog;
     private Toast endingToast;
+    private ManualStateUpdateEventManager manualStateUpdateEventManager;
 
     public enum Action {
         ENABLE,
@@ -53,6 +56,11 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collectio
         return this;
     }
 
+    public PackageStateUpdateAsyncTask withManualStateUpdateSent(final ManualStateUpdateEventManager manualStateUpdateEventManager) {
+        this.manualStateUpdateEventManager = manualStateUpdateEventManager;
+        return this;
+    }
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -77,18 +85,22 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collectio
     protected Collection<String> doInBackground(Void... params) {
         if (Action.ENABLE.equals(action)) {
             Set<String> needActionPackages = getSingleActionPackages(Action.ENABLE, packages);
+            notifyManualStateUpdate(needActionPackages, true);
             packageStateController.enablePackages(needActionPackages);
             return needActionPackages;
         } else if (Action.DISABLE.equals(action)) {
             Set<String> needActionPackages = getSingleActionPackages(Action.DISABLE, packages);
+            notifyManualStateUpdate(needActionPackages, false);
             packageStateController.disablePackages(needActionPackages);
             return needActionPackages;
         } else if (Action.TOGGLE.equals(action)) {
             Set<String> packagesToEnable = getSingleActionPackages(Action.ENABLE, packages);
+            notifyManualStateUpdate(packagesToEnable, true);
             packageStateController.enablePackages(packagesToEnable);
 
             Set<String> otherPackages = Sets.difference(packages, packagesToEnable);
             Set<String> packagesToDisable = getSingleActionPackages(Action.DISABLE, otherPackages);
+            notifyManualStateUpdate(packagesToDisable, false);
             packageStateController.disablePackages(packagesToDisable);
             return Sets.union(packagesToEnable, packagesToDisable);
         } else {
@@ -105,5 +117,15 @@ public class PackageStateUpdateAsyncTask extends AsyncTask<Void, Void, Collectio
         return stream(packageNames)
                 .filter(packageName -> targetState ^ appStateProvider.isPackageEnabled(packageName))
                 .collect(Collectors.toSet());
+    }
+
+    private void notifyManualStateUpdate(Collection<String> packageNames, boolean enable) {
+        if (manualStateUpdateEventManager == null) {
+            return;
+        }
+        PackageState packageState = enable ? PackageState.ENABLE : PackageState.DISABLE;
+        for (String packageName : packageNames) {
+            manualStateUpdateEventManager.publishUpdate(packageName, packageState);
+        }
     }
 }

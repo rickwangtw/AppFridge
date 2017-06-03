@@ -59,6 +59,7 @@ public class AutoDisablingAppLauncher implements AppLauncher {
         private Intent applicationLaunchIntent;
         private boolean isAutoDisablingOn;
         private long inactiveTimeoutInSeconds;
+        private boolean packageEnabledBeforeLaunching = false;
 
         AppLauncherAsyncTask(Context context,
                              Dialog progressDialog,
@@ -84,6 +85,7 @@ public class AutoDisablingAppLauncher implements AppLauncher {
             if (!isEnabled) {
                 publishProgress(AppLaunchProgress.NOTIFY_APP_ENABLING);
                 packageStateController.enablePackages(Arrays.asList(packageName));
+                this.packageEnabledBeforeLaunching = true;
             }
             applicationLaunchIntent = packageManager.getLaunchIntentForPackage(packageName);
             publishProgress(AppLaunchProgress.APP_LAUNCH_READY);
@@ -129,8 +131,7 @@ public class AutoDisablingAppLauncher implements AppLauncher {
                     break;
                 case LAUNCH_APPLICATION:
                     context.startActivity(applicationLaunchIntent);
-                    // auto disable package after 1 min of not in foreground
-                    if (isAutoDisablingOn) {
+                    if (isAutoDisablingOn && packageEnabledBeforeLaunching) {
                         disabledPackageStateDecider.addDetectionRequest(
                                 new DisabledStateDetectionRequest(packageName, inactiveTimeoutInSeconds));
                     }

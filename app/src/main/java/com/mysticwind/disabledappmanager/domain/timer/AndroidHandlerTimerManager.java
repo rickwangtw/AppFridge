@@ -15,10 +15,9 @@ public class AndroidHandlerTimerManager implements TimerManager {
 
     @Override
     public void schedule(final TimesUpObserver timesUpObserver, final String uniqueRequestId, long secondsToNotify) {
-        // TODO should we reschedule?
         if (isRequestIdRequested(uniqueRequestId)) {
-            log.warn("Request: " + uniqueRequestId + " already scheduled!");
-            return;
+            // cancel to reschedule
+            cancel(uniqueRequestId);
         }
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -38,7 +37,7 @@ public class AndroidHandlerTimerManager implements TimerManager {
     @Override
     public void cancel(String uniqueRequestId) {
         if (!isRequestIdRequested(uniqueRequestId)) {
-            throw new RuntimeException("No task allocated for request: " + uniqueRequestId);
+            return;
         }
         Handler handler = uniqueRequestIdToHandler.get(uniqueRequestId);
         handler.removeCallbacksAndMessages(null);

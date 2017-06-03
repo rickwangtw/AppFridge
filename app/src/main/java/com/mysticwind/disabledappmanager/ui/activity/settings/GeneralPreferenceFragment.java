@@ -2,6 +2,7 @@ package com.mysticwind.disabledappmanager.ui.activity.settings;
 
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.PreferenceFragment;
 
 import com.mysticwind.disabledappmanager.R;
@@ -20,6 +21,9 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
 
     @PreferenceByKey(R.string.pref_key_viewoptions_show_system)
     CheckBoxPreference showSystemAppPreference;
+
+    @PreferenceByKey(R.string.pref_key_viewoptions_sort_method)
+    ListPreference sortMethodPreference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

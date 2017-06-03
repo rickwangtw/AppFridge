@@ -25,4 +25,11 @@
     <string name="pref_title_viewoptions_show_system">顯示系統程式</string>
     <string name="pref_description_viewoptions_show_system">這會顯示系統程式。如果將 Android 重要的程式冷凍，系統可能會表現得不正常。請警慎使用！</string>
 
+    <string name="pref_title_viewoptions_sort_method">App 排序的方式</string>
+    <string name="pref_description_viewoptions_sort_method">App 在列表當中排序的方式</string>
+    <string-array name="pref_viewoptions_sort_method_options">
+        <item>包裹名稱</item>
+        <item>App 名稱</item>
+    </string-array>
+
 </resources>

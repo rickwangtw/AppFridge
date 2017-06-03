@@ -9,6 +9,16 @@
             android:title="@string/pref_title_viewoptions_show_system"
             android:summary="@string/pref_description_viewoptions_show_system" />
 
+        <ListPreference
+            android:key="@string/pref_key_viewoptions_sort_method"
+            android:title="@string/pref_title_viewoptions_sort_method"
+            android:summary="@string/pref_description_viewoptions_sort_method"
+            android:entries="@array/pref_viewoptions_sort_method_options"
+            android:entryValues="@array/pref_viewoptions_sort_method_option_values"
+            android:defaultValue="PACKAGE_NAME"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

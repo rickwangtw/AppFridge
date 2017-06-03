@@ -69,8 +69,21 @@ public class PackageStatePerspective extends PerspectiveBase {
         }.execute();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (applicationStateViewModel == null) {
+            return;
+        }
+        final boolean showSystemApps = viewOptionConfigDataAccessor.showSystemApps();
+        applicationStateViewModel.updateShowSystemApps(showSystemApps);
+    }
+
     private void setupView() {
         final PerspectiveStateActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.perspective_state_activity);
+
+        final boolean showSystemApps = viewOptionConfigDataAccessor.showSystemApps();
 
         binding.appListView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -87,7 +100,8 @@ public class PackageStatePerspective extends PerspectiveBase {
                 PackageStatePerspective.this, dataSource, packageListProvider,
                 packageAssetService, appAssetUpdateEventManager, packageStateController,
                 appStateProvider, packageStateUpdateEventManager,
-                DialogHelper.newProgressDialog(PackageStatePerspective.this), appLauncher);
+                DialogHelper.newProgressDialog(PackageStatePerspective.this), appLauncher,
+                showSystemApps);
         binding.setViewModel(applicationStateViewModel);
 
         AddAppGroupViewModel addAppGroupViewModel = new AddAppGroupViewModel(appGroupManager,

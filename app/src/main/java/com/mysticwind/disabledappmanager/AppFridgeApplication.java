@@ -19,6 +19,8 @@ import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigServic
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
 import com.mysticwind.disabledappmanager.domain.config.BackupConfigService;
 import com.mysticwind.disabledappmanager.domain.config.BackupConfig_;
+import com.mysticwind.disabledappmanager.domain.config.view.ViewOptionConfigDataAccessor;
+import com.mysticwind.disabledappmanager.domain.config.view.impl.ViewOptionConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
@@ -35,6 +37,9 @@ public class AppFridgeApplication extends Application implements ApplicationComp
     private ApplicationComponent component;
 
     @Pref
+    ViewOptionConfig_ viewOptionConfig;
+
+    @Pref
     AutoDisablingConfig_ autoDisablingConfig;
 
     @Pref
@@ -47,7 +52,7 @@ public class AppFridgeApplication extends Application implements ApplicationComp
         JodaTimeAndroid.init(this);
 
         component = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this, autoDisablingConfig, backupConfig))
+                .applicationModule(new ApplicationModule(this, viewOptionConfig, autoDisablingConfig, backupConfig))
                 .build();
     }
 
@@ -139,5 +144,10 @@ public class AppFridgeApplication extends Application implements ApplicationComp
     @Override
     public WidgetConfigDataAccessor widgetConfigDataAccessor() {
         return component.widgetConfigDataAccessor();
+    }
+
+    @Override
+    public ViewOptionConfigDataAccessor viewOptionConfigDataAccessor() {
+        return component.viewOptionConfigDataAccessor();
     }
 }

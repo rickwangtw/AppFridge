@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 
+import com.google.common.base.Preconditions;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
@@ -39,6 +40,9 @@ import com.mysticwind.disabledappmanager.domain.config.BackupConfigDataAccessorI
 import com.mysticwind.disabledappmanager.domain.config.BackupConfigService;
 import com.mysticwind.disabledappmanager.domain.config.BackupConfigServiceImpl;
 import com.mysticwind.disabledappmanager.domain.config.BackupConfig_;
+import com.mysticwind.disabledappmanager.domain.config.view.ViewOptionConfigDataAccessor;
+import com.mysticwind.disabledappmanager.domain.config.view.impl.ViewOptionConfigDataAccessorImpl;
+import com.mysticwind.disabledappmanager.domain.config.view.impl.ViewOptionConfig_;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.EventBusManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.EventBusPackageStateUpdateEventManager;
@@ -62,20 +66,33 @@ import de.greenrobot.event.EventBus;
 public class ApplicationModule {
 
     private final Context context;
+    private final ViewOptionConfig_ viewOptionConfig;
     private final AutoDisablingConfig_ autoDisablingConfig;
     private final BackupConfig_ backupConfig;
 
     public ApplicationModule(final Context context,
+                             final ViewOptionConfig_ viewOptionConfig,
                              final AutoDisablingConfig_ autoDisablingConfig,
                              final BackupConfig_ backupConfig) {
-        this.context = context;
-        this.autoDisablingConfig = autoDisablingConfig;
-        this.backupConfig = backupConfig;
+        this.context = Preconditions.checkNotNull(context);
+        this.viewOptionConfig = Preconditions.checkNotNull(viewOptionConfig);
+        this.autoDisablingConfig = Preconditions.checkNotNull(autoDisablingConfig);
+        this.backupConfig = Preconditions.checkNotNull(backupConfig);
     }
 
     @Provides @Singleton
     public Context provideContext() {
         return this.context;
+    }
+
+    @Provides @Singleton
+    public ViewOptionConfig_ viewOptionConfig() {
+        return this.viewOptionConfig;
+    }
+
+    @Provides @Singleton
+    public ViewOptionConfigDataAccessor viewOptionConfigDataAccessor(final ViewOptionConfig_ viewOptionConfig) {
+        return new ViewOptionConfigDataAccessorImpl(viewOptionConfig);
     }
 
     @Provides @Singleton

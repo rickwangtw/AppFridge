@@ -5,16 +5,17 @@ import android.content.Context;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
-import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
-import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
+import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.backup.AppGroupBackupManager;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigService;
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
 import com.mysticwind.disabledappmanager.domain.config.BackupConfigService;
 import com.mysticwind.disabledappmanager.domain.config.BackupConfig_;
+import com.mysticwind.disabledappmanager.domain.config.view.ViewOptionConfigDataAccessor;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
@@ -38,12 +39,14 @@ public interface ApplicationComponent {
     PackageStateController packageStateController();
     AppLauncher appLauncher();
     DisabledPackageStateDecider disabledPackageStateDecider();
-    AutoDisablingConfigService autoDisablingConfigService();
-    BackupConfigService backupConfigService();
     ManualStateUpdateEventManager manualStateUpdateEventManager();
     AppGroupManager appGroupManager();
     AppGroupBackupManager appGroupBackupManager();
     AppGroupUpdateEventManager appGroupUpdateEventManager();
 
     WidgetConfigDataAccessor widgetConfigDataAccessor();
+
+    ViewOptionConfigDataAccessor viewOptionConfigDataAccessor();
+    AutoDisablingConfigService autoDisablingConfigService();
+    BackupConfigService backupConfigService();
 }

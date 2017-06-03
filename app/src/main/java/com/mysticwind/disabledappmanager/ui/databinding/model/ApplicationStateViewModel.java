@@ -10,8 +10,9 @@ import com.google.common.collect.Lists;
 import com.minimize.android.rxrecycleradapter.RxDataSource;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
-import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
+import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
+import com.mysticwind.disabledappmanager.domain.app.model.ApplicationFilter;
 import com.mysticwind.disabledappmanager.domain.app.model.ApplicationOrderingMethod;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdate;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
@@ -85,6 +86,7 @@ public class ApplicationStateViewModel extends BaseObservable {
 
     private int viewMode = ViewMode.ALL;
     private List<ApplicationModel> cachedApplicationModels = Lists.newArrayList();
+    private boolean showSystemApps;
 
     @Setter
     private Dialog addToAppGroupDialog;
@@ -98,7 +100,8 @@ public class ApplicationStateViewModel extends BaseObservable {
                                      final AppStateProvider appStateProvider,
                                      final PackageStateUpdateEventManager packageStateUpdateEventManager,
                                      final Dialog progressDialog,
-                                     final AppLauncher appLauncher) {
+                                     final AppLauncher appLauncher,
+                                     final boolean showSystemApps) {
         this.context = Preconditions.checkNotNull(context);
         this.rxDataSource = Preconditions.checkNotNull(dataSource);
         this.packageListProvider = Preconditions.checkNotNull(packageListProvider);
@@ -108,6 +111,7 @@ public class ApplicationStateViewModel extends BaseObservable {
         Preconditions.checkNotNull(packageStateUpdateEventManager);
         this.progressDialog = Preconditions.checkNotNull(progressDialog);
         this.appLauncher = Preconditions.checkNotNull(appLauncher);
+        this.showSystemApps = showSystemApps;
 
         appAssetUpdateEventManager.registerListener(appAssetupUpdateListener);
         packageStateUpdateEventManager.registerListener(packageStateUpdateListener);
@@ -222,9 +226,8 @@ public class ApplicationStateViewModel extends BaseObservable {
                                 cachedSelectedPackageNames.add(packageName));
     }
 
-
     private void updateApplicationModelCache() {
-        cachedApplicationModels = stream(packageListProvider.getOrderedPackages(ApplicationOrderingMethod.APPLICATION_LABEL))
+        cachedApplicationModels = stream(packageListProvider.getOrderedPackages(appFilter(), ApplicationOrderingMethod.APPLICATION_LABEL))
                 .map(appInfo -> {
                     PackageAssets packageAsset = packageAssetService.getPackageAssets(appInfo.getPackageName());
                     return ApplicationModel.builder()
@@ -239,6 +242,12 @@ public class ApplicationStateViewModel extends BaseObservable {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    private ApplicationFilter appFilter() {
+        return ApplicationFilter.builder()
+                .includeSystemApp(showSystemApps ? true : false)
+                .build();
     }
 
     public void launchAddToAppGroupDialog() {
@@ -281,4 +290,13 @@ public class ApplicationStateViewModel extends BaseObservable {
     public void cancelSearch() {
         reloadAdapter();
     }
+
+    public void updateShowSystemApps(boolean showSystemApps) {
+        if (this.showSystemApps == showSystemApps) {
+            return;
+        }
+        this.showSystemApps = showSystemApps;
+        reloadAdapter();
+    }
+
 }

@@ -40,8 +40,17 @@ public class AppGroupLauncherWidgetConfigureActivity extends Activity {
         public void onClick(View v) {
             final Context context = AppGroupLauncherWidgetConfigureActivity.this;
 
+            // nothing has been selected
+            final View view = appGroupSpinner.getSelectedView();
+            if (view == null) {
+                return;
+            }
+            CharSequence text = ((TextView) appGroupSpinner.getSelectedView()).getText();
+            if (text == null || text.length() == 0) {
+                return;
+            }
             // When the button is clicked, store the string locally
-            String appGroupName = ((TextView)appGroupSpinner.getSelectedView()).getText().toString();
+            String appGroupName = text.toString();
             saveAppGroupNameForWidget(context, appGroupName, appWidgetId);
 
             // It is the responsibility of the configuration activity to update the app widget

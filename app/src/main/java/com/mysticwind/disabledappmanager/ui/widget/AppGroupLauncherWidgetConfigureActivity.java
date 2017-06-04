@@ -53,7 +53,7 @@ public class AppGroupLauncherWidgetConfigureActivity extends Activity {
             }
             // When the button is clicked, store the string locally
             String appGroupName = text.toString();
-            saveAppGroupNameForWidget(context, appGroupName, appWidgetId);
+            saveAppGroupNameForWidget(appGroupName, appWidgetId);
 
             // It is the responsibility of the configuration activity to update the app widget
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -116,7 +116,7 @@ public class AppGroupLauncherWidgetConfigureActivity extends Activity {
     }
 
     // Write the prefix to the SharedPreferences object for this widget
-    private void saveAppGroupNameForWidget(Context context, String appGroupName, int appWidgetId) {
+    private void saveAppGroupNameForWidget(final String appGroupName, final int appWidgetId) {
         widgetConfigDataAccessor.addWidget(appWidgetId, appGroupName);
     }
 }

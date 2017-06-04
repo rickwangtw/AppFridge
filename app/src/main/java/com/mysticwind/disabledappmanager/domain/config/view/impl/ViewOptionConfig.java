@@ -9,4 +9,5 @@ public interface ViewOptionConfig {
     @DefaultBoolean(false)
     boolean showSystemApps();
 
+    String orderingMethod();
 }

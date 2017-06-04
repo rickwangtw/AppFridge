@@ -89,6 +89,7 @@ public class ApplicationStateViewModel extends BaseObservable {
     private int viewMode = ViewMode.ALL;
     private List<ApplicationModel> cachedApplicationModels = Lists.newArrayList();
     private boolean showSystemApps;
+    private ApplicationOrderingMethod orderingMethod;
 
     @Setter
     private Dialog addToAppGroupDialog;
@@ -104,7 +105,8 @@ public class ApplicationStateViewModel extends BaseObservable {
                                      final ManualStateUpdateEventManager manualStateUpdateEventManager,
                                      final Dialog progressDialog,
                                      final AppLauncher appLauncher,
-                                     final boolean showSystemApps) {
+                                     final boolean showSystemApps,
+                                     final ApplicationOrderingMethod orderingMethod) {
         this.context = Preconditions.checkNotNull(context);
         this.rxDataSource = Preconditions.checkNotNull(dataSource);
         this.packageListProvider = Preconditions.checkNotNull(packageListProvider);
@@ -116,6 +118,7 @@ public class ApplicationStateViewModel extends BaseObservable {
         this.progressDialog = Preconditions.checkNotNull(progressDialog);
         this.appLauncher = Preconditions.checkNotNull(appLauncher);
         this.showSystemApps = showSystemApps;
+        this.orderingMethod = Preconditions.checkNotNull(orderingMethod);
 
         appAssetUpdateEventManager.registerListener(appAssetupUpdateListener);
         packageStateUpdateEventManager.registerListener(packageStateUpdateListener);
@@ -213,9 +216,6 @@ public class ApplicationStateViewModel extends BaseObservable {
         List<ApplicationModel> filteredApplicationModelList = stream(getCachedApplicationModels())
                 .filter(applicationModel -> shouldIncludePackageInAdapter(applicationModel, viewMode))
                 .filter(applicationModel -> applicationModelPredicate.test(applicationModel))
-                .sorted(
-                        (applicationModel1, applicationModel2) ->
-                                applicationModel1.getApplicationLabel().compareTo(applicationModel2.getApplicationLabel()))
                 .collect(Collectors.toList());
 
         rxDataSource
@@ -232,7 +232,7 @@ public class ApplicationStateViewModel extends BaseObservable {
     }
 
     private void updateApplicationModelCache() {
-        cachedApplicationModels = stream(packageListProvider.getOrderedPackages(appFilter(), ApplicationOrderingMethod.APPLICATION_LABEL))
+        cachedApplicationModels = stream(packageListProvider.getOrderedPackages(appFilter(), orderingMethod))
                 .map(appInfo -> {
                     PackageAssets packageAsset = packageAssetService.getPackageAssets(appInfo.getPackageName());
                     return ApplicationModel.builder()
@@ -296,11 +296,15 @@ public class ApplicationStateViewModel extends BaseObservable {
         reloadAdapter();
     }
 
-    public void updateShowSystemApps(boolean showSystemApps) {
-        if (this.showSystemApps == showSystemApps) {
+    public void updateViewOptions(final boolean showSystemApps,
+                                  final ApplicationOrderingMethod orderingMethod) {
+        if (this.showSystemApps == showSystemApps &&
+                this.orderingMethod == orderingMethod) {
             return;
         }
         this.showSystemApps = showSystemApps;
+        this.orderingMethod = orderingMethod;
+
         reloadAdapter();
     }
 

@@ -22,6 +22,7 @@ import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupActivityBinding;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupAppItemBinding;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveAppgroupGroupItemBinding;
+import com.mysticwind.disabledappmanager.domain.app.model.ApplicationOrderingMethod;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupOperation;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdate;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateListener;
@@ -57,9 +58,6 @@ import static java8.util.stream.StreamSupport.stream;
 @EActivity
 public class AppGroupPerspective extends PerspectiveBase {
 
-    private static final Comparator<ApplicationModel> APPLICATION_MODEL_COMPARATOR =
-            (applicationModel1, applicationModel2) -> applicationModel1.getApplicationLabel().compareTo(applicationModel2.getApplicationLabel());
-
     private String allAppGroupName = "";
     private Map<String, ApplicationModel> packageNameToApplicationModelMap = Maps.newConcurrentMap();
     // prevent reference release as the event managers are handling it using weak reference
@@ -79,6 +77,16 @@ public class AppGroupPerspective extends PerspectiveBase {
                 }
                 return appGroupViewModel1.getAppGroupName().compareTo(appGroupViewModel2.getAppGroupName());
             };
+    private final Comparator<ApplicationModel> applicationModelComparator =
+            (applicationModel1, applicationModel2) -> {
+                if (orderingMethod == ApplicationOrderingMethod.APPLICATION_LABEL) {
+                    return applicationModel1.getApplicationLabel().compareTo(applicationModel2.getApplicationLabel());
+                } else if (orderingMethod == ApplicationOrderingMethod.PACKAGE_NAME) {
+                    return applicationModel1.getPackageName().compareTo(applicationModel2.getPackageName());
+                }
+                throw new IllegalArgumentException("Unsupported ordering method: " + orderingMethod);
+            };
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -163,7 +171,7 @@ public class AppGroupPerspective extends PerspectiveBase {
                 };
         this.multimapExpandableListAdapter =
                 new MultimapExpandableListAdapter<>(appGroupToApplicationModelMultimap,
-                        appGroupViewModelComparator, APPLICATION_MODEL_COMPARATOR, viewGenerator);
+                        appGroupViewModelComparator, applicationModelComparator, viewGenerator);
         binding.appGroupListView.setAdapter(this.multimapExpandableListAdapter);
 
         appAssetUpdateListener = new AppAssetUpdateListener() {

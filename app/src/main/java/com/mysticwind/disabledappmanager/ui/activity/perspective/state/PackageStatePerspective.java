@@ -76,7 +76,7 @@ public class PackageStatePerspective extends PerspectiveBase {
         if (applicationStateViewModel == null) {
             return;
         }
-        applicationStateViewModel.updateShowSystemApps(showSystemApps);
+        applicationStateViewModel.updateViewOptions(showSystemApps, orderingMethod);
     }
 
     private void setupView() {
@@ -98,7 +98,7 @@ public class PackageStatePerspective extends PerspectiveBase {
                 packageAssetService, appAssetUpdateEventManager, packageStateController,
                 appStateProvider, packageStateUpdateEventManager, manualStateUpdateEventManager,
                 DialogHelper.newProgressDialog(PackageStatePerspective.this), appLauncher,
-                showSystemApps);
+                showSystemApps, orderingMethod);
         binding.setViewModel(applicationStateViewModel);
 
         AddAppGroupViewModel addAppGroupViewModel = new AddAppGroupViewModel(appGroupManager,

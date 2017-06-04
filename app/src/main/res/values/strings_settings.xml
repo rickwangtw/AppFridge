@@ -40,7 +40,7 @@
     <string name="pref_title_viewoptions_show_system">Show System Apps</string>
     <string name="pref_description_viewoptions_show_system">This will display system apps as well. This can be dangerous if you freeze system apps that are critical to Android. Use at your own risk!</string>
 
-    <string name="pref_key_viewoptions_sort_method">sortMethod</string>
+    <string name="pref_key_viewoptions_sort_method">orderingMethod</string>
     <string name="pref_title_viewoptions_sort_method">Application Sort Method</string>
     <string name="pref_description_viewoptions_sort_method">The sort method of displaying the applications.</string>
     <string-array name="pref_viewoptions_sort_method_options">

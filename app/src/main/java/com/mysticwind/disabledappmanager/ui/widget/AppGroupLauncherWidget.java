@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class AppGroupLauncherWidget extends AppWidgetProvider {
-    private static final String LAUNCH_APP_LIST_INTENT_ACTION = "LAUNCH_APP_LIST";
 
     private static WidgetConfigDataAccessor widgetConfigDataAccessor;
 
@@ -44,15 +43,10 @@ public class AppGroupLauncherWidget extends AppWidgetProvider {
         }
     }
 
-    private static Intent buildLaunchAppGroupDialogIntent(Context context, String appGroupName) {
-        Intent appGroupDialogIntent = new Intent(context, AppGroupPackageGridDialogActivity_.class);
-        appGroupDialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        appGroupDialogIntent.putExtra(WidgetConstants.APP_GROUP_NAME_EXTRA_KEY, appGroupName);
-        return appGroupDialogIntent;
-    }
-
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
+        initializeWidget(context);
+
         // When the user deletes the widget, delete the preference associated with it.
         for (int appWidgetIdIndex = 0; appWidgetIdIndex < appWidgetIds.length; appWidgetIdIndex++) {
             int widgetId = appWidgetIds[appWidgetIdIndex];
@@ -70,8 +64,9 @@ public class AppGroupLauncherWidget extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
+    public static void updateAppWidget(final Context context,
+                                       final AppWidgetManager appWidgetManager,
+                                       final int appWidgetId) {
         initializeWidget(context);
 
         String appGroupName;
@@ -99,6 +94,13 @@ public class AppGroupLauncherWidget extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.appgroup_widget_layout, launchAppListEvent);
         }
         return views;
+    }
+
+    private static Intent buildLaunchAppGroupDialogIntent(Context context, String appGroupName) {
+        Intent appGroupDialogIntent = new Intent(context, AppGroupPackageGridDialogActivity_.class);
+        appGroupDialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        appGroupDialogIntent.putExtra(WidgetConstants.APP_GROUP_NAME_EXTRA_KEY, appGroupName);
+        return appGroupDialogIntent;
     }
 }
 

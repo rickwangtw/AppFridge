@@ -300,7 +300,8 @@ public class AppGroupPerspective extends PerspectiveBase {
                 .appGroupPackageAddingConsumer(
                         appGroup ->
                                 DialogHelper.newPackageListForAddingToGroupDialog(this, appGroupName,
-                                        packageListProvider, packageAssetService, appGroupManager).show()
+                                        packageListProvider, packageAssetService, appGroupManager,
+                                        showSystemApps, orderingMethod).show()
                 )
                 .appGroupDeletingConsumer(
                         appGroup ->
@@ -377,7 +378,8 @@ public class AppGroupPerspective extends PerspectiveBase {
                 startActivity(new Intent(this, PackageStatePerspective_.class));
                 return true;
             case R.id.action_new_app_group:
-                DialogHelper.newNewAppGroupDialog(this, packageListProvider, packageAssetService, appGroupManager).show();
+                DialogHelper.newNewAppGroupDialog(this, packageListProvider, packageAssetService,
+                        appGroupManager, showSystemApps, orderingMethod).show();
                 return true;
         }
 

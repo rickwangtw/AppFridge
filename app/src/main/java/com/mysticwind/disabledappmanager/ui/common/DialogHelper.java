@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
+import com.mysticwind.disabledappmanager.domain.app.model.ApplicationFilter;
 import com.mysticwind.disabledappmanager.domain.app.model.ApplicationOrderingMethod;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
@@ -61,7 +62,9 @@ public class DialogHelper {
     public static Dialog newNewAppGroupDialog(final Context context,
                                               final PackageListProvider packageListProvider,
                                               final PackageAssetService packageAssetService,
-                                              final AppGroupManager appGroupManager) {
+                                              final AppGroupManager appGroupManager,
+                                              final boolean showSystemApps,
+                                              final ApplicationOrderingMethod orderingMethod) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.new_app_group_dialog_title);
 
@@ -76,7 +79,7 @@ public class DialogHelper {
                 dialog.dismiss();
                 String appGroupName = appGroupNameEditText.getText().toString();
                 newPackageListForAddingToGroupDialog(context, appGroupName, packageListProvider,
-                        packageAssetService, appGroupManager).show();
+                        packageAssetService, appGroupManager, showSystemApps, orderingMethod).show();
             }
         });
         builder.setNegativeButton(R.string.new_app_group_dialog_negative_button, null);
@@ -133,9 +136,15 @@ public class DialogHelper {
                                                               final String appGroupName,
                                                               final PackageListProvider packageListProvider,
                                                               final PackageAssetService packageAssetService,
-                                                              final AppGroupManager appGroupManager) {
+                                                              final AppGroupManager appGroupManager,
+                                                              final boolean showSystemApps,
+                                                              final ApplicationOrderingMethod orderingMethod) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        final List<AppInfo> allPackages = packageListProvider.getOrderedPackages(ApplicationOrderingMethod.APPLICATION_LABEL);
+        final List<AppInfo> allPackages = packageListProvider.getOrderedPackages(
+                ApplicationFilter.builder()
+                        .includeSystemApp(showSystemApps)
+                        .build(),
+                orderingMethod);
         Set<String> packagesInAppGroup = appGroupManager.getPackagesOfAppGroup(appGroupName);
         final List<AppInfo> packagesNotInAppGroup = new ArrayList<>(
                 allPackages.size() - packagesInAppGroup.size());

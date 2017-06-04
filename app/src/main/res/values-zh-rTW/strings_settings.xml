@@ -21,7 +21,7 @@
         <item>5 分鐘</item>
     </string-array>
 
-    <string name="settings_preference_viewoptions">視覺選項</string>
+    <string name="settings_preference_viewoptions">顯示方式</string>
     <string name="pref_title_viewoptions_show_system">顯示系統程式</string>
     <string name="pref_description_viewoptions_show_system">這會顯示系統程式。如果將 Android 重要的程式冷凍，系統可能會表現得不正常。請警慎使用！</string>
 

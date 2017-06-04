@@ -249,11 +249,17 @@ public class AppGroupPerspective extends PerspectiveBase {
     }
 
     private Set<ApplicationModel> getOrCreateApplicationModels(Set<String> packageNames) {
-        return stream(packageNames)
-                .map(packageName ->
-                        packageNameToApplicationModelMap.computeIfAbsent(packageName,
-                                absentPackage -> getApplicationModel(absentPackage)))
-                .collect(Collectors.toSet());
+        final Set<ApplicationModel> applicationModels = Sets.newHashSet();
+        for (String packageName : packageNames) {
+            ApplicationModel applicationModel = packageNameToApplicationModelMap.get(packageName);
+            // computeIfAbsent not available for older Android versions
+            if (applicationModel == null) {
+                applicationModel = getApplicationModel(packageName);
+                packageNameToApplicationModelMap.put(packageName, applicationModel);
+            }
+            applicationModels.add(applicationModel);
+        }
+        return applicationModels;
     }
 
     private AppGroupViewModel getVirtualAllAppGroupViewModel() {

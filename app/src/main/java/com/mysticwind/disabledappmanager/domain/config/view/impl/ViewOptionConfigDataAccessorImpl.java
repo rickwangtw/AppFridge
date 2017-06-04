@@ -42,8 +42,13 @@ public class ViewOptionConfigDataAccessorImpl implements ViewOptionConfigDataAcc
 
     @Override
     public ApplicationOrderingMethod getOrderingMethod() {
+        // getOrDefault is not available in older Android versions
         String orderingMethodString = viewOptionConfig.orderingMethod().get();
-        return ORDERING_METHOD_MAP.getOrDefault(orderingMethodString, ApplicationOrderingMethod.PACKAGE_NAME);
+        ApplicationOrderingMethod orderingMethod = ORDERING_METHOD_MAP.get(orderingMethodString);
+        if (orderingMethod == null) {
+            return ApplicationOrderingMethod.PACKAGE_NAME;
+        }
+        return orderingMethod;
     }
 
     @Override

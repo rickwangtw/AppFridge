@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -77,7 +79,8 @@ public class AppGroupLauncherWidgetConfigureActivity extends Activity {
         setResult(RESULT_CANCELED);
 
         setContentView(R.layout.app_group_launcher_widget_configure);
-        findViewById(R.id.add_button).setOnClickListener(onButtonClickListener);
+        final Button addWidgetButton = (Button) findViewById(R.id.add_button);
+        addWidgetButton.setOnClickListener(onButtonClickListener);
 
         // Find the widget id from the intent.
         Intent intent = getIntent();
@@ -98,6 +101,18 @@ public class AppGroupLauncherWidgetConfigureActivity extends Activity {
 
         appGroupSpinner.setAdapter(new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_dropdown_item, appGroupList));
+        // the add widget button is disabled by default and will be enabled if an item is being selected
+        appGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                addWidgetButton.setEnabled(true);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                addWidgetButton.setEnabled(false);
+            }
+        });
     }
 
     // Write the prefix to the SharedPreferences object for this widget

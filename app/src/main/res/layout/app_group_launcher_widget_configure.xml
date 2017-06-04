@@ -11,8 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <Button android:id="@+id/add_button" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:text="@string/widget_configure_add_widget_button"
+    <Button
+        android:id="@+id/add_button"
+        android:enabled="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/widget_configure_add_widget_button"
         android:layout_marginTop="8dp" />
 
 </LinearLayout>

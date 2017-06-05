@@ -129,8 +129,33 @@ public class AppGroupPerspective extends PerspectiveBase {
         if (multimapExpandableListAdapter == null) {
             return;
         }
-        Multimap<AppGroupViewModel, ApplicationModel> updatedMultimap = buildApplicationGroupToApplicationModelMultimap();
-        multimapExpandableListAdapter.updateDataSet(updatedMultimap);
+
+        new AsyncTask<Void, Void, Multimap<AppGroupViewModel, ApplicationModel>>() {
+
+            private Dialog dialog;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+                dialog = DialogHelper.newLoadingDialog(AppGroupPerspective.this);
+                dialog.show();
+            }
+
+            @Override
+            protected Multimap<AppGroupViewModel, ApplicationModel> doInBackground(Void... params) {
+                return buildApplicationGroupToApplicationModelMultimap();
+            }
+
+            @Override
+            protected void onPostExecute(Multimap<AppGroupViewModel, ApplicationModel> multimap) {
+                super.onPostExecute(multimap);
+
+                multimapExpandableListAdapter.updateDataSet(multimap);
+
+                dialog.dismiss();
+            }
+        }.execute();
     }
 
     private void setupView() {

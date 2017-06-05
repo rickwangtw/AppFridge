@@ -2,6 +2,7 @@ package com.mysticwind.disabledappmanager;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import com.mysticwind.disabledappmanager.config.ApplicationComponent;
 import com.mysticwind.disabledappmanager.config.ApplicationModule;
@@ -139,6 +140,11 @@ public class AppFridgeApplication extends Application implements ApplicationComp
     @Override
     public AppGroupUpdateEventManager appGroupUpdateEventManager() {
         return component.appGroupUpdateEventManager();
+    }
+
+    @Override
+    public Drawable defaultIconStubDrawable() {
+        return component.defaultIconStubDrawable();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.mysticwind.disabledappmanager.config;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
@@ -43,6 +44,8 @@ public interface ApplicationComponent {
     AppGroupManager appGroupManager();
     AppGroupBackupManager appGroupBackupManager();
     AppGroupUpdateEventManager appGroupUpdateEventManager();
+
+    Drawable defaultIconStubDrawable();
 
     WidgetConfigDataAccessor widgetConfigDataAccessor();
 

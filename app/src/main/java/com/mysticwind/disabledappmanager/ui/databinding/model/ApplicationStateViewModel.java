@@ -3,6 +3,7 @@ package com.mysticwind.disabledappmanager.ui.databinding.model;
 import android.app.Dialog;
 import android.content.Context;
 import android.databinding.BaseObservable;
+import android.graphics.drawable.Drawable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -19,6 +20,7 @@ import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateListener;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssets;
+import com.mysticwind.disabledappmanager.domain.model.AppInfo;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageState;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdate;
@@ -53,6 +55,7 @@ public class ApplicationStateViewModel extends BaseObservable {
     private final Set<String> cachedSelectedPackageNames = new HashSet<>();
 
     private final Context context;
+    private final Drawable defaultIcon;
     private final RxDataSource<ApplicationModel> rxDataSource;
     private final PackageListProvider packageListProvider;
     private final PackageAssetService packageAssetService;
@@ -94,7 +97,26 @@ public class ApplicationStateViewModel extends BaseObservable {
     @Setter
     private Dialog addToAppGroupDialog;
 
+    /* constructor for first launch optimization */
     public ApplicationStateViewModel(final Context context,
+                                     final Drawable defaultIcon,
+                                     final RxDataSource<ApplicationModel> dataSource,
+                                     final PackageListProvider packageListProvider,
+                                     final PackageAssetService packageAssetService,
+                                     final AppAssetUpdateEventManager appAssetUpdateEventManager,
+                                     final PackageStateController packageStateController,
+                                     final AppStateProvider appStateProvider,
+                                     final PackageStateUpdateEventManager packageStateUpdateEventManager,
+                                     final ManualStateUpdateEventManager manualStateUpdateEventManager,
+                                     final Dialog progressDialog,
+                                     final AppLauncher appLauncher) {
+        this(context, defaultIcon, dataSource, packageListProvider, packageAssetService, appAssetUpdateEventManager,
+                packageStateController, appStateProvider, packageStateUpdateEventManager, manualStateUpdateEventManager,
+                progressDialog, appLauncher, false, ApplicationOrderingMethod.PACKAGE_NAME, true);
+    }
+
+    public ApplicationStateViewModel(final Context context,
+                                     final Drawable defaultIcon,
                                      final RxDataSource<ApplicationModel> dataSource,
                                      final PackageListProvider packageListProvider,
                                      final PackageAssetService packageAssetService,
@@ -107,7 +129,28 @@ public class ApplicationStateViewModel extends BaseObservable {
                                      final AppLauncher appLauncher,
                                      final boolean showSystemApps,
                                      final ApplicationOrderingMethod orderingMethod) {
+        this(context, defaultIcon, dataSource, packageListProvider, packageAssetService, appAssetUpdateEventManager,
+                packageStateController, appStateProvider, packageStateUpdateEventManager, manualStateUpdateEventManager,
+                progressDialog, appLauncher, showSystemApps, orderingMethod, false);
+    }
+
+    public ApplicationStateViewModel(final Context context,
+                                     final Drawable defaultIcon,
+                                     final RxDataSource<ApplicationModel> dataSource,
+                                     final PackageListProvider packageListProvider,
+                                     final PackageAssetService packageAssetService,
+                                     final AppAssetUpdateEventManager appAssetUpdateEventManager,
+                                     final PackageStateController packageStateController,
+                                     final AppStateProvider appStateProvider,
+                                     final PackageStateUpdateEventManager packageStateUpdateEventManager,
+                                     final ManualStateUpdateEventManager manualStateUpdateEventManager,
+                                     final Dialog progressDialog,
+                                     final AppLauncher appLauncher,
+                                     final boolean showSystemApps,
+                                     final ApplicationOrderingMethod orderingMethod,
+                                     final boolean optimizeFirstLaunch) {
         this.context = Preconditions.checkNotNull(context);
+        this.defaultIcon = Preconditions.checkNotNull(defaultIcon);
         this.rxDataSource = Preconditions.checkNotNull(dataSource);
         this.packageListProvider = Preconditions.checkNotNull(packageListProvider);
         this.packageAssetService = Preconditions.checkNotNull(packageAssetService);
@@ -123,7 +166,12 @@ public class ApplicationStateViewModel extends BaseObservable {
         appAssetUpdateEventManager.registerListener(appAssetupUpdateListener);
         packageStateUpdateEventManager.registerListener(packageStateUpdateListener);
 
-        reloadAdapter();
+        if (optimizeFirstLaunch) {
+            updateApplicationModelCache(true);
+            updateDataSet(applicationModel -> true, false);
+        } else {
+            reloadAdapter();
+        }
     }
 
     public int getViewMode() {
@@ -131,6 +179,9 @@ public class ApplicationStateViewModel extends BaseObservable {
     }
 
     public void setViewMode(int viewMode) {
+        if (this.viewMode == viewMode) {
+            return;
+        }
         this.viewMode = viewMode;
 
         clearSelectedApplications();
@@ -150,7 +201,6 @@ public class ApplicationStateViewModel extends BaseObservable {
     public void toggleSelectedApplications() {
         updateSelectedApplications(PackageStateUpdateAsyncTask.Action.TOGGLE);
     }
-
 
     public void enableSelectedApplications() {
         updateSelectedApplications(PackageStateUpdateAsyncTask.Action.ENABLE);
@@ -210,7 +260,7 @@ public class ApplicationStateViewModel extends BaseObservable {
         cacheSelectedPackages();
 
         if (fullReload) {
-            updateApplicationModelCache();
+            updateApplicationModelCache(false);
         }
 
         List<ApplicationModel> filteredApplicationModelList = stream(getCachedApplicationModels())
@@ -231,22 +281,31 @@ public class ApplicationStateViewModel extends BaseObservable {
                                 cachedSelectedPackageNames.add(packageName));
     }
 
-    private void updateApplicationModelCache() {
+    private void updateApplicationModelCache(final boolean optimizePackageNameAssetLoading) {
         cachedApplicationModels = stream(packageListProvider.getOrderedPackages(appFilter(), orderingMethod))
-                .map(appInfo -> {
-                    PackageAssets packageAsset = packageAssetService.getPackageAssets(appInfo.getPackageName());
-                    return ApplicationModel.builder()
-                            .packageName(appInfo.getPackageName())
-                            .applicationLabel(packageAsset.getAppName())
-                            .applicationIcon(packageAsset.getIconDrawable())
-                            .isEnabled(appInfo.isEnabled())
-                            .selected(cachedSelectedPackageNames.contains(appInfo.getPackageName()))
-                            .applicationLauncher(
-                                    packageName ->
-                                            appLauncher.launch(context, packageName))
-                            .build();
-                })
+                .map(appInfo -> buildApplicationModel(appInfo, orderingMethod, optimizePackageNameAssetLoading))
                 .collect(Collectors.toList());
+    }
+
+    private ApplicationModel buildApplicationModel(final AppInfo appInfo,
+                                                   final ApplicationOrderingMethod orderingMethod,
+                                                   final boolean optimizePackageNameAssetLoading) {
+        final PackageAssets packageAssets;
+        if (orderingMethod == ApplicationOrderingMethod.PACKAGE_NAME && optimizePackageNameAssetLoading) {
+            packageAssets = new PackageAssets(appInfo.getPackageName(), appInfo.getPackageName(), defaultIcon);
+        } else {
+            packageAssets = packageAssetService.getPackageAssets(appInfo.getPackageName());
+        }
+        return ApplicationModel.builder()
+                .packageName(appInfo.getPackageName())
+                .applicationLabel(packageAssets.getAppName())
+                .applicationIcon(packageAssets.getIconDrawable())
+                .isEnabled(appInfo.isEnabled())
+                .selected(cachedSelectedPackageNames.contains(appInfo.getPackageName()))
+                .applicationLauncher(
+                        packageName ->
+                                appLauncher.launch(context, packageName))
+                .build();
     }
 
     private ApplicationFilter appFilter() {

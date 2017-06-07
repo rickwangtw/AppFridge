@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="tutorial_check">知道了</string>
+
+    <string name="package_state_perspective_tutorial_add_to_group_button_title">把 App 組成群組</string>
+    <string name="package_state_perspective_tutorial_add_to_group_button_description">用這個按鈕來將 App 放到群組中。你可以選擇既有的群組，也可以建立新的群組。</string>
+
+    <string name="package_state_perspective_tutorial_disable_app_button_title">冷凍 或 解凍</string>
+    <string name="package_state_perspective_tutorial_disable_app_button_description">用這個按鈕來將已勾選的 App 冷凍或解凍。</string>
+
+    <string name="package_state_perspective_tutorial_app_status_spinner_title">篩選</string>
+    <string name="package_state_perspective_tutorial_app_status_spinner_description">選擇關注的 App 狀態。可以選擇所有 App，一般狀態的，或是冷凍中的。</string>
+
+    <string name="package_state_perspective_tutorial_click_to_launch_title">啟動 App</string>
+    <string name="package_state_perspective_tutorial_click_to_launch_description">將 App 啟動，無論是否以冷凍！</string>
+
+</resources>

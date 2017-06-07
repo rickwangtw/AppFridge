@@ -9,7 +9,7 @@ import com.mysticwind.disabledappmanager.BuildConfig;
 import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.domain.AppGroupManager;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.group.AppGroupPerspective_;
-import com.mysticwind.disabledappmanager.ui.activity.perspective.state.FirstLaunchOptimizedPackageStatePerspective_;
+import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspectiveTutorial;
 import com.mysticwind.disabledappmanager.ui.activity.perspective.state.PackageStatePerspective_;
 
 public class PerspectiveSelector extends AppCompatActivity {
@@ -24,8 +24,9 @@ public class PerspectiveSelector extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         AppGroupManager appGroupManager = ApplicationHelper.from(this).appGroupManager();
+
         if (isFirstRun()) {
-            startActivity(new Intent(this, FirstLaunchOptimizedPackageStatePerspective_.class));
+            startActivity(new Intent(this, PackageStatePerspectiveTutorial.class));
         } else if (appGroupManager.getAllAppGroups().isEmpty()) {
             startActivity(new Intent(this, PackageStatePerspective_.class));
         } else {

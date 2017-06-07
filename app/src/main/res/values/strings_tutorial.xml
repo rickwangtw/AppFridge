@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="tutorial_check">GOT IT</string>
+
+    <string name="package_state_perspective_tutorial_add_to_group_button_title">Group apps</string>
+    <string name="package_state_perspective_tutorial_add_to_group_button_description">Use this button to add selected apps into a group. You can create a new app group, or add them into an existing app group.</string>
+
+    <string name="package_state_perspective_tutorial_disable_app_button_title">Freeze/Unfreeze apps</string>
+    <string name="package_state_perspective_tutorial_disable_app_button_description">Use this button to freeze or unfreeze selected apps in batch.</string>
+
+    <string name="package_state_perspective_tutorial_app_status_spinner_title">Select a view</string>
+    <string name="package_state_perspective_tutorial_app_status_spinner_description">Choose which apps to look at. You can look at all apps, apps that are active, or only apps that are frozen.</string>
+
+    <string name="package_state_perspective_tutorial_click_to_launch_title">Launch an app</string>
+    <string name="package_state_perspective_tutorial_click_to_launch_description">Whether the app is frozen or not, click to launch the app!</string>
+
+</resources>

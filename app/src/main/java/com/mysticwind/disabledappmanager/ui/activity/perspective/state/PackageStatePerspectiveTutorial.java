@@ -3,11 +3,13 @@ package com.mysticwind.disabledappmanager.ui.activity.perspective.state;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewTreeObserver;
 
 import com.google.common.collect.ImmutableList;
 import com.minimize.android.rxrecycleradapter.RxDataSource;
@@ -31,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 
 import java8.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
-import uk.co.deanwild.materialshowcaseview.IShowcaseListener;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 
@@ -41,7 +42,7 @@ import static java8.util.stream.StreamSupport.stream;
 public class PackageStatePerspectiveTutorial extends PerspectiveBase {
 
     private static final String SHOWCASE_ID = BuildConfig.VERSION_NAME;
-    private static final int LAST_SEQUENCE_INDEX = 2;
+    private static final int LAST_SEQUENCE_INDEX = 3;
     private static final int THREAD_POOL_SIZE = 5;
     private static final int MAX_POOL_SIZE = 10_000;
     private static final long KEEP_ALIVE_IN_MINUTES = 5;
@@ -83,6 +84,17 @@ public class PackageStatePerspectiveTutorial extends PerspectiveBase {
                     itemBinding.setVariable(BR.application, applicationModel);
                     itemBinding.executePendingBindings();
                 });
+
+        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                startShowCaseSequence();
+
+                if (Build.VERSION.SDK_INT >= 16) {
+                    recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            }
+        });
     }
 
     @Override
@@ -118,10 +130,7 @@ public class PackageStatePerspectiveTutorial extends PerspectiveBase {
                 );
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-
+    private void startShowCaseSequence() {
         final MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this, SHOWCASE_ID);
         sequence.addSequenceItem(
                 findViewById(R.id.add_to_group_button),
@@ -141,27 +150,18 @@ public class PackageStatePerspectiveTutorial extends PerspectiveBase {
                 getString(R.string.package_state_perspective_tutorial_app_status_spinner_description),
                 getString(R.string.tutorial_check));
 
+        sequence.addSequenceItem(
+                recyclerView.getChildAt(0).findViewById(R.id.packagename),
+                getString(R.string.package_state_perspective_tutorial_click_to_launch_title),
+                getString(R.string.package_state_perspective_tutorial_click_to_launch_description),
+                getString(R.string.tutorial_check));
+
         sequence.setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
             @Override
             public void onDismiss(MaterialShowcaseView materialShowcaseView, int i) {
                 if (i == LAST_SEQUENCE_INDEX) {
-                    new MaterialShowcaseView.Builder(PackageStatePerspectiveTutorial.this)
-                            .setTarget(recyclerView.getChildAt(0).findViewById(R.id.packagename))
-                            .setTitleText(R.string.package_state_perspective_tutorial_click_to_launch_title)
-                            .setContentText(R.string.package_state_perspective_tutorial_click_to_launch_description)
-                            .setDismissText(R.string.tutorial_check)
-                            .setListener(new IShowcaseListener() {
-                                @Override
-                                public void onShowcaseDisplayed(MaterialShowcaseView materialShowcaseView) {
-                                }
-
-                                @Override
-                                public void onShowcaseDismissed(MaterialShowcaseView materialShowcaseView) {
-                                    startActivity(new Intent(PackageStatePerspectiveTutorial.this, FirstLaunchOptimizedPackageStatePerspective_.class));
-                                    finish();
-                                }
-                            })
-                            .show();
+                    startActivity(new Intent(PackageStatePerspectiveTutorial.this, FirstLaunchOptimizedPackageStatePerspective_.class));
+                    finish();
                 }
             }
         });

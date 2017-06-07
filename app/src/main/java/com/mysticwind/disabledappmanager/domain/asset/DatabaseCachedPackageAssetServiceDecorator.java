@@ -1,14 +1,14 @@
 package com.mysticwind.disabledappmanager.domain.asset;
 
-import android.os.AsyncTask;
-
 import com.google.common.base.Preconditions;
 import com.mysticwind.disabledappmanager.domain.asset.dao.CachedPackageAssetsDAO;
 
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,7 +16,13 @@ import static java8.util.stream.StreamSupport.stream;
 
 @Slf4j
 public class DatabaseCachedPackageAssetServiceDecorator implements PackageAssetService {
-    private final static ExecutorService THREAD_POOL_EXECUTOR = Executors.newSingleThreadExecutor();
+
+    private static final int THREAD_POOL_SIZE = 1;
+    private static final int MAX_POOL_SIZE = 10_000;
+    private static final long KEEP_ALIVE_IN_MINUTES = Long.MAX_VALUE;
+
+    private final ExecutorService threadPool = new ThreadPoolExecutor(THREAD_POOL_SIZE, MAX_POOL_SIZE,
+            KEEP_ALIVE_IN_MINUTES, TimeUnit.MINUTES, new ArrayBlockingQueue<>(MAX_POOL_SIZE));
 
     private final PackageAssetService packageAssetService;
     private final CachedPackageAssetsDAO cachedPackageAssetsDAO;
@@ -54,24 +60,10 @@ public class DatabaseCachedPackageAssetServiceDecorator implements PackageAssetS
             return;
         }
         packageNameToPackageAssetsMap.put(packageName, packageAssets);
-        new DatabaseEntryUpdateAsyncTask(cachedPackageAssetsDAO, packageAssets)
-                .executeOnExecutor(THREAD_POOL_EXECUTOR);
-    }
 
-    private static class DatabaseEntryUpdateAsyncTask extends AsyncTask<Void, Void, Void> {
-        private final CachedPackageAssetsDAO dataAccessor;
-        private final PackageAssets packageAssets;
-
-        public DatabaseEntryUpdateAsyncTask(CachedPackageAssetsDAO dataAccessor, PackageAssets packageAssets) {
-            this.dataAccessor = dataAccessor;
-            this.packageAssets = packageAssets;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            dataAccessor.createOrUpdate(packageAssets.getPackageName(),
-                    packageAssets.getAppName(), packageAssets.getIconDrawable());
-            return null;
-        }
+        threadPool.submit(() ->
+                cachedPackageAssetsDAO.createOrUpdate(packageAssets.getPackageName(),
+                        packageAssets.getAppName(), packageAssets.getIconDrawable())
+        );
     }
 }

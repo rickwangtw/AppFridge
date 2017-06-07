@@ -76,7 +76,7 @@ public class ApplicationStateViewModel extends BaseObservable {
         }
     };
     // weak reference will be released
-    private final AppAssetUpdateListener appAssetupUpdateListener = new AppAssetUpdateListener() {
+    private final AppAssetUpdateListener appAssetUpdateListener = new AppAssetUpdateListener() {
         @Override
         public void update(AppAssetUpdate event) {
             String packageName = event.getPackageName();
@@ -163,7 +163,7 @@ public class ApplicationStateViewModel extends BaseObservable {
         this.showSystemApps = showSystemApps;
         this.orderingMethod = Preconditions.checkNotNull(orderingMethod);
 
-        appAssetUpdateEventManager.registerListener(appAssetupUpdateListener);
+        appAssetUpdateEventManager.registerListener(appAssetUpdateListener);
         packageStateUpdateEventManager.registerListener(packageStateUpdateListener);
 
         if (optimizeFirstLaunch) {

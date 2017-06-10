@@ -81,4 +81,8 @@
     <string name="help_about_libraries_swipelayout_license">MIT</string>
     <string name="help_about_libraries_swipelayout_description">Android Swipe Layout by Daimaja</string>
 
+    <string name="help_about_libraries_materialshowcaseview_url">https://github.com/deano2390/MaterialShowcaseView</string>
+    <string name="help_about_libraries_materialshowcaseview_license">Apache 2.0</string>
+    <string name="help_about_libraries_materialshowcaseview_description">MaterialShowcaseView by Dean Wild</string>
+
 </resources>

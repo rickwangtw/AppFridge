@@ -47,7 +47,8 @@ public class AboutListAdapter extends BaseAdapter{
             new Library(R.string.help_about_libraries_retrolambda_description, R.string.help_about_libraries_retrolambda_license, R.string.help_about_libraries_retrolambda_url),
             new Library(R.string.help_about_libraries_streamsupport_description, R.string.help_about_libraries_streamsupport_license, R.string.help_about_libraries_streamsupport_url),
             new Library(R.string.help_about_libraries_rxrecycleradapter_description, R.string.help_about_libraries_rxrecycleradapter_license, R.string.help_about_libraries_rxrecycleradapter_url),
-            new Library(R.string.help_about_libraries_swipelayout_description, R.string.help_about_libraries_swipelayout_license, R.string.help_about_libraries_swipelayout_url)
+            new Library(R.string.help_about_libraries_swipelayout_description, R.string.help_about_libraries_swipelayout_license, R.string.help_about_libraries_swipelayout_url),
+            new Library(R.string.help_about_libraries_materialshowcaseview_description, R.string.help_about_libraries_materialshowcaseview_license, R.string.help_about_libraries_materialshowcaseview_url)
     );
 
     private final Context context;

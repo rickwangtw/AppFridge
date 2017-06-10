@@ -25,5 +25,6 @@
     <string name="help_about_libraries_streamsupport_description">Stefan Zobel 開發的 Streamsupport</string>
     <string name="help_about_libraries_rxrecycleradapter_description">Ahmed Rizwan 開發的 RxRecyclerAdapter</string>
     <string name="help_about_libraries_swipelayout_description">代碼家開發的 Android Swipe Layout</string>
+    <string name="help_about_libraries_materialshowcaseview_description">Dean Wild 開發的 MaterialShowcaseView</string>
 
 </resources>

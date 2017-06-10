@@ -196,6 +196,7 @@ public class AppGroupPerspectiveTutorial extends PerspectiveBase {
         final View firstAppGroupView = expandableListView.getChildAt(0);
         final View secondAppGroupView = expandableListView.getChildAt(2);
         final View appViewOfFirstAppGroup = expandableListView.getChildAt(1);
+        final View appViewOfSecondAppGroup = expandableListView.getChildAt(3);
 
         sequence.addSequenceItem(
                 firstAppGroupView.findViewById(R.id.app_group_name),
@@ -229,6 +230,12 @@ public class AppGroupPerspectiveTutorial extends PerspectiveBase {
                 getString(R.string.tutorial_check));
 
         sequence.addSequenceItem(
+                appViewOfSecondAppGroup.findViewById(R.id.app_label_swipe),
+                getString(R.string.perspective_tutorial_click_to_launch_title),
+                getString(R.string.perspective_tutorial_click_to_launch_description),
+                getString(R.string.tutorial_check));
+
+        sequence.addSequenceItem(
                 new MaterialShowcaseView.Builder(this)
                         // invisible view
                         .setTarget(appViewOfFirstAppGroup.findViewById(R.id.app_label_noswipe))
@@ -248,7 +255,7 @@ public class AppGroupPerspectiveTutorial extends PerspectiveBase {
                     LinearLayout linearLayout = (LinearLayout) appViewOfFirstAppGroup;
                     SwipeLayout childSwipeLayout = (SwipeLayout) linearLayout.getChildAt(1);
                     childSwipeLayout.open();
-                } else if (sequenceIndex == 5) {
+                } else if (sequenceIndex == 6) {
                     appStateConfigDataAccessor.updateAppGroupPerspectiveTutorialShown();
                     startActivity(new Intent(AppGroupPerspectiveTutorial.this, AppGroupPerspective_.class));
                     finish();

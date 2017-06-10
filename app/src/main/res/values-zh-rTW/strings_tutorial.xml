@@ -3,6 +3,9 @@
 
     <string name="tutorial_check">知道了</string>
 
+    <string name="perspective_tutorial_click_to_launch_title">啟動 App</string>
+    <string name="perspective_tutorial_click_to_launch_description">將 App 啟動，無論是否以冷凍！</string>
+
     <string name="package_state_perspective_tutorial_app_name">我的 App</string>
 
     <string name="package_state_perspective_tutorial_add_to_group_button_title">把 App 組成群組</string>
@@ -13,9 +16,6 @@
 
     <string name="package_state_perspective_tutorial_app_status_spinner_title">篩選</string>
     <string name="package_state_perspective_tutorial_app_status_spinner_description">選擇關注的 App 狀態。可以選擇所有 App，一般狀態的，或是冷凍中的。</string>
-
-    <string name="package_state_perspective_tutorial_click_to_launch_title">啟動 App</string>
-    <string name="package_state_perspective_tutorial_click_to_launch_description">將 App 啟動，無論是否以冷凍！</string>
 
     <string name="app_group_perspective_tutorial_appgroup1">群組 1</string>
     <string name="app_group_perspective_tutorial_appgroup2">群組 2</string>

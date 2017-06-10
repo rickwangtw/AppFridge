@@ -159,8 +159,8 @@ public class PackageStatePerspectiveTutorial extends PerspectiveBase {
 
         sequence.addSequenceItem(
                 recyclerView.getChildAt(0).findViewById(R.id.packagename),
-                getString(R.string.package_state_perspective_tutorial_click_to_launch_title),
-                getString(R.string.package_state_perspective_tutorial_click_to_launch_description),
+                getString(R.string.perspective_tutorial_click_to_launch_title),
+                getString(R.string.perspective_tutorial_click_to_launch_description),
                 getString(R.string.tutorial_check));
 
         MaterialShowcaseView settingsShowcaseView = new MaterialShowcaseView.Builder(this)

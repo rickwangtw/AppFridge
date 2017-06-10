@@ -3,6 +3,9 @@
 
     <string name="tutorial_check">GOT IT</string>
 
+    <string name="perspective_tutorial_click_to_launch_title">Launch an app</string>
+    <string name="perspective_tutorial_click_to_launch_description">Whether the app is frozen or not, click to launch the app!</string>
+
     <string name="package_state_perspective_tutorial_app_name">My Application</string>
 
     <string name="package_state_perspective_tutorial_add_to_group_button_title">Group apps</string>
@@ -13,9 +16,6 @@
 
     <string name="package_state_perspective_tutorial_app_status_spinner_title">Select a view</string>
     <string name="package_state_perspective_tutorial_app_status_spinner_description">Choose which apps to look at. You can look at all apps, apps that are active, or only apps that are frozen.</string>
-
-    <string name="package_state_perspective_tutorial_click_to_launch_title">Launch an app</string>
-    <string name="package_state_perspective_tutorial_click_to_launch_description">Whether the app is frozen or not, click to launch the app!</string>
 
     <string name="app_group_perspective_tutorial_appgroup1">App Group 1</string>
     <string name="app_group_perspective_tutorial_appgroup2">App Group 2</string>

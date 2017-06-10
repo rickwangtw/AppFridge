@@ -99,6 +99,9 @@ public class AboutListAdapter extends BaseAdapter{
                 setupButtonResourceIdWithLinkResourceId(
                         convertView, R.id.retrolambda_link_button,
                         R.string.help_about_libraries_retrolambda_url);
+                setupButtonResourceIdWithLinkResourceId(
+                        convertView, R.id.streamsupport_link_button,
+                        R.string.help_about_libraries_streamsupport_url);
                 return convertView;
             default:
                 return null;

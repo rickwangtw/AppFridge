@@ -69,4 +69,8 @@
     <string name="help_about_libraries_retrolambda_license">Apache 2.0</string>
     <string name="help_about_libraries_retrolambda_description">Retrolambda by orfjackal</string>
 
+    <string name="help_about_libraries_streamsupport_url">https://sourceforge.net/projects/streamsupport/</string>
+    <string name="help_about_libraries_streamsupport_license">GPL2</string>
+    <string name="help_about_libraries_streamsupport_description">Streamsupport by Stefan Zobel</string>
+
 </resources>

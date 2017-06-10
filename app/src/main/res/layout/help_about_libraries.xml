@@ -21,5 +21,6 @@
     <include layout="@layout/help_about_libraries_gson" />
     <include layout="@layout/help_about_libraries_libsuperuser" />
     <include layout="@layout/help_about_libraries_retrolambda" />
+    <include layout="@layout/help_about_libraries_streamsupport" />
 
 </LinearLayout>

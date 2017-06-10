@@ -57,3 +57,6 @@
     *;
 }
 
+# streamsupport
+-dontwarn java8.util.**
+

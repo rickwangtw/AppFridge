@@ -251,10 +251,17 @@ public class AppGroupPerspectiveTutorial extends PerspectiveBase {
                 if (sequenceIndex == 1) {
                     SwipeLayout groupSwipeLayout = (SwipeLayout) firstAppGroupView;
                     groupSwipeLayout.open();
+                } else if (sequenceIndex == 2) {
+                    SwipeLayout groupSwipeLayout = (SwipeLayout) firstAppGroupView;
+                    groupSwipeLayout.close();
                 } else if (sequenceIndex == 3) {
                     LinearLayout linearLayout = (LinearLayout) appViewOfFirstAppGroup;
                     SwipeLayout childSwipeLayout = (SwipeLayout) linearLayout.getChildAt(1);
                     childSwipeLayout.open();
+                } else if (sequenceIndex == 4) {
+                    LinearLayout linearLayout = (LinearLayout) appViewOfFirstAppGroup;
+                    SwipeLayout childSwipeLayout = (SwipeLayout) linearLayout.getChildAt(1);
+                    childSwipeLayout.close();
                 } else if (sequenceIndex == 6) {
                     appStateConfigDataAccessor.updateAppGroupPerspectiveTutorialShown();
                     startActivity(new Intent(AppGroupPerspectiveTutorial.this, AppGroupPerspective_.class));

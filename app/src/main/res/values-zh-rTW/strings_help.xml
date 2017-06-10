@@ -23,5 +23,6 @@
     <string name="help_about_libraries_libsuperuser_description">Chainfire 開發的 libsuperuser</string>
     <string name="help_about_libraries_retrolambda_description">orfjackal 開發的 Retrolambda</string>
     <string name="help_about_libraries_streamsupport_description">Stefan Zobel 開發的 Streamsupport</string>
+    <string name="help_about_libraries_rxrecycleradapter_description">Ahmed Rizwan 開發的 RxRecyclerAdapter</string>
 
 </resources>

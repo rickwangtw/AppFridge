@@ -73,4 +73,8 @@
     <string name="help_about_libraries_streamsupport_license">GPL2</string>
     <string name="help_about_libraries_streamsupport_description">Streamsupport by Stefan Zobel</string>
 
+    <string name="help_about_libraries_rxrecycleradapter_url">https://github.com/ahmedrizwan/RxRecyclerAdapter</string>
+    <string name="help_about_libraries_rxrecycleradapter_license">Apache 2.0</string>
+    <string name="help_about_libraries_rxrecycleradapter_description">RxRecyclerAdapter by Ahmed Rizwan</string>
+
 </resources>

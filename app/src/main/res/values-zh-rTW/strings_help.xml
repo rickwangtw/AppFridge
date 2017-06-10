@@ -21,5 +21,6 @@
     <string name="help_about_libraries_gson_description">來自谷歌的 Gson</string>
     <string name="help_about_libraries_joda_time_android_description">dlew 移植給 Android 的 Joda-Time</string>
     <string name="help_about_libraries_libsuperuser_description">Chainfire 開發的 libsuperuser</string>
+    <string name="help_about_libraries_retrolambda_description">orfjackal 開發的 Retrolambda</string>
 
 </resources>

@@ -64,4 +64,9 @@
     <string name="help_about_libraries_libsuperuser_url">https://github.com/Chainfire/libsuperuser</string>
     <string name="help_about_libraries_libsuperuser_license">Apache 2.0</string>
     <string name="help_about_libraries_libsuperuser_description">libsuperuser by Chainfire</string>
+
+    <string name="help_about_libraries_retrolambda_url">https://github.com/orfjackal/retrolambda</string>
+    <string name="help_about_libraries_retrolambda_license">Apache 2.0</string>
+    <string name="help_about_libraries_retrolambda_description">Retrolambda by orfjackal</string>
+
 </resources>

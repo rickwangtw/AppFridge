@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver;
+import android.widget.Spinner;
 
 import com.google.common.collect.ImmutableList;
 import com.minimize.android.rxrecycleradapter.RxDataSource;
@@ -174,7 +175,10 @@ public class PackageStatePerspectiveTutorial extends PerspectiveBase {
         sequence.setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
             @Override
             public void onDismiss(MaterialShowcaseView materialShowcaseView, int sequenceIndex) {
-                if (sequenceIndex == LAST_SEQUENCE_INDEX) {
+                if (sequenceIndex == 1) {
+                    Spinner spinner = (Spinner) findViewById(R.id.app_status_spinner);
+                    spinner.performClick();
+                } else if (sequenceIndex == LAST_SEQUENCE_INDEX) {
                     appStateConfigDataAccessor.updatePackageStatePerspectiveTutorialShown();
                     startActivity(new Intent(PackageStatePerspectiveTutorial.this, FirstLaunchOptimizedPackageStatePerspective_.class));
                     finish();

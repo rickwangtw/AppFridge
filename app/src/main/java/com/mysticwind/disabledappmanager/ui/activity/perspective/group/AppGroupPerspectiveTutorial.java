@@ -160,8 +160,7 @@ public class AppGroupPerspectiveTutorial extends PerspectiveBase {
                         .packageName(PACKAGE_NAME_2)
                         .applicationLabel(appLabel2)
                         .applicationIcon(defaultIconStub)
-                        .isEnabled(true)
-                        .isEnabled(true)
+                        .isEnabled(false)
                         .build());
         // all
         appGroupToApplicationModelMultiMap.put(

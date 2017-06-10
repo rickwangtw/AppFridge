@@ -3,6 +3,8 @@
 
     <string name="tutorial_check">知道了</string>
 
+    <string name="package_state_perspective_tutorial_app_name">我的 App</string>
+
     <string name="package_state_perspective_tutorial_add_to_group_button_title">把 App 組成群組</string>
     <string name="package_state_perspective_tutorial_add_to_group_button_description">用這個按鈕來將 App 放到群組中。你可以選擇既有的群組，也可以建立新的群組。</string>
 
@@ -14,5 +16,28 @@
 
     <string name="package_state_perspective_tutorial_click_to_launch_title">啟動 App</string>
     <string name="package_state_perspective_tutorial_click_to_launch_description">將 App 啟動，無論是否以冷凍！</string>
+
+    <string name="app_group_perspective_tutorial_appgroup1">群組 1</string>
+    <string name="app_group_perspective_tutorial_appgroup2">群組 2</string>
+    <string name="app_group_perspective_tutorial_applabel1">我的 App 1</string>
+    <string name="app_group_perspective_tutorial_applabel2">我的 App 2</string>
+
+    <string name="app_group_perspective_tutorial_app_group_title">群組</string>
+    <string name="app_group_perspective_tutorial_app_group_description">利用群組來更有效的管理 App！</string>
+
+    <string name="app_group_perspective_tutorial_swipe_group_title">群組操作</string>
+    <string name="app_group_perspective_tutorial_swipe_group_description">向左滑動來顯示群組操作列表。</string>
+
+    <string name="app_group_perspective_tutorial_group_actions_title">群組操作</string>
+    <string name="app_group_perspective_tutorial_group_actions_description">可以群組冷凍、群組解凍、增加 App、以及刪除群組。</string>
+
+    <string name="app_group_perspective_tutorial_swipe_app_title">App 操作</string>
+    <string name="app_group_perspective_tutorial_swipe_app_description">向左滑動來顯示 App 操作列表。</string>
+
+    <string name="app_group_perspective_tutorial_app_actions_title">App 操作</string>
+    <string name="app_group_perspective_tutorial_app_actions_description">可以從群組中刪除特定 App。</string>
+
+    <string name="settings_tutorial_title">探索更多設定</string>
+    <string name="settings_tutorial_description">可以設定自動冷凍、顯示方式，還有更多！</string>
 
 </resources>

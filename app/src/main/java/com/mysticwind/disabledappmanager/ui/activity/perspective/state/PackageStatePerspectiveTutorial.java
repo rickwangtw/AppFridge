@@ -14,7 +14,6 @@ import android.view.ViewTreeObserver;
 import com.google.common.collect.ImmutableList;
 import com.minimize.android.rxrecycleradapter.RxDataSource;
 import com.mysticwind.disabledappmanager.BR;
-import com.mysticwind.disabledappmanager.BuildConfig;
 import com.mysticwind.disabledappmanager.R;
 import com.mysticwind.disabledappmanager.common.ApplicationHelper;
 import com.mysticwind.disabledappmanager.databinding.PerspectiveStateAppItemBinding;
@@ -41,7 +40,9 @@ import static java8.util.stream.StreamSupport.stream;
 @Slf4j
 public class PackageStatePerspectiveTutorial extends PerspectiveBase {
 
-    private static final String SHOWCASE_ID = BuildConfig.VERSION_NAME;
+    private static final String SHOWCASE_ID = PackageStatePerspectiveTutorial.class.getSimpleName();
+    private static final String PACKAGE_NAME = "com.my.application";
+
     private static final int LAST_SEQUENCE_INDEX = 3;
     private static final int THREAD_POOL_SIZE = 5;
     private static final int MAX_POOL_SIZE = 10_000;
@@ -67,8 +68,8 @@ public class PackageStatePerspectiveTutorial extends PerspectiveBase {
         RxDataSource<ApplicationModel> dataSource = new RxDataSource<>(
                 ImmutableList.of(
                         ApplicationModel.builder()
-                                .packageName("com.my.application")
-                                .applicationLabel("My Application")
+                                .packageName(PACKAGE_NAME)
+                                .applicationLabel(getString(R.string.package_state_perspective_tutorial_app_name))
                                 .applicationIcon(defaultIconStub)
                                 .isEnabled(true)
                                 .selected(false)
@@ -158,8 +159,9 @@ public class PackageStatePerspectiveTutorial extends PerspectiveBase {
 
         sequence.setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
             @Override
-            public void onDismiss(MaterialShowcaseView materialShowcaseView, int i) {
-                if (i == LAST_SEQUENCE_INDEX) {
+            public void onDismiss(MaterialShowcaseView materialShowcaseView, int sequenceIndex) {
+                if (sequenceIndex == LAST_SEQUENCE_INDEX) {
+                    appStateConfigDataAccessor.updatePackageStatePerspectiveTutorialShown();
                     startActivity(new Intent(PackageStatePerspectiveTutorial.this, FirstLaunchOptimizedPackageStatePerspective_.class));
                     finish();
                 }

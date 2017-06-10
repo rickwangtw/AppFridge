@@ -23,6 +23,7 @@ import com.mysticwind.disabledappmanager.domain.app.model.ApplicationOrderingMet
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.PackageAssetService;
+import com.mysticwind.disabledappmanager.domain.config.application.AppStateConfigDataAccessor;
 import com.mysticwind.disabledappmanager.domain.config.view.ViewOptionConfigDataAccessor;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.state.PackageStateUpdateEventManager;
@@ -46,6 +47,7 @@ public abstract class PerspectiveBase extends AppCompatActivity {
     protected Drawable closeIconDrawable;
     protected PackageAssetService packageAssetService;
     protected ViewOptionConfigDataAccessor viewOptionConfigDataAccessor;
+    protected AppStateConfigDataAccessor appStateConfigDataAccessor;
 
     // search
     protected MenuItem searchAction;
@@ -73,6 +75,7 @@ public abstract class PerspectiveBase extends AppCompatActivity {
         this.packageStateUpdateEventManager = ApplicationHelper.from(this).packageStateUpdateEventManager();
         this.packageAssetService = ApplicationHelper.from(this).packageAssetService();
         this.viewOptionConfigDataAccessor = ApplicationHelper.from(this).viewOptionConfigDataAccessor();
+        this.appStateConfigDataAccessor = ApplicationHelper.from(this).appStateConfigDataAccessor();
 
         this.searchIconDrawable = getResources().getDrawable(R.drawable.ic_search_white_48dp);
         this.closeIconDrawable = getResources().getDrawable(R.drawable.ic_close_white_48dp);

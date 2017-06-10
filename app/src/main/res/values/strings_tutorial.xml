@@ -3,6 +3,8 @@
 
     <string name="tutorial_check">GOT IT</string>
 
+    <string name="package_state_perspective_tutorial_app_name">My Application</string>
+
     <string name="package_state_perspective_tutorial_add_to_group_button_title">Group apps</string>
     <string name="package_state_perspective_tutorial_add_to_group_button_description">Use this button to add selected apps into a group. You can create a new app group, or add them into an existing app group.</string>
 
@@ -14,5 +16,28 @@
 
     <string name="package_state_perspective_tutorial_click_to_launch_title">Launch an app</string>
     <string name="package_state_perspective_tutorial_click_to_launch_description">Whether the app is frozen or not, click to launch the app!</string>
+
+    <string name="app_group_perspective_tutorial_appgroup1">App Group 1</string>
+    <string name="app_group_perspective_tutorial_appgroup2">App Group 2</string>
+    <string name="app_group_perspective_tutorial_applabel1">App 1</string>
+    <string name="app_group_perspective_tutorial_applabel2">App 2</string>
+
+    <string name="app_group_perspective_tutorial_app_group_title">Group Apps</string>
+    <string name="app_group_perspective_tutorial_app_group_description">Group apps to manage them efficiently.</string>
+
+    <string name="app_group_perspective_tutorial_swipe_group_title">Group Actions</string>
+    <string name="app_group_perspective_tutorial_swipe_group_description">Swipe left to access group actions.</string>
+
+    <string name="app_group_perspective_tutorial_group_actions_title">Group Actions</string>
+    <string name="app_group_perspective_tutorial_group_actions_description">You can freeze the entire group, unfreeze the entire group, add other apps to the group, or even delete the group!</string>
+
+    <string name="app_group_perspective_tutorial_swipe_app_title">App Actions</string>
+    <string name="app_group_perspective_tutorial_swipe_app_description">Swipe left to access app actions.</string>
+
+    <string name="app_group_perspective_tutorial_app_actions_title">App Actions</string>
+    <string name="app_group_perspective_tutorial_app_actions_description">You can delete an app from the app group!</string>
+
+    <string name="settings_tutorial_title">Discover more Settings</string>
+    <string name="settings_tutorial_description">Setup auto-freeze, view options, and many more in settings!</string>
 
 </resources>

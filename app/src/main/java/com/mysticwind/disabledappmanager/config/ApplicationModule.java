@@ -12,11 +12,11 @@ import com.mysticwind.disabledappmanager.domain.AppGroupManagerImpl;
 import com.mysticwind.disabledappmanager.domain.AppLauncher;
 import com.mysticwind.disabledappmanager.domain.AppStateProvider;
 import com.mysticwind.disabledappmanager.domain.AutoDisablingAppLauncher;
-import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
-import com.mysticwind.disabledappmanager.domain.app.impl.PackageManagerPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.PackageMangerAppStateProvider;
 import com.mysticwind.disabledappmanager.domain.PackageStateController;
 import com.mysticwind.disabledappmanager.domain.RootProcessPackageStateController;
+import com.mysticwind.disabledappmanager.domain.app.PackageListProvider;
+import com.mysticwind.disabledappmanager.domain.app.impl.PackageManagerPackageListProvider;
 import com.mysticwind.disabledappmanager.domain.appgroup.AppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.appgroup.EventBusAppGroupUpdateEventManager;
 import com.mysticwind.disabledappmanager.domain.asset.AppAssetUpdateEventManager;
@@ -40,6 +40,9 @@ import com.mysticwind.disabledappmanager.domain.config.BackupConfigDataAccessorI
 import com.mysticwind.disabledappmanager.domain.config.BackupConfigService;
 import com.mysticwind.disabledappmanager.domain.config.BackupConfigServiceImpl;
 import com.mysticwind.disabledappmanager.domain.config.BackupConfig_;
+import com.mysticwind.disabledappmanager.domain.config.application.AppStateConfigDataAccessor;
+import com.mysticwind.disabledappmanager.domain.config.application.impl.AppStateConfigDataAccessorImpl;
+import com.mysticwind.disabledappmanager.domain.config.application.impl.AppStateConfig_;
 import com.mysticwind.disabledappmanager.domain.config.view.ViewOptionConfigDataAccessor;
 import com.mysticwind.disabledappmanager.domain.config.view.impl.ViewOptionConfigDataAccessorImpl;
 import com.mysticwind.disabledappmanager.domain.config.view.impl.ViewOptionConfig_;
@@ -69,15 +72,18 @@ public class ApplicationModule {
     private final ViewOptionConfig_ viewOptionConfig;
     private final AutoDisablingConfig_ autoDisablingConfig;
     private final BackupConfig_ backupConfig;
+    private final AppStateConfig_ appStateConfig;
 
     public ApplicationModule(final Context context,
                              final ViewOptionConfig_ viewOptionConfig,
                              final AutoDisablingConfig_ autoDisablingConfig,
-                             final BackupConfig_ backupConfig) {
+                             final BackupConfig_ backupConfig,
+                             final AppStateConfig_ appStateConfig) {
         this.context = Preconditions.checkNotNull(context);
         this.viewOptionConfig = Preconditions.checkNotNull(viewOptionConfig);
         this.autoDisablingConfig = Preconditions.checkNotNull(autoDisablingConfig);
         this.backupConfig = Preconditions.checkNotNull(backupConfig);
+        this.appStateConfig = Preconditions.checkNotNull(appStateConfig);
     }
 
     @Provides @Singleton
@@ -125,6 +131,16 @@ public class ApplicationModule {
     @Provides @Singleton
     public BackupConfigService provideBackupConfigService(BackupConfigDataAccessor backupConfigDataAccessor) {
         return new BackupConfigServiceImpl(backupConfigDataAccessor);
+    }
+
+    @Provides @Singleton
+    public AppStateConfig_ provideAppStateConfig() {
+        return this.appStateConfig;
+    }
+
+    @Provides @Singleton
+    public AppStateConfigDataAccessor provideAppStateConfigDataAccessor(AppStateConfig_ appStateConfig) {
+        return new AppStateConfigDataAccessorImpl(appStateConfig);
     }
 
     @Provides @Singleton

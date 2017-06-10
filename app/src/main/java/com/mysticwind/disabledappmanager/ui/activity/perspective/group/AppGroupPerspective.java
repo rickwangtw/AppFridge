@@ -92,6 +92,11 @@ public class AppGroupPerspective extends PerspectiveBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (appStateConfigDataAccessor.shouldShowAppGroupPerspectiveTutorial()) {
+            startActivity(new Intent(this, AppGroupPerspectiveTutorial.class));
+            finish();
+        }
+
         this.allAppGroupName = getResources().getString(R.string.generated_app_group_name_all);
 
         new AsyncTask<Void, Void, Void>() {

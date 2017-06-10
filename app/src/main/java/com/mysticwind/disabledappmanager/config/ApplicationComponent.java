@@ -16,6 +16,7 @@ import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfigServic
 import com.mysticwind.disabledappmanager.domain.config.AutoDisablingConfig_;
 import com.mysticwind.disabledappmanager.domain.config.BackupConfigService;
 import com.mysticwind.disabledappmanager.domain.config.BackupConfig_;
+import com.mysticwind.disabledappmanager.domain.config.application.AppStateConfigDataAccessor;
 import com.mysticwind.disabledappmanager.domain.config.view.ViewOptionConfigDataAccessor;
 import com.mysticwind.disabledappmanager.domain.state.DisabledPackageStateDecider;
 import com.mysticwind.disabledappmanager.domain.state.ManualStateUpdateEventManager;
@@ -52,4 +53,5 @@ public interface ApplicationComponent {
     ViewOptionConfigDataAccessor viewOptionConfigDataAccessor();
     AutoDisablingConfigService autoDisablingConfigService();
     BackupConfigService backupConfigService();
+    AppStateConfigDataAccessor appStateConfigDataAccessor();
 }

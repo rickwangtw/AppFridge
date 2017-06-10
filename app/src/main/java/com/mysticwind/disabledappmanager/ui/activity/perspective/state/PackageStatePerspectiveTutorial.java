@@ -43,7 +43,7 @@ public class PackageStatePerspectiveTutorial extends PerspectiveBase {
     private static final String SHOWCASE_ID = PackageStatePerspectiveTutorial.class.getSimpleName();
     private static final String PACKAGE_NAME = "com.my.application";
 
-    private static final int LAST_SEQUENCE_INDEX = 3;
+    private static final int LAST_SEQUENCE_INDEX = 4;
     private static final int THREAD_POOL_SIZE = 5;
     private static final int MAX_POOL_SIZE = 10_000;
     private static final long KEEP_ALIVE_IN_MINUTES = 5;
@@ -156,6 +156,15 @@ public class PackageStatePerspectiveTutorial extends PerspectiveBase {
                 getString(R.string.package_state_perspective_tutorial_click_to_launch_title),
                 getString(R.string.package_state_perspective_tutorial_click_to_launch_description),
                 getString(R.string.tutorial_check));
+
+        MaterialShowcaseView settingsShowcaseView = new MaterialShowcaseView.Builder(this)
+                .setTarget(recyclerView.getChildAt(0).findViewById(R.id.packagename))
+                .setTitleText(R.string.settings_tutorial_title)
+                .setContentText(R.string.settings_tutorial_description)
+                .withoutShape()
+                .setDismissText(R.string.tutorial_check)
+                .build();
+        sequence.addSequenceItem(settingsShowcaseView);
 
         sequence.setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
             @Override

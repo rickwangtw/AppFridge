@@ -77,4 +77,8 @@
     <string name="help_about_libraries_rxrecycleradapter_license">Apache 2.0</string>
     <string name="help_about_libraries_rxrecycleradapter_description">RxRecyclerAdapter by Ahmed Rizwan</string>
 
+    <string name="help_about_libraries_swipelayout_url">https://github.com/daimajia/AndroidSwipeLayout</string>
+    <string name="help_about_libraries_swipelayout_license">MIT</string>
+    <string name="help_about_libraries_swipelayout_description">Android Swipe Layout by Daimaja</string>
+
 </resources>

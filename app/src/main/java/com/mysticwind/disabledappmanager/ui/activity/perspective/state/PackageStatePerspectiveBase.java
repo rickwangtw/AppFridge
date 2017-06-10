@@ -43,6 +43,11 @@ public abstract class PackageStatePerspectiveBase extends PerspectiveBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (appStateConfigDataAccessor.shouldShowPackageStatePerspectiveTutorial()) {
+            startActivity(new Intent(this, PackageStatePerspectiveTutorial.class));
+            finish();
+        }
+
         this.defaultIconStub = ApplicationHelper.from(this).defaultIconStubDrawable();
 
         loadingDialog = DialogHelper.newLoadingDialog(PackageStatePerspectiveBase.this);

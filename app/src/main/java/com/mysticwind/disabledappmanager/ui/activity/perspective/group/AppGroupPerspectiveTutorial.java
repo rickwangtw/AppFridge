@@ -63,6 +63,11 @@ public class AppGroupPerspectiveTutorial extends PerspectiveBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (!appStateConfigDataAccessor.shouldShowAppGroupPerspectiveTutorial()) {
+            startActivity(new Intent(this, AppGroupPerspective_.class));
+            finish();
+        }
+
         this.defaultIconStub = ApplicationHelper.from(this).defaultIconStubDrawable();
         this.allAppGroupName = getResources().getString(R.string.generated_app_group_name_all);
 

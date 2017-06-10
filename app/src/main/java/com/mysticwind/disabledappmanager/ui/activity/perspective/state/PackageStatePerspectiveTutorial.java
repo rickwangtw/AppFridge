@@ -59,6 +59,11 @@ public class PackageStatePerspectiveTutorial extends PerspectiveBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (!appStateConfigDataAccessor.shouldShowPackageStatePerspectiveTutorial()) {
+            startActivity(new Intent(this, PackageStatePerspective_.class));
+            finish();
+        }
+
         this.defaultIconStub = ApplicationHelper.from(this).defaultIconStubDrawable();
 
         setContentView(R.layout.perspective_state_activity);

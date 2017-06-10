@@ -195,36 +195,35 @@ public class AppGroupPerspectiveTutorial extends PerspectiveBase {
         final MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this, SHOWCASE_ID);
         final View firstAppGroupView = expandableListView.getChildAt(0);
         final View secondAppGroupView = expandableListView.getChildAt(2);
-        final View appViewOfSecondAppGroup = expandableListView.getChildAt(3);
+        final View appViewOfFirstAppGroup = expandableListView.getChildAt(1);
 
         sequence.addSequenceItem(
-                secondAppGroupView.findViewById(R.id.app_group_name),
+                firstAppGroupView.findViewById(R.id.app_group_name),
                 getString(R.string.app_group_perspective_tutorial_app_group_title),
                 getString(R.string.app_group_perspective_tutorial_app_group_description),
                 getString(R.string.tutorial_check));
 
         sequence.addSequenceItem(
-                secondAppGroupView.findViewById(R.id.app_group_name),
+                firstAppGroupView.findViewById(R.id.app_group_name),
                 getString(R.string.app_group_perspective_tutorial_swipe_group_title),
                 getString(R.string.app_group_perspective_tutorial_swipe_group_description),
                 getString(R.string.tutorial_check));
 
         sequence.addSequenceItem(
-                // invisible view
-                appViewOfSecondAppGroup.findViewById(R.id.app_label_noswipe),
+                appViewOfFirstAppGroup.findViewById(R.id.app_label_noswipe),
                 getString(R.string.app_group_perspective_tutorial_group_actions_title),
                 getString(R.string.app_group_perspective_tutorial_group_actions_description),
                 getString(R.string.tutorial_check));
 
         sequence.addSequenceItem(
-                appViewOfSecondAppGroup.findViewById(R.id.app_label_swipe),
+                appViewOfFirstAppGroup.findViewById(R.id.app_label_swipe),
                 getString(R.string.app_group_perspective_tutorial_swipe_app_title),
                 getString(R.string.app_group_perspective_tutorial_swipe_app_description),
                 getString(R.string.tutorial_check));
 
         sequence.addSequenceItem(
                 // invisible view
-                appViewOfSecondAppGroup.findViewById(R.id.app_label_noswipe),
+                appViewOfFirstAppGroup.findViewById(R.id.app_label_noswipe),
                 getString(R.string.app_group_perspective_tutorial_app_actions_title),
                 getString(R.string.app_group_perspective_tutorial_app_actions_description),
                 getString(R.string.tutorial_check));
@@ -232,7 +231,7 @@ public class AppGroupPerspectiveTutorial extends PerspectiveBase {
         sequence.addSequenceItem(
                 new MaterialShowcaseView.Builder(this)
                         // invisible view
-                        .setTarget(appViewOfSecondAppGroup.findViewById(R.id.app_label_noswipe))
+                        .setTarget(appViewOfFirstAppGroup.findViewById(R.id.app_label_noswipe))
                         .setTitleText(R.string.settings_tutorial_title)
                         .setContentText(R.string.settings_tutorial_description)
                         .setDismissText(R.string.tutorial_check)
@@ -243,10 +242,10 @@ public class AppGroupPerspectiveTutorial extends PerspectiveBase {
             @Override
             public void onDismiss(MaterialShowcaseView materialShowcaseView, int sequenceIndex) {
                 if (sequenceIndex == 1) {
-                    SwipeLayout groupSwipeLayout = (SwipeLayout) secondAppGroupView;
+                    SwipeLayout groupSwipeLayout = (SwipeLayout) firstAppGroupView;
                     groupSwipeLayout.open();
                 } else if (sequenceIndex == 3) {
-                    LinearLayout linearLayout = (LinearLayout) appViewOfSecondAppGroup;
+                    LinearLayout linearLayout = (LinearLayout) appViewOfFirstAppGroup;
                     SwipeLayout childSwipeLayout = (SwipeLayout) linearLayout.getChildAt(1);
                     childSwipeLayout.open();
                 } else if (sequenceIndex == 5) {

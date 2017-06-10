@@ -9,18 +9,6 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <include layout="@layout/help_about_libraries_material_design_icons" />
-    <include layout="@layout/help_about_libraries_acacia" />
-    <include layout="@layout/help_about_libraries_eventbus" />
-    <include layout="@layout/help_about_libraries_dagger2" />
-    <include layout="@layout/help_about_libraries_lombok" />
-    <include layout="@layout/help_about_libraries_guava" />
-    <include layout="@layout/help_about_libraries_logback" />
-    <include layout="@layout/help_about_libraries_androidannotations" />
-    <include layout="@layout/help_about_libraries_joda_time_android" />
-    <include layout="@layout/help_about_libraries_gson" />
-    <include layout="@layout/help_about_libraries_libsuperuser" />
-    <include layout="@layout/help_about_libraries_retrolambda" />
-    <include layout="@layout/help_about_libraries_streamsupport" />
+    <!-- add library items after the above text view -->
 
 </LinearLayout>

@@ -13,27 +13,26 @@
         android:layout_alignParentLeft="true" />
 
     <TextView
-        android:text="@string/help_about_libraries_material_design_icons_description"
+        android:id="@+id/library_description"
         android:layout_gravity="bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/bullet_point"
-        android:layout_toLeftOf="@+id/material_design_icons_license"
+        android:layout_toLeftOf="@+id/library_license"
         android:layout_centerVertical="true"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_alignParentTop="true" />
 
     <TextView
-        android:id="@+id/material_design_icons_license"
-        android:text="@string/help_about_libraries_material_design_icons_license"
+        android:id="@+id/library_license"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_toLeftOf="@+id/material_design_icons_link_button" />
+        android:layout_toLeftOf="@+id/library_link_button" />
 
     <Button
-        android:id="@+id/material_design_icons_link_button"
+        android:id="@+id/library_link_button"
         android:text="@string/help_about_resource_link_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
